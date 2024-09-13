@@ -21,13 +21,14 @@ int main(int argc, char* argv[])
 
     try
     {
-        setenv("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;tcp", 1);
+        //setenv("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;tcp", 1);
 
-        VideoCapture cap(uri, CAP_FFMPEG);
-        HOGDescriptor hog;
-        hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+        // setenv("GST_PLUGIN_PATH", "/mnt/data/dev/perso/rstp_analyser/build/vcpkg_installed/x64-linux/lib/gstreamer-1.0", 1);
+        // setenv("GST_DEBUG", "3", 1);
 
-        vector<Point> track;
+        std::string pipeline = "rtspsrc location=" + uri + " latency=0 ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! appsink";
+
+        VideoCapture cap(pipeline, CAP_GSTREAMER);
         
         if (!cap.isOpened()) {           
             std::cerr << "Tentative de connection au flux RTSP." << std::endl;
@@ -35,7 +36,6 @@ int main(int argc, char* argv[])
         }
 
         cv::Mat frame;
-        cv::Mat analyseFrame;
 
         while (true) {
             cap >> frame;
@@ -44,33 +44,6 @@ int main(int argc, char* argv[])
                 std::cerr << "Frame vide." << std::endl;
             }
             else {
-
-                std::vector<cv::Rect> found, found_filtered;
-                analyseFrame = frame.clone();
-                resize(analyseFrame, analyseFrame, Size(640, 480));
-                hog.detectMultiScale(analyseFrame, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
-
-                size_t i, j;
-                for (i = 0; i < found.size(); i++) {
-                    cv::Rect r = found[i];
-                    for (j = 0; j < found.size(); j++)
-                        if (j != i && (r & found[j]) == r)
-                            break;
-                    if (j == found.size())
-                        found_filtered.push_back(r);
-                }
-
-                for (i = 0; i < found_filtered.size(); i++) {
-                    cv::Rect r = found_filtered[i];
-                    r.x += cvRound(r.width * 0.1);
-                    r.width = cvRound(r.width * 0.8);
-                    r.y += cvRound(r.height * 0.07);
-                    r.height = cvRound(r.height * 0.8);
-                    cv::rectangle(frame, r.tl(), r.br(), cv::Scalar(0, 255, 0), 3);
-                }
-
-
-
                 cv::imshow("RTSP Stream", frame);
             }
 
@@ -81,7 +54,6 @@ int main(int argc, char* argv[])
 
         cap.release();
         cv::destroyAllWindows();
-        
     }
     catch(const std::exception& e)
     {

@@ -10,6 +10,17 @@
         "vulkan",
         "eigen"
       ]
+    },
+    {
+      "name" : "gstreamer",
+      "version>=": "1.18.4",
+      "features": [
+        "plugins-base",
+        "plugins-good",
+        "plugins-bad",
+        "plugins-ugly",
+        "x265"
+      ]
     }
   ]
 }
