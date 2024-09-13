@@ -1,0 +1,15 @@
+{
+  "dependencies": [
+    {
+      "name": "opencv4",
+      "features": [
+        "contrib",
+        "ffmpeg",
+        "gstreamer",
+        "opengl",
+        "vulkan",
+        "eigen"
+      ]
+    }
+  ]
+}
