@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
         // setenv("GST_PLUGIN_PATH", "/mnt/data/dev/perso/rstp_analyser/build/vcpkg_installed/x64-linux/lib/gstreamer-1.0", 1);
         // setenv("GST_DEBUG", "3", 1);
 
-        std::string pipeline = "rtspsrc location=" + uri + " latency=0 ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! appsink";
+        std::string pipeline = "rtspsrc location=" + uri + " ! h265parse ! avdec_h265 ! videoconvert ! appsink";
 
         VideoCapture cap(pipeline, CAP_GSTREAMER);
         
