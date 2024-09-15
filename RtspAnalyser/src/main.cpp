@@ -9,57 +9,59 @@
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
+#include <gst/gst.h>
+#include <nlohmann/json.hpp>
+#include <fstream>
 #include "Nico/RtspAnalyser/RtspAnalyser.h"
+#include "Nico/RtspAnalyser/Libs/Config.h"
 
 using namespace std;
 using namespace Nico::RtspAnalyser;
+using namespace Nico::RtspAnalyser::Libs;
 using namespace cv;
+using json = nlohmann::json;
 
 int main(int argc, char* argv[])
 {
-    const string uri = "rtsp://analyser:jkTRf8g6a7m6q_jkicxi@192.168.2.252:29172/unicast/c1/s1/live";
+    const string rtsp_config_file = "/mnt/data/dev/perso/rstp_analyser/rtsp.json";
+    // read json file
+    Config conf(rtsp_config_file);
 
-    try
-    {
-        //setenv("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;tcp", 1);
+    const string uri = "";
 
-        // setenv("GST_PLUGIN_PATH", "/mnt/data/dev/perso/rstp_analyser/build/vcpkg_installed/x64-linux/lib/gstreamer-1.0", 1);
-        // setenv("GST_DEBUG", "3", 1);
+    // GStreamer pipeline for read RTSP stream encoded with H265, output with BGR, and display it, with TCP protocol
+    std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=0 ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw,format=BGR ! videoconvert ! appsink";
 
-        std::string pipeline = "rtspsrc location=" + uri + " ! h265parse ! avdec_h265 ! videoconvert ! appsink";
+    std::cout << "Pipeline: " << std::endl << pipeline << std::endl;
 
-        VideoCapture cap(pipeline, CAP_GSTREAMER);
-        
-        if (!cap.isOpened()) {           
-            std::cerr << "Tentative de connection au flux RTSP." << std::endl;
-            return EXIT_FAILURE;
-        }
+    gst_init(nullptr, nullptr);
 
-        cv::Mat frame;
-
-        while (true) {
-            cap >> frame;
-
-            if (frame.empty()) {
-                std::cerr << "Frame vide." << std::endl;
-            }
-            else {
-                cv::imshow("RTSP Stream", frame);
-            }
-
-            if (cv::waitKey(30) == 27) {  // Attendre 30 ms ou jusqu'à ce que la touche 'Esc' soit enfoncée
-                break;
-            }
-        }
-
-        cap.release();
-        cv::destroyAllWindows();
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+    VideoCapture cap(pipeline, CAP_GSTREAMER);
     
+    if (!cap.isOpened()) {           
+        std::cerr << "Tentative de connection au flux RTSP." << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    cv::Mat frame;
+
+    while (true) {
+        cap >> frame;
+
+        if (frame.empty()) {
+            std::cerr << "Frame vide." << std::endl;
+        }
+        else {
+            cv::imshow("RTSP Stream", frame);
+        }
+
+        if (cv::waitKey(30) == 27) {  // Attendre 30 ms ou jusqu'à ce que la touche 'Esc' soit enfoncée
+            break;
+        }
+    }
+
+    cap.release();
+    cv::destroyAllWindows();    
 
     return EXIT_SUCCESS;
 }

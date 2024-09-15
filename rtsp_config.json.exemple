@@ -1,0 +1,15 @@
+{
+    "nvr" : {
+        "ip" : "192.168.1.1",
+        "port" : 554,
+        "username" : "admin",
+        "password" : "admin",
+        "protocol" : "tcp"
+    },
+    "streams" : [
+        {
+            "url" : "/unicast/c1/s1/live",
+            "codec" : "h265"
+        }
+    ]
+}

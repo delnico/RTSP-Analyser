@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.13.4)
+
+project(RtspAnalyser.Libs VERSION 0.0.1)
+
+set(SOURCES
+    src/Config.cpp
+)
+
+set(INCLUDES
+    includes/Nico/RtspAnalyser/Libs/Config.h
+)
+
+add_library(${PROJECT_NAME}
+    ${SOURCES}
+    ${INCLUDES}
+)
+
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/includes>
+    $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE 
+        nlohmann_json::nlohmann_json
+    PUBLIC
+        Threads::Threads
+)
+

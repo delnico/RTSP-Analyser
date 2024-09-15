@@ -4,9 +4,17 @@ Analyse video stream to detect human.
 
 Make lightweight to be execute on RPI 4.
 
+## Tools to build
+
+- CMake
+- Vcpkg
+- Ninja
+
 ## Dependencies
 
 - OpenCV 4
+- GStreamer
+- Niels Lohmann JSON
 
 ## Installation
 

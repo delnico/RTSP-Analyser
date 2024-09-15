@@ -21,6 +21,9 @@
         "plugins-ugly",
         "x265"
       ]
+    },
+    {
+      "name": "nlohmann-json"
     }
   ]
 }
