@@ -5,6 +5,14 @@ project(RtspAnalyser VERSION 0.0.1)
 # Compiler flags
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /VERBOSE")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /VERBOSE")
+
+# Set debug build
+set(CMAKE_BUILD_TYPE Debug)
+
+# Set release build
+#set(CMAKE_BUILD_TYPE Release)
+
+# Set C++17
 set(CMAKE_CXX_STANDARD 17)
 # Link static lib as shared
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
