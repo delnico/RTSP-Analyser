@@ -12,8 +12,10 @@
 #include <gst/gst.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
+
 #include "Nico/RtspAnalyser/RtspAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
+#include "Nico/RtspAnalyser/Libs/Codec.h"
 
 using namespace std;
 using namespace Nico::RtspAnalyser;
@@ -27,7 +29,12 @@ int main(int argc, char* argv[])
     // read json file
     Config conf(rtsp_config_file);
 
-    const string uri = "";
+    std::cout << "Streams: " << std::endl;
+    for(int i = 0; i < conf.getHowManyStreams(); i++) {
+        std::cout << "\t" << i << " : " << conf.getStreamUrl(i) << "\t" << conf.getStreamCodec(i) << std::endl;
+    }
+
+    const string uri = conf.getStreamUrl(0);
 
     // GStreamer pipeline for read RTSP stream encoded with H265, output with BGR, and display it, with TCP protocol
     std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=0 ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw,format=BGR ! videoconvert ! appsink";

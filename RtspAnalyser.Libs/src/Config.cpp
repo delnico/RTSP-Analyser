@@ -1,8 +1,9 @@
-#include "Nico/RtspAnalyser/Libs/Config.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include <iostream>
+#include "Nico/RtspAnalyser/Libs/Config.h"
+#include "Nico/RtspAnalyser/Libs/Codec.h"
+#include "Nico/RtspAnalyser/Libs/Stream.h"
 
 using namespace Nico::RtspAnalyser::Libs;
 using json = nlohmann::json;
@@ -10,8 +11,7 @@ using namespace std;
 
 Config::Config() : Config("./rtsp_config.json"){}
 
-Config::Config(const std::string& file)
-{
+Config::Config(const std::string& file) {
     std::ifstream ifs(file);
     if(!ifs.is_open()) {
         throw std::runtime_error("Impossible d'ouvrir le fichier de configuration.");
@@ -43,16 +43,16 @@ Config::Config(const std::string& file)
     }
 }
 
-int Config::getHowManyStreams() const
-{
+int Config::getHowManyStreams() const {
     return streams.size();
 }
 
-std::string Config::getStreamUrl(int index) const
-{
+std::string Config::getStreamUrl(int index) const {
     return "rtsp://" + nvr_user + ":" + nvr_password + "@" + nvr_ip + ":" + std::to_string(nvr_port) + streams[index].url;
 }
 
-
+Codec Config::getStreamCodec(int index) const {
+    return streams[index].codec;
+}
 
 Config::~Config(){}
