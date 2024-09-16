@@ -23,7 +23,7 @@ using json = nlohmann::json;
 
 int main(int argc, char* argv[])
 {
-    const string rtsp_config_file = "/mnt/data/dev/perso/rstp_analyser/rtsp.json";
+    const string rtsp_config_file = "/mnt/data/dev/perso/rstp_analyser/rtsp_config.json";
     // read json file
     Config conf(rtsp_config_file);
 

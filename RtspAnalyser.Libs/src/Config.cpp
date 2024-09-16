@@ -2,6 +2,8 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+#include <iostream>
+
 using namespace Nico::RtspAnalyser::Libs;
 using json = nlohmann::json;
 using namespace std;
@@ -11,14 +13,33 @@ Config::Config() : Config("./rtsp_config.json"){}
 Config::Config(const std::string& file)
 {
     std::ifstream ifs(file);
-    json j = json::parse(ifs);
+    if(!ifs.is_open()) {
+        throw std::runtime_error("Impossible d'ouvrir le fichier de configuration.");
+    }
+    json j;
+    ifs >> j;
+    ifs.close();
 
-    if (j.find("nvr") != j.end()) {
-        auto nvr = j["nvr"];
-        nvr_ip = nvr["ip"];
-        nvr_port = nvr["port"];
-        nvr_user = nvr["user"];
-        nvr_password = nvr["password"];
+    auto nvr = j["nvr"];
+    nvr_ip = nvr["ip"];
+    nvr_port = nvr["port"];
+    nvr_user = nvr["username"];
+    nvr_password = nvr["password"];
+
+    auto streams = j["streams"];
+    for(auto& stream : streams) {
+        struct Stream s;
+        s.url = stream["url"];
+        std::string codec = stream["codec"];
+        std::transform(codec.begin(), codec.end(), codec.begin(), ::tolower);
+        if(codec == "h264") {
+            s.codec = Codec::H264;
+        } else if(codec == "h265") {
+            s.codec = Codec::H265;
+        } else {
+            throw std::runtime_error("Codec inconnu.");
+        }
+        this->streams.push_back(s);
     }
 }
 
@@ -29,7 +50,9 @@ int Config::getHowManyStreams() const
 
 std::string Config::getStreamUrl(int index) const
 {
-    return "";
+    return "rtsp://" + nvr_user + ":" + nvr_password + "@" + nvr_ip + ":" + std::to_string(nvr_port) + streams[index].url;
 }
+
+
 
 Config::~Config(){}

@@ -8,6 +8,7 @@ set(SOURCES
 
 set(INCLUDES
     includes/Nico/RtspAnalyser/Libs/Config.h
+    includes/Nico/RtspAnalyser/Libs/Codec.h
 )
 
 add_library(${PROJECT_NAME}
