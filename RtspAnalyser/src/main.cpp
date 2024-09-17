@@ -37,13 +37,30 @@ int main(int argc, char* argv[])
     const string uri = conf.getStreamUrl(0);
 
     // GStreamer pipeline for read RTSP stream encoded with H265, output with BGR, and display it, with TCP protocol
-    std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! application/x-rtp, media=video ! rtph265depay ! h265parse ! avdec_h265 ! video/x-raw ! autovideosink ! appsink";
+    std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
+    std::string pipeline2 = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! 'video/x-raw, width=1280, height=720, framerate=30/1' ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
+    std::string pipeline3 = "rtspsrc location=" + uri + " protocols=\"tcp\" ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
+    std::string pipeline4 = "rtspsrc location=" + uri + " protocols=\"tcp\" ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw, format=RGB ! appsink emit-signals=true";
 
-    std::cout << "Pipeline: " << std::endl << pipeline << std::endl;
+    // manque weight et height
+
+    std::cout << "Pipeline: " << std::endl << pipeline4 << std::endl;
+
+    // cv::setNumThreads(0);
+
+    gst_init(&argc, &argv);
+
+    // Gstreamer debug
+    gst_debug_set_active(TRUE);
+    GstDebugLevel dbglevel = gst_debug_get_default_threshold();
+    if (dbglevel < GST_LEVEL_ERROR) {
+        dbglevel = GST_LEVEL_ERROR;
+        gst_debug_set_default_threshold(dbglevel);
+    }
 
     VideoCapture cap;
 
-    if(cap.open(pipeline, CAP_GSTREAMER)) {
+    if(cap.open(pipeline4, CAP_GSTREAMER)) {
         std::cout << "Connection au flux RTSP établie." << std::endl;
     }
     else {
@@ -59,7 +76,10 @@ int main(int argc, char* argv[])
     cv::Mat frame;
 
     while (true) {
-        cap >> frame;
+        if(!cap.read(frame)) {
+            std::cerr << "Erreur lors de la lecture du flux RTSP." << std::endl;
+            break;
+        }
 
         if (frame.empty()) {
             std::cerr << "Frame vide." << std::endl;
