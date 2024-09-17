@@ -37,13 +37,19 @@ int main(int argc, char* argv[])
     const string uri = conf.getStreamUrl(0);
 
     // GStreamer pipeline for read RTSP stream encoded with H265, output with BGR, and display it, with TCP protocol
-    std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=0 ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw,format=BGR ! videoconvert ! appsink";
+    std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! application/x-rtp, media=video ! rtph265depay ! h265parse ! avdec_h265 ! video/x-raw ! autovideosink ! appsink";
 
     std::cout << "Pipeline: " << std::endl << pipeline << std::endl;
 
-    gst_init(nullptr, nullptr);
+    VideoCapture cap;
 
-    VideoCapture cap(pipeline, CAP_GSTREAMER);
+    if(cap.open(pipeline, CAP_GSTREAMER)) {
+        std::cout << "Connection au flux RTSP établie." << std::endl;
+    }
+    else {
+        std::cerr << "Tentative de connection au flux RTSP." << std::endl;
+        return EXIT_FAILURE;
+    }
     
     if (!cap.isOpened()) {           
         std::cerr << "Tentative de connection au flux RTSP." << std::endl;
