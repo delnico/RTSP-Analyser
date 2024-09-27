@@ -12,6 +12,7 @@
 #include <gst/gst.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <exception>
 
 #include "Nico/RtspAnalyser/RtspAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
@@ -40,11 +41,13 @@ int main(int argc, char* argv[])
     std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
     std::string pipeline2 = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! 'video/x-raw, width=1280, height=720, framerate=30/1' ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
     std::string pipeline3 = "rtspsrc location=" + uri + " protocols=\"tcp\" ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
-    std::string pipeline4 = "rtspsrc location=" + uri + " protocols=\"tcp\" ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw, format=RGB ! appsink emit-signals=true";
+    std::string pipeline4 = "rtspsrc location=" + uri + " protocols=tcp latency=500 ! queue ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! videoscale ! video/x-raw,width=1280,height=720 ! appsink emit-signals=true";
+    std::string pipeline5 = "rtspsrc location=" + uri + " protocols=tcp debug=true ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw ! appsink buffer-list=true emit-signals=true sync=false";
+    std::string pipeline6 = "rtspsrc location=" + uri + " protocols=tcp debug=true ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw ! appsink";
 
     // manque weight et height
 
-    std::cout << "Pipeline: " << std::endl << pipeline4 << std::endl;
+    std::cout << "Pipeline: " << std::endl << pipeline6 << std::endl;
 
     // cv::setNumThreads(0);
 
@@ -60,7 +63,7 @@ int main(int argc, char* argv[])
 
     VideoCapture cap;
 
-    if(cap.open(pipeline4, CAP_GSTREAMER)) {
+    if(cap.open(pipeline6, CAP_GSTREAMER)) {
         std::cout << "Connection au flux RTSP établie." << std::endl;
     }
     else {
@@ -76,7 +79,22 @@ int main(int argc, char* argv[])
     cv::Mat frame;
 
     while (true) {
-        if(!cap.read(frame)) {
+        // problème de buffer
+
+        try{
+            cap.read(frame);
+        }
+        catch (cv::Exception& e) {
+            std::cerr << "Erreur lors de la lecture du flux RTSP." << std::endl;
+            std::cerr << e.what() << std::endl;
+            break;
+        }
+        catch (std::exception& e) {
+            std::cerr << "Erreur lors de la lecture du flux RTSP." << std::endl;
+            std::cerr << e.what() << std::endl;
+            break;
+        }
+        catch (...) {
             std::cerr << "Erreur lors de la lecture du flux RTSP." << std::endl;
             break;
         }
