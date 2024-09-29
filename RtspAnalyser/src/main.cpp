@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
     cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(history, varThreshold, detectShadows);
 
-    cv::Mat frame, fgMask, roiMask;
+    cv::Mat frame, fgMask, roiMask, grayFrame;
 
     std::vector<cv::Rect> zones;
     zones.push_back(cv::Rect(0, 300, 1100, 420));
@@ -70,10 +70,10 @@ int main(int argc, char* argv[])
         try{
             cap.read(frame);
 
-            cap >> frame;
             if (frame.empty()) break;
 
-            bgSubtractor->apply(frame, fgMask);                         // Appliquer la soustraction d'arrière-plan pour obtenir le masque du premier plan
+            cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);            // Convertir l'image en niveaux de gris
+            bgSubtractor->apply(grayFrame, fgMask);                         // Appliquer la soustraction d'arrière-plan pour obtenir le masque du premier plan
 
             roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());     // Initialiser un masque de la même taille que l'image originale
 
@@ -81,8 +81,8 @@ int main(int argc, char* argv[])
                 fgMask(zone).copyTo(roiMask(zone));                         // Copier uniquement la zone d'intérêt dans un nouveau masque
 
                 // Appliquer un filtre morphologique pour éliminer le bruit (petites zones)
-                cv::erode(roiMask, roiMask, cv::Mat(), cv::Point(-1, -1), 2);  // Réduire les petites zones
-                cv::dilate(roiMask, roiMask, cv::Mat(), cv::Point(-1, -1), 2); // Agrandir les zones significatives
+                cv::erode(roiMask, roiMask, cv::Mat(), cv::Point(-1, -1), 1);  // Réduire les petites zones
+                cv::dilate(roiMask, roiMask, cv::Mat(), cv::Point(-1, -1), 1); // Agrandir les zones significatives
 
                 cv::GaussianBlur(roiMask, roiMask, cv::Size(15, 15), 0); // Appliquer un flou pour lisser les petites variations
 
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
                 cv::rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);       // Dessiner le rectangle de la zone sur l'image originale
             }
 
-            //cv::imshow("Mouvement dans la zone", roiMask);              // Seulement afficher le mouvement détecté dans la zone d'intérêt
+            cv::imshow("Mouvement dans la zone", roiMask);              // Seulement afficher le mouvement détecté dans la zone d'intérêt
             cv::imshow("RTSP", frame);
 
             if (cv::waitKey(33) == 27) break;  // Waiting for 33 ms = ~ 30 frames per second (ideally 1000/30 = 33.33 ms)
