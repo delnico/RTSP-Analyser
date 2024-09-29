@@ -9,7 +9,6 @@
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
-#include <gst/gst.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <exception>
@@ -37,33 +36,12 @@ int main(int argc, char* argv[])
 
     const string uri = conf.getStreamUrl(0);
 
-    // GStreamer pipeline for read RTSP stream encoded with H265, output with BGR, and display it, with TCP protocol
-    std::string pipeline = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
-    std::string pipeline2 = "rtspsrc location=" + uri + " protocols=\"tcp\" latency=2000 ! 'video/x-raw, width=1280, height=720, framerate=30/1' ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
-    std::string pipeline3 = "rtspsrc location=" + uri + " protocols=\"tcp\" ! rtph265depay ! avdec_h265 ! autovideosink ! appsink emit-signals=true";
-    std::string pipeline4 = "rtspsrc location=" + uri + " protocols=tcp latency=500 ! queue ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! videoscale ! video/x-raw,width=1280,height=720 ! appsink emit-signals=true";
-    std::string pipeline5 = "rtspsrc location=" + uri + " protocols=tcp debug=true ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw ! appsink buffer-list=true emit-signals=true sync=false";
-    std::string pipeline6 = "rtspsrc location=" + uri + " protocols=tcp debug=true ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert ! video/x-raw ! appsink";
-
-    // manque weight et height
-
-    std::cout << "Pipeline: " << std::endl << pipeline6 << std::endl;
-
-    // cv::setNumThreads(0);
-
-    gst_init(&argc, &argv);
-
-    // Gstreamer debug
-    gst_debug_set_active(TRUE);
-    GstDebugLevel dbglevel = gst_debug_get_default_threshold();
-    if (dbglevel < GST_LEVEL_ERROR) {
-        dbglevel = GST_LEVEL_ERROR;
-        gst_debug_set_default_threshold(dbglevel);
-    }
+    // Define globally the number of threads to use for OpenCV, not thread safe !
+    //cv::setNumThreads(1);
 
     VideoCapture cap;
 
-    if(cap.open(pipeline6, CAP_GSTREAMER)) {
+    if(cap.open(uri, CAP_FFMPEG)) {
         std::cout << "Connection au flux RTSP établie." << std::endl;
     }
     else {
@@ -76,10 +54,12 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    cv::Mat frame;
+    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2();
+
+    cv::Mat frame, fgMask, roiMask;
+    cv::Rect zone(0, 0, 1280, 720);
 
     while (true) {
-        // problème de buffer
 
         try{
             cap.read(frame);
@@ -101,12 +81,21 @@ int main(int argc, char* argv[])
 
         if (frame.empty()) {
             std::cerr << "Frame vide." << std::endl;
-        }
-        else {
-            cv::imshow("RTSP Stream", frame);
+            break;
         }
 
-        if (cv::waitKey(30) == 27) {  // Attendre 30 ms ou jusqu'à ce que la touche 'Esc' soit enfoncée
+        bgSubtractor->apply(frame, fgMask);
+
+        roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());
+        roiMask(zone) = fgMask(zone);
+
+        cv::rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);
+
+        cv::imshow("Mouvement dans la zone", roiMask);
+        
+        cv::imshow("RTSP Stream", frame);
+
+        if (cv::waitKey(33) == 27) {  // Waiting for 33 ms = ~ 30 frames per second (ideally 1000/30 = 33.33 ms)
             break;
         }
     }

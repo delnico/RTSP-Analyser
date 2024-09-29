@@ -6,21 +6,9 @@
       "features": [
         "contrib",
         "ffmpeg",
-        "gstreamer",
         "opengl",
         "vulkan",
         "eigen"
-      ]
-    },
-    {
-      "name" : "gstreamer",
-      "version>=": "1.20.5",
-      "features": [
-        "plugins-base",
-        "plugins-good",
-        "plugins-bad",
-        "plugins-ugly",
-        "x265"
       ]
     },
     {
