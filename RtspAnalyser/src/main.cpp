@@ -54,15 +54,56 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2();
+    int history = 500;              // Nombre d'images pour le modèle de fond
+    double varThreshold = 60;       // Seuil pour la sensibilité
+    bool detectShadows = false;     // Désactiver la détection des ombres
+
+    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(history, varThreshold, detectShadows);
 
     cv::Mat frame, fgMask, roiMask;
-    cv::Rect zone(0, 0, 1280, 720);
+
+    std::vector<cv::Rect> zones;
+    zones.push_back(cv::Rect(0, 300, 1100, 420));
+    zones.push_back(cv::Rect(500, 100, 650, 200));
 
     while (true) {
-
         try{
             cap.read(frame);
+
+            cap >> frame;
+            if (frame.empty()) break;
+
+            bgSubtractor->apply(frame, fgMask);                         // Appliquer la soustraction d'arrière-plan pour obtenir le masque du premier plan
+
+            roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());     // Initialiser un masque de la même taille que l'image originale
+
+            for (const auto& zone : zones) {
+                fgMask(zone).copyTo(roiMask(zone));                         // Copier uniquement la zone d'intérêt dans un nouveau masque
+
+                // Appliquer un filtre morphologique pour éliminer le bruit (petites zones)
+                cv::erode(roiMask, roiMask, cv::Mat(), cv::Point(-1, -1), 2);  // Réduire les petites zones
+                cv::dilate(roiMask, roiMask, cv::Mat(), cv::Point(-1, -1), 2); // Agrandir les zones significatives
+
+                cv::GaussianBlur(roiMask, roiMask, cv::Size(15, 15), 0); // Appliquer un flou pour lisser les petites variations
+
+                // Trouver les contours dans le masque pour filtrer les petits mouvements
+                std::vector<std::vector<cv::Point>> contours;
+                cv::findContours(roiMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+                
+                // Filtrer les petits contours
+                for (size_t i = 0; i < contours.size(); i++) {
+                    if (cv::contourArea(contours[i]) > 500) { // Garder seulement les grands mouvements
+                        cv::drawContours(frame, contours, (int)i, cv::Scalar(0, 0, 255), 2); // Dessiner les contours des grands objets en mouvement
+                    }
+                }
+                    
+                cv::rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);       // Dessiner le rectangle de la zone sur l'image originale
+            }
+
+            //cv::imshow("Mouvement dans la zone", roiMask);              // Seulement afficher le mouvement détecté dans la zone d'intérêt
+            cv::imshow("RTSP", frame);
+
+            if (cv::waitKey(33) == 27) break;  // Waiting for 33 ms = ~ 30 frames per second (ideally 1000/30 = 33.33 ms)
         }
         catch (cv::Exception& e) {
             std::cerr << "Erreur lors de la lecture du flux RTSP." << std::endl;
@@ -76,26 +117,6 @@ int main(int argc, char* argv[])
         }
         catch (...) {
             std::cerr << "Erreur lors de la lecture du flux RTSP." << std::endl;
-            break;
-        }
-
-        if (frame.empty()) {
-            std::cerr << "Frame vide." << std::endl;
-            break;
-        }
-
-        bgSubtractor->apply(frame, fgMask);
-
-        roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());
-        roiMask(zone) = fgMask(zone);
-
-        cv::rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);
-
-        cv::imshow("Mouvement dans la zone", roiMask);
-        
-        cv::imshow("RTSP Stream", frame);
-
-        if (cv::waitKey(33) == 27) {  // Waiting for 33 ms = ~ 30 frames per second (ideally 1000/30 = 33.33 ms)
             break;
         }
     }
