@@ -15,8 +15,6 @@ add_library(${PROJECT_NAME}
     ${INCLUDES}
 )
 
-link_directories( ${OpenCV_LIB_DIR} )
-
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/includes>
@@ -24,9 +22,6 @@ target_include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        RtspAnalyser.Streamer
-        RtspAnalyser.Libs
     PUBLIC
         Threads::Threads
 )

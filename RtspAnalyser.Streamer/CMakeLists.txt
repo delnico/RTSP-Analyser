@@ -24,8 +24,6 @@ target_include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        RtspAnalyser.Libs
     PUBLIC
         Threads::Threads
 )
