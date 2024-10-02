@@ -23,4 +23,6 @@ link_directories( ${OpenCV_LIB_DIR} )
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${OpenCV_LIBS}
     RtspAnalyser.Libs
+    RtspAnalyser.Streamer
+    RtspAnalyser.Analyser
 )
