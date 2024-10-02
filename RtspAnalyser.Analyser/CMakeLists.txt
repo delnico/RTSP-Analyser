@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.13.4)
 
-project(RtspAnalyser.Streamer VERSION 0.0.1)
+project(RtspAnalyser.Analyser VERSION 0.0.1)
 
 set(SOURCES
+    src/IAnalyser.cpp
 )
 
 set(INCLUDES
@@ -24,7 +25,8 @@ target_include_directories(
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        ${OpenCV_LIBS}
+        RtspAnalyser.Streamer
+        RtspAnalyser.Libs
     PUBLIC
         Threads::Threads
 )

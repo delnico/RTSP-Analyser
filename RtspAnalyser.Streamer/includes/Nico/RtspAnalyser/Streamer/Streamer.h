@@ -21,6 +21,8 @@ namespace Nico {
                 ~Streamer();
                 void start();
                 void stop();
+                void subscribe(const Nico::RtspAnalyser::Analyser::Analyser & analyser);
+                void unsubscribe(const Nico::RtspAnalyser::Analyser::Analyser & analyser);
             private:
                 std::atomic_flag isEnabled;
                 Nico::RtspAnalyser::Libs::Stream stream;
