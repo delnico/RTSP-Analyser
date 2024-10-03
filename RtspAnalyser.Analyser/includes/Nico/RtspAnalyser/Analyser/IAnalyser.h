@@ -1,4 +1,3 @@
-
 #pragma once
 
 // Analyser interface
@@ -10,6 +9,7 @@ namespace Nico {
                 public:
                     virtual ~IAnalyser() = default;
                     virtual void notify();
+                    virtual void wait();
 
                     virtual bool operator==(const IAnalyser & other) const;
             };
