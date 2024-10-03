@@ -7,7 +7,7 @@ namespace Nico {
         namespace Analyser {
             class IAnalyser {
                 public:
-                    virtual ~IAnalyser() = default;
+                    virtual ~IAnalyser();
                     virtual void notify();
                     virtual void wait();
 

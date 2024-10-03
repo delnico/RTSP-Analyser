@@ -3,10 +3,13 @@ cmake_minimum_required(VERSION 3.13.4)
 project(RtspAnalyser.Analyser VERSION 0.0.1)
 
 set(SOURCES
+    src/IAnalyser.cpp
+    src/Viewer.cpp
 )
 
 set(INCLUDES
     includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
+    includes/Nico/RtspAnalyser/Analyser/Viewer.h
 )
 
 add_library(${PROJECT_NAME}
@@ -20,10 +23,12 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+#set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         Threads::Threads
+        ${OpenCV_LIBS}
+        RtspAnalyser.Libs
 )
 

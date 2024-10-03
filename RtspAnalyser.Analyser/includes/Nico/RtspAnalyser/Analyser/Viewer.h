@@ -14,6 +14,10 @@ namespace Nico {
         namespace Analyser {
             class Viewer : public IAnalyser {
                 public:
+                    Viewer();
+                    ~Viewer();
+                    Viewer(const Viewer & other) = delete;
+                    Viewer & operator=(const Viewer & other) = delete;
                     void run();
                     void start();
                     void stop();
@@ -24,9 +28,10 @@ namespace Nico {
                     std::thread thread;
                     std::deque<cv::Mat> frames;
 
-                    void notify() override {};
-                    void wait() override {};
-                    bool operator==(const IAnalyser & other) const override;
+                    void notify() override;
+                    void wait() override;
+
+                    bool operator==(const Viewer & other) const;
             };
         }
     }

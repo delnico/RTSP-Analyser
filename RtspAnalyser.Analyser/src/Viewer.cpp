@@ -5,17 +5,29 @@
 
 using namespace Nico::RtspAnalyser::Analyser;
 
+Viewer::Viewer()
+{
+}
+
+Viewer::~Viewer()
+{
+    stop();
+}
+
 void Viewer::run()
 {
     cv::namedWindow("Viewer", cv::WINDOW_NORMAL);
+    cv::Mat frame;
     while (isEnabled.test_and_set(std::memory_order_acquire))
     {
-        if(frames.empty())
+        wait();
+        frame = frames.front();
+        frames.pop_front();
+        if(frame.empty())
         {
             continue;
         }
-        cv::imshow("Viewer", frames.front());
-        frames.pop_front();
+        cv::imshow("Viewer", frame);
         if(cv::waitKey(33) == 27) break;
     }
     cv::destroyWindow("Viewer");
@@ -33,5 +45,19 @@ void Viewer::stop()
         thread.join();
 }
 
+void Viewer::notify()
+{
+    lock.unlock();
+}
 
+void Viewer::wait()
+{
+    lock.lock();
+}
+
+
+bool Viewer::operator==(const Viewer & other) const
+{
+    return &other == this;
+}
 

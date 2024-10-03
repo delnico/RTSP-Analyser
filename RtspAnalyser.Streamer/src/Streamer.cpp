@@ -3,6 +3,7 @@
 #include <deque>
 #include <thread>
 #include <vector>
+#include <memory>
 
 #include <opencv2/opencv.hpp>
 
@@ -10,14 +11,22 @@
 #include "Nico/RtspAnalyser/Libs/Stream.h"
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 
-using namespace Nico::RtspAnalyser::Streamer;
+using namespace Nico::RtspAnalyser::Streamers;
 
+
+Streamer::Streamer() :
+    isEnabled(ATOMIC_FLAG_INIT),
+    stream(),
+    cap(),
+    thread()
+{
+}
 
 Streamer::Streamer(const Nico::RtspAnalyser::Libs::Stream & stream) :
     isEnabled(ATOMIC_FLAG_INIT),
     stream(stream),
     cap(),
-    thread(&Streamer::run, this)
+    thread()
 {
 }
 
@@ -38,12 +47,12 @@ void Streamer::stop()
     thread.join();
 }
 
-void Streamer::subscribe(const Nico::RtspAnalyser::Analyser::IAnalyser & analyser)
+void Streamer::subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
 {
     listeners.push_back(analyser);
 }
 
-void Streamer::unsubscribe(const Nico::RtspAnalyser::Analyser::IAnalyser & analyser)
+void Streamer::unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
 {
     listeners.erase(std::remove(listeners.begin(), listeners.end(), analyser), listeners.end());
 }
@@ -55,10 +64,10 @@ void Streamer::run()
     {
         return;
     }
+    cv::Mat frame;
     while (isEnabled.test_and_set(std::memory_order_acquire))
     {
         auto start = std::chrono::high_resolution_clock::now();
-        cv::Mat frame;
         cap >> frame;
 
         if(listeners.size() > 0)
@@ -66,7 +75,7 @@ void Streamer::run()
             frames.push_back(frame);
             for(auto listener : listeners)
             {
-                listener.notify();
+                listener->notify();
             }
         }
         auto end = std::chrono::high_resolution_clock::now();
