@@ -17,7 +17,7 @@ namespace Nico {
         namespace Streamer {
           class Streamer {
             public:
-                Streamer();
+                Streamer() = delete;
                 Streamer(const Nico::RtspAnalyser::Libs::Stream & stream);
                 ~Streamer();
                 void start();

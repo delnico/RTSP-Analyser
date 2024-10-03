@@ -12,13 +12,6 @@
 
 using namespace Nico::RtspAnalyser::Streamer;
 
-Streamer::Streamer() :
-    isEnabled(ATOMIC_FLAG_INIT),
-    stream(),
-    cap(),
-    thread()
-{
-}
 
 Streamer::Streamer(const Nico::RtspAnalyser::Libs::Stream & stream) :
     isEnabled(ATOMIC_FLAG_INIT),
@@ -73,7 +66,7 @@ void Streamer::run()
             frames.push_back(frame);
             for(auto listener : listeners)
             {
-                // listener.notify();
+                listener.notify();
             }
         }
         auto end = std::chrono::high_resolution_clock::now();

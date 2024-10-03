@@ -9,7 +9,7 @@ namespace Nico {
             class IAnalyser {
                 public:
                     virtual ~IAnalyser() = default;
-                    virtual void analyse();
+                    virtual void notify();
 
                     virtual bool operator==(const IAnalyser & other) const;
             };
