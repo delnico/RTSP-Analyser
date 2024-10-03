@@ -1,16 +1,17 @@
 
 #pragma once
 
-#include "Nico/RtspAnalyser/Streamer/Streamer.h"
+// Analyser interface
 
 namespace Nico {
-    namespace RtspAnalyseer {
+    namespace RtspAnalyser {
         namespace Analyser {
-            // Analyser interface
             class IAnalyser {
                 public:
                     virtual ~IAnalyser() = default;
-                    void subscribe(const Streamer::Streamer & streamer);
+                    virtual void analyse();
+
+                    virtual bool operator==(const IAnalyser & other) const;
             };
         }
     }

@@ -33,7 +33,7 @@ add_subdirectory(RtspAnalyser.Libs)
 
 add_subdirectory(RtspAnalyser.Streamer)
 
-#add_subdirectory(RtspAnalyser.Analyser)
+add_subdirectory(RtspAnalyser.Analyser)
 
 add_subdirectory(RtspAnalyser)
 

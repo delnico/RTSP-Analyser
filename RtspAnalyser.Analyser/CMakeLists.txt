@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.13.4)
 project(RtspAnalyser.Analyser VERSION 0.0.1)
 
 set(SOURCES
-    src/IAnalyser.cpp
 )
 
 set(INCLUDES
@@ -20,6 +19,8 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/includes>
     $<INSTALL_INTERFACE:include>
 )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC

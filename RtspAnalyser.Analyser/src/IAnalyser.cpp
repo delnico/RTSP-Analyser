@@ -1,8 +1,8 @@
-#include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "Nico/RtspAnalyser/Streamer/Streamer.h"
+// #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 
-using namespace Nico::RtspAnalyser::Analyser;
+// using namespace Nico::RtspAnalyser::Analyser;
 
-void IAnalyser::subscribe(const Streamer::Streamer & streamer) {
-    streamer.subscribe(*this);
-}
+// bool IAnalyser::operator==(const IAnalyser & other) const
+// {
+//     return this == &other;
+// }
