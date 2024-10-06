@@ -14,18 +14,20 @@
 using namespace Nico::RtspAnalyser::Streamers;
 
 
-Streamer::Streamer() :
-    isEnabled(ATOMIC_FLAG_INIT),
-    stream(),
-    cap(),
-    thread()
-{
-}
+// Streamer::Streamer() :
+//     isEnabled(ATOMIC_FLAG_INIT),
+//     stream(),
+//     cap(),
+//     frames(std::deque<cv::Mat>()),
+//     thread()
+// {
+// }
 
-Streamer::Streamer(const Nico::RtspAnalyser::Libs::Stream & stream) :
+Streamer::Streamer(const Nico::RtspAnalyser::Libs::Stream & stream, std::deque<cv::Mat> & frames) :
     isEnabled(ATOMIC_FLAG_INIT),
     stream(stream),
     cap(),
+    frames(frames),
     thread()
 {
 }
@@ -38,13 +40,19 @@ Streamer::~Streamer()
 void Streamer::start()
 {
     isEnabled.test_and_set(std::memory_order_release);
+    cap.open(stream.url, cv::CAP_FFMPEG);
+    if(!cap.isOpened())
+        throw std::runtime_error("Failed to open stream");
     thread = std::thread(&Streamer::run, this);
 }
 
 void Streamer::stop()
 {
-    isEnabled.clear(std::memory_order_release);
-    thread.join();
+    if(thread.joinable())
+    {
+        isEnabled.clear(std::memory_order_release);
+        thread.join();
+    }
 }
 
 void Streamer::subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
@@ -59,11 +67,6 @@ void Streamer::unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
 
 void Streamer::run()
 {
-    cap.open(stream.url, cv::CAP_FFMPEG);
-    if(!cap.isOpened())
-    {
-        return;
-    }
     cv::Mat frame;
     while (isEnabled.test_and_set(std::memory_order_acquire))
     {
@@ -82,5 +85,4 @@ void Streamer::run()
         std::chrono::duration<double> elapsed = end - start;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000/30) - elapsed);
     }
-    cap.release();
 }

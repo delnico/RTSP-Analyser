@@ -26,6 +26,12 @@ sudo apt install libgstreamer-plugins-good1.0-0 libgstreamer-plugins-good1.0-dev
 
 ```
 
+# Raspberry Pi OS - Raspbian
+
+```bash
+
+```
+
 ## TO DO
 
 - Test & Impl Mouvement detectection

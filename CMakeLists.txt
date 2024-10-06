@@ -13,7 +13,7 @@ set(CMAKE_BUILD_TYPE Debug)
 #set(CMAKE_BUILD_TYPE Release)
 
 # Set C++17
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 # Link static lib as shared
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -37,4 +37,4 @@ add_subdirectory(RtspAnalyser.Analyser)
 
 add_subdirectory(RtspAnalyser)
 
-set_property(TARGET RtspAnalyser PROPERTY CXX_STANDARD 17)
+set_property(TARGET RtspAnalyser PROPERTY CXX_STANDARD 20)

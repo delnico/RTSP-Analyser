@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "Nico/RtspAnalyser/Libs/Spinlock.h"
+#include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
 
 namespace Nico {
     namespace RtspAnalyser {
@@ -15,6 +15,7 @@ namespace Nico {
             class Viewer : public IAnalyser {
                 public:
                     Viewer();
+                    Viewer(std::deque<cv::Mat> & frames);
                     ~Viewer();
                     Viewer(const Viewer & other) = delete;
                     Viewer & operator=(const Viewer & other) = delete;
@@ -23,10 +24,10 @@ namespace Nico {
                     void stop();
                     
                 private:
-                    Nico::RtspAnalyser::Libs::Spinlock lock;
+                    Nico::RtspAnalyser::Libs::ConditionalVariable cond;
                     std::atomic_flag isEnabled = ATOMIC_FLAG_INIT;
                     std::thread thread;
-                    std::deque<cv::Mat> frames;
+                    std::deque<cv::Mat> & frames;
 
                     void notify() override;
                     void wait() override;

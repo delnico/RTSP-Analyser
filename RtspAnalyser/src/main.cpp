@@ -1,5 +1,8 @@
 #include <iostream>
 #include <memory>
+#include <deque>
+
+#include <opencv2/opencv.hpp>
 
 #include "Nico/RtspAnalyser/RtspAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
@@ -21,9 +24,11 @@ int main(int argc, char* argv[])
     stream.url = conf.getStreamUrl(0);
     stream.codec = conf.getStreamCodec(0);
 
-    Streamer streamer(stream);
+    std::deque<cv::Mat> frames;
 
-    Viewer viewer;
+    Streamer streamer(stream, frames);
+
+    Viewer viewer(frames);
 
     streamer.subscribe(&viewer);
 
@@ -31,6 +36,11 @@ int main(int argc, char* argv[])
     streamer.start();
 
     std::cin.get();
+
+    streamer.stop();
+    viewer.stop();
+
+    cv::destroyAllWindows();
 
     return EXIT_SUCCESS;
 }

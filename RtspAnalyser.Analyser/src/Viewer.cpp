@@ -1,3 +1,7 @@
+#include <thread>
+#include <atomic>
+#include <deque>
+
 #include <opencv2/opencv.hpp>
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
@@ -5,7 +9,19 @@
 
 using namespace Nico::RtspAnalyser::Analyser;
 
-Viewer::Viewer()
+// Viewer::Viewer() :
+//     cond(),
+//     isEnabled(ATOMIC_FLAG_INIT),
+//     thread(),
+//     frames(std::deque<cv::Mat>())
+// {
+// }
+
+Viewer::Viewer(std::deque<cv::Mat> & frames) :
+    cond(),
+    isEnabled(ATOMIC_FLAG_INIT),
+    thread(),
+    frames(frames)
 {
 }
 
@@ -18,15 +34,15 @@ void Viewer::run()
 {
     cv::namedWindow("Viewer", cv::WINDOW_NORMAL);
     cv::Mat frame;
-    while (isEnabled.test_and_set(std::memory_order_acquire))
+    while (isEnabled.test())
     {
         wait();
-        frame = frames.front();
-        frames.pop_front();
-        if(frame.empty())
+        if(frames.empty())
         {
             continue;
         }
+        frame = frames.front();
+        frames.pop_front();
         cv::imshow("Viewer", frame);
         if(cv::waitKey(33) == 27) break;
     }
@@ -41,18 +57,22 @@ void Viewer::start()
 
 void Viewer::stop()
 {
-    if(isEnabled.test_and_set(std::memory_order_release))
+    if(thread.joinable())
+    {
+        isEnabled.clear(std::memory_order_release);
+        notify();
         thread.join();
+    }
 }
 
 void Viewer::notify()
 {
-    lock.unlock();
+    cond.notify();
 }
 
 void Viewer::wait()
 {
-    lock.lock();
+    cond.wait();
 }
 
 

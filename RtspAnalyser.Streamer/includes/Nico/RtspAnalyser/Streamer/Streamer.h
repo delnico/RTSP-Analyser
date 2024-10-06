@@ -18,8 +18,8 @@ namespace Nico {
         namespace Streamers {
           class Streamer {
             public:
-                Streamer();
-                Streamer(const Nico::RtspAnalyser::Libs::Stream & stream);
+                Streamer() = delete;
+                Streamer(const Nico::RtspAnalyser::Libs::Stream & stream, std::deque<cv::Mat> & frames);
                 ~Streamer();
                 void start();
                 void stop();
@@ -29,7 +29,7 @@ namespace Nico {
                 std::atomic_flag isEnabled;
                 Nico::RtspAnalyser::Libs::Stream stream;
                 cv::VideoCapture cap;
-                std::deque<cv::Mat> frames;
+                std::deque<cv::Mat> & frames;
                 std::thread thread;
                 std::vector<Nico::RtspAnalyser::Analyser::IAnalyser *> listeners;
 
