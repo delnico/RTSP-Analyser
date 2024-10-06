@@ -29,6 +29,17 @@ sudo apt install libgstreamer-plugins-good1.0-0 libgstreamer-plugins-good1.0-dev
 # Raspberry Pi OS - Raspbian
 
 ```bash
+sudo apt update
+sudo apt install -y git wget curl build-essential make cmake ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data
+
+# innstallé ninja
+
+
+# Vcpkg install https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started?pivots=shell-bash
+
+git clone https://github.com/microsoft/vcpkg.git
+
+# changé param install vcpkg en arm
 
 ```
 
