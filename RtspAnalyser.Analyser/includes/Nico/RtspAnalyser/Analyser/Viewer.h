@@ -3,6 +3,7 @@
 #include <thread>
 #include <atomic>
 #include <deque>
+#include <string>
 
 #include <opencv2/opencv.hpp>
 
@@ -15,7 +16,8 @@ namespace Nico {
             class Viewer : public IAnalyser {
                 public:
                     Viewer();
-                    Viewer(std::deque<cv::Mat> & frames);
+                    // windowName is can't be empty, can't be a space, can't be a tabulation, ...
+                    Viewer(std::deque<cv::Mat> & frames, std::string windowName = "Viewer");
                     ~Viewer();
                     Viewer(const Viewer & other) = delete;
                     Viewer & operator=(const Viewer & other) = delete;
@@ -28,6 +30,7 @@ namespace Nico {
                     std::atomic_flag isEnabled = ATOMIC_FLAG_INIT;
                     std::thread thread;
                     std::deque<cv::Mat> & frames;
+                    std::string windowName;
 
                     void notify() override;
                     void wait() override;

@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     Streamer streamer(stream, frames);
 
-    Viewer viewer(frames);
+    Viewer viewer(frames, "rtsp");
 
     streamer.subscribe(&viewer);
 

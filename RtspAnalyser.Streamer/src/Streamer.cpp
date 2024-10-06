@@ -14,15 +14,6 @@
 using namespace Nico::RtspAnalyser::Streamers;
 
 
-// Streamer::Streamer() :
-//     isEnabled(ATOMIC_FLAG_INIT),
-//     stream(),
-//     cap(),
-//     frames(std::deque<cv::Mat>()),
-//     thread()
-// {
-// }
-
 Streamer::Streamer(const Nico::RtspAnalyser::Libs::Stream & stream, std::deque<cv::Mat> & frames) :
     isEnabled(ATOMIC_FLAG_INIT),
     stream(stream),

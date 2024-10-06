@@ -9,18 +9,11 @@
 
 using namespace Nico::RtspAnalyser::Analyser;
 
-// Viewer::Viewer() :
-//     cond(),
-//     isEnabled(ATOMIC_FLAG_INIT),
-//     thread(),
-//     frames(std::deque<cv::Mat>())
-// {
-// }
-
-Viewer::Viewer(std::deque<cv::Mat> & frames) :
+Viewer::Viewer(std::deque<cv::Mat> & frames, std::string windowName) :
     cond(),
     isEnabled(ATOMIC_FLAG_INIT),
     thread(),
+    windowName(windowName),
     frames(frames)
 {
 }
@@ -32,21 +25,19 @@ Viewer::~Viewer()
 
 void Viewer::run()
 {
-    cv::namedWindow("Viewer", cv::WINDOW_NORMAL);
+    cv::namedWindow(windowName, cv::WINDOW_NORMAL);
     cv::Mat frame;
     while (isEnabled.test())
     {
         wait();
         if(frames.empty())
-        {
             continue;
-        }
         frame = frames.front();
         frames.pop_front();
-        cv::imshow("Viewer", frame);
-        if(cv::waitKey(33) == 27) break;
+        cv::imshow(windowName, frame);
+        cv::waitKey(1);                 // No pause, scheduled by Streamer thread
     }
-    cv::destroyWindow("Viewer");
+    cv::destroyWindow(windowName);
 }
 
 void Viewer::start()
