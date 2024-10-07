@@ -21,7 +21,6 @@ namespace Nico {
                     ~Viewer();
                     Viewer(const Viewer & other) = delete;
                     Viewer & operator=(const Viewer & other) = delete;
-                    void run();
                     void start();
                     void stop();
                     
@@ -31,6 +30,8 @@ namespace Nico {
                     std::thread thread;
                     std::deque<cv::Mat> & frames;
                     std::string windowName;
+
+                    void run();
 
                     void notify() override;
                     void wait() override;
