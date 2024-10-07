@@ -23,6 +23,22 @@ Viewer::~Viewer()
     stop();
 }
 
+void Viewer::start()
+{
+    if(! isEnabled.test_and_set(std::memory_order_acquire))
+        thread = std::thread(&Viewer::run, this);
+}
+
+void Viewer::stop()
+{
+    if(thread.joinable())
+    {
+        isEnabled.clear(std::memory_order_release);
+        notify();
+        thread.join();
+    }
+}
+
 void Viewer::run()
 {
     cv::namedWindow(windowName, cv::WINDOW_NORMAL);
@@ -38,22 +54,6 @@ void Viewer::run()
         cv::waitKey(1);                 // No pause, scheduled by Streamer thread
     }
     cv::destroyWindow(windowName);
-}
-
-void Viewer::start()
-{
-    if(! isEnabled.test_and_set(std::memory_order_acquire))
-        thread = std::thread(&Viewer::run, this);
-}
-
-void Viewer::stop()
-{
-    if(thread.joinable())
-    {
-        isEnabled.clear(std::memory_order_release);
-        notify();
-        thread.join();
-    }
 }
 
 void Viewer::notify()

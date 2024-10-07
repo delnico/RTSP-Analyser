@@ -4,11 +4,13 @@ project(RtspAnalyser.Analyser VERSION 0.0.1)
 
 set(SOURCES
     src/IAnalyser.cpp
+    src/MotionDetector.cpp
     src/Viewer.cpp
 )
 
 set(INCLUDES
     includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
+    includes/Nico/RtspAnalyser/Analyser/MotionDetector.h
     includes/Nico/RtspAnalyser/Analyser/Viewer.h
 )
 
