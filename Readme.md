@@ -30,14 +30,16 @@ sudo apt install libgstreamer-plugins-good1.0-0 libgstreamer-plugins-good1.0-dev
 
 ```bash
 sudo apt update
-sudo apt install -y git wget curl build-essential make cmake ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data
-
-# innstallé ninja
+sudo apt install -y git wget curl build-essential make cmake ninja-build
+sudo apt install -y ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data
 
 
 # Vcpkg install https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started?pivots=shell-bash
 
 git clone https://github.com/microsoft/vcpkg.git
+
+cd vcpkg
+./bootstrap-vcpkg.sh -disableMetrics
 
 # changé param install vcpkg en arm
 
