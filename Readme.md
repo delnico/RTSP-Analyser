@@ -4,6 +4,10 @@ Analyse video stream to detect human.
 
 Make lightweight to be execute on RPI 4.
 
+## Workflow
+
+![Workflow](./doc/uml/out/workflow.png)
+
 ## Tools to build
 
 - CMake

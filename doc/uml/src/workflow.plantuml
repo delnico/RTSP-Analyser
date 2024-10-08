@@ -1,0 +1,14 @@
+@startuml workflow
+
+skinparam SequenceMessageAlignment direction
+left to right direction
+
+(*) --> "Streamer"
+"Streamer" --> "MotionDetector"
+"MotionDetector" --> "MotionManager"
+"Streamer" --> "MotionManager"
+"MotionManager" --> "TSHumanDetector"
+"TSHumanDetector" --> "MotionManager"
+"MotionManager" --> "TriggerAlert"
+
+@enduml
