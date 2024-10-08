@@ -1,3 +1,5 @@
+#pragma once
+
 #include <condition_variable>
 #include <mutex>
 
@@ -9,15 +11,15 @@ namespace Nico
         {
             class ConditionalVariable
             {
-            public:
-                ConditionalVariable();
-                ~ConditionalVariable() = default;
-                void notify();
-                void wait();
-            private:
-                std::mutex lock;
-                std::condition_variable cond;
-                bool status;
+                public:
+                    ConditionalVariable();
+                    ~ConditionalVariable() = default;
+                    void notify();
+                    void wait();
+                private:
+                    std::mutex lock;
+                    std::condition_variable cond;
+                    bool status;
             };
         }
     }

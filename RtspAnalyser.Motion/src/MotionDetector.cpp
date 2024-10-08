@@ -19,6 +19,8 @@ MotionDetector::MotionDetector(std::deque<cv::Mat> & frames) :
     isEnabled(ATOMIC_FLAG_INIT),
     zones(),
     frames(frames),
+    fgMasks(),
+    viewer(nullptr),
     cv_motion_history(500),
     cv_motion_var_threshold(60),
     cv_motion_detect_shadows(false)
@@ -48,7 +50,6 @@ void MotionDetector::run() {
     cv::Mat frame, fgMask, roiMask, grayFrame;
 
     bool motionDetected = false;
-    bool displayZone = false;
     while (isEnabled.test())
     {
         motionDetected = false;
@@ -83,7 +84,7 @@ void MotionDetector::run() {
                 motionDetected = true;
             }
 
-            if(displayZone) {
+            if(viewer != nullptr) {
                 for(size_t i = 0; i < outlines.size(); i++) {
                     cv::Rect rect = cv::boundingRect(outlines[i]);
                     if(rect.area() > 500) {
@@ -99,8 +100,8 @@ void MotionDetector::run() {
             // trigger event to MotionManager thread
         }
 
-        if(displayZone) {
-            // send roiMask to Viewer thread via queue
+        if(viewer != nullptr) {
+            // send to viewer mask
         }
 
         auto end = std::chrono::high_resolution_clock::now();
