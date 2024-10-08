@@ -23,6 +23,7 @@ namespace Nico {
                     Viewer & operator=(const Viewer & other) = delete;
                     void start();
                     void stop();
+                    void notify() override;
                     
                 private:
                     Nico::RtspAnalyser::Libs::ConditionalVariable cond;
@@ -32,8 +33,6 @@ namespace Nico {
                     std::string windowName;
 
                     void run();
-
-                    void notify() override;
                     void wait() override;
 
                     bool operator==(const Viewer & other) const;

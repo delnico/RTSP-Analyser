@@ -25,4 +25,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     RtspAnalyser.Libs
     RtspAnalyser.Streamer
     RtspAnalyser.Analyser
+    RtspAnalyser.Motion
 )

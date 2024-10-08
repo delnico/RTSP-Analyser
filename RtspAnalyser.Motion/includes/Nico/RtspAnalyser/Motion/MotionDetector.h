@@ -14,15 +14,16 @@
 
 namespace Nico {
     namespace RtspAnalyser {
-        namespace Analyser {
-            class MotionDetector : public IAnalyser {
+        namespace Motion {
+            class MotionDetector : public Nico::RtspAnalyser::Analyser::IAnalyser {
                 public:
                     MotionDetector() = delete;
-                    MotionDetector(std::deque<cv::Mat> & frames);
+                    MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat> & fgMasks);
                     ~MotionDetector();
 
                     void start();
                     void stop();
+                    void setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer);
 
                 private:
                     Nico::RtspAnalyser::Libs::ConditionalVariable cond;
@@ -30,7 +31,7 @@ namespace Nico {
                     std::thread thread;
                     std::list<cv::Rect> zones;
                     std::deque<cv::Mat> & frames;
-                    std::deque<cv::Mat> fgMasks;
+                    std::deque<cv::Mat> & fgMasks;
                     Nico::RtspAnalyser::Analyser::Viewer * viewer;
                     int cv_motion_history;
                     double cv_motion_var_threshold;

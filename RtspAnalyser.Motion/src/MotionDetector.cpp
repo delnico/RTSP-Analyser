@@ -12,14 +12,14 @@
 
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
-using namespace Nico::RtspAnalyser::Analyser;
+using namespace Nico::RtspAnalyser::Motion;
 
-MotionDetector::MotionDetector(std::deque<cv::Mat> & frames) :
+MotionDetector::MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat> & fgMasks) :
     cond(),
     isEnabled(ATOMIC_FLAG_INIT),
     zones(),
     frames(frames),
-    fgMasks(),
+    fgMasks(fgMasks),
     viewer(nullptr),
     cv_motion_history(500),
     cv_motion_var_threshold(60),
@@ -42,6 +42,10 @@ void MotionDetector::stop() {
         notify();
         thread.join();
     }
+}
+
+void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
+    this->viewer = viewer;
 }
 
 void MotionDetector::run() {
@@ -101,7 +105,8 @@ void MotionDetector::run() {
         }
 
         if(viewer != nullptr) {
-            // send to viewer mask
+            fgMasks.push_back(roiMask);
+            viewer->notify();
         }
 
         auto end = std::chrono::high_resolution_clock::now();
