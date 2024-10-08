@@ -35,6 +35,8 @@ add_subdirectory(RtspAnalyser.Streamer)
 
 add_subdirectory(RtspAnalyser.Analyser)
 
+add_subdirectory(RtspAnalyser.Motion)
+
 add_subdirectory(RtspAnalyser)
 
 set_property(TARGET RtspAnalyser PROPERTY CXX_STANDARD 20)

@@ -1,15 +1,13 @@
 cmake_minimum_required(VERSION 3.13.4)
 
-project(RtspAnalyser.Analyser VERSION 0.0.1)
+project(RtspAnalyser.Motion VERSION 0.0.1)
 
 set(SOURCES
-    src/IAnalyser.cpp
-    src/Viewer.cpp
+    src/MotionDetector.cpp
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
-    includes/Nico/RtspAnalyser/Analyser/Viewer.h
+    includes/Nico/RtspAnalyser/Motion/MotionDetector.h
 )
 
 add_library(${PROJECT_NAME}
@@ -28,5 +26,6 @@ target_link_libraries(${PROJECT_NAME}
         Threads::Threads
         ${OpenCV_LIBS}
         RtspAnalyser.Libs
+        RtspAnalyser.Analyser
 )
 

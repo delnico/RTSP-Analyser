@@ -10,7 +10,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "Nico/RtspAnalyser/Analyser/MotionDetector.h"
+#include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
 using namespace Nico::RtspAnalyser::Analyser;
 
