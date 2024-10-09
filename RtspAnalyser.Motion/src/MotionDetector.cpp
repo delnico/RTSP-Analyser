@@ -10,6 +10,8 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <opencv2/core/cuda.hpp>
+
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
 using namespace Nico::RtspAnalyser::Motion;
@@ -51,7 +53,8 @@ void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
 void MotionDetector::run() {
     cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
 
-    cv::Mat frame, fgMask, roiMask, grayFrame;
+    cv::cuda::GpuMat frame, fgMask, roiMask, grayFrame;
+    cv::Mat tmp;
 
     bool motionDetected = false;
     while (isEnabled.test())
@@ -60,16 +63,19 @@ void MotionDetector::run() {
         wait();
         if(frames.empty())
             continue;
-        frame = frames.front();
+        tmp = frames.front();
         frames.pop_front();
 
         auto start = std::chrono::high_resolution_clock::now();
 
+        // convert Mat to Cuda Mat
+        frame.upload(tmp);
 
-        cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
+        // cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
+        //cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
 
-        bgSubtractor->apply(grayFrame, fgMask);
-        roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());
+        bgSubtractor->apply(frame, fgMask);
+        roiMask = cv::cuda::GpuMat(cv::Mat::zeros(fgMask.size(), fgMask.type()));
 
         for(const auto & zone : zones) {
             fgMask(zone).copyTo(roiMask(zone));
@@ -78,7 +84,7 @@ void MotionDetector::run() {
             cv::erode(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
             cv::dilate(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
 
-            cv::GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(15, 15), 0);
+            // cv::GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(5, 5), 0);
 
             std::vector<std::vector<cv::Point>> outlines;
             cv::findContours(roiMask(zone), outlines, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -105,7 +111,7 @@ void MotionDetector::run() {
         }
 
         if(viewer != nullptr) {
-            fgMasks.push_back(roiMask);
+            fgMasks.push_back(cv::Mat(roiMask));
             viewer->notify();
         }
 

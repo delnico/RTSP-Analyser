@@ -20,6 +20,9 @@ using namespace Nico::RtspAnalyser::Motion;
 
 int main(int argc, char* argv[])
 {
+    cv::setNumThreads(0);
+
+
     Config conf("/mnt/data/dev/perso/rstp_analyser/rtsp_config.json");
 
     Stream stream;
@@ -30,16 +33,18 @@ int main(int argc, char* argv[])
 
     Streamer streamer(stream, frames);
 
-    Viewer viewer(frames, "rtsp");
+    //Viewer viewer(frames, "rtsp");
     Viewer viewerFgMasks(fgMasks, "fgMasks");
 
     MotionDetector motionDetector(frames, fgMasks);
     motionDetector.setViewer(&viewerFgMasks);
 
-    streamer.subscribe(&viewer);
+    //streamer.subscribe(&viewer);
+
+    streamer.subscribe(&motionDetector);
 
     viewerFgMasks.start();
-    viewer.start();
+    //viewer.start();
 
     motionDetector.start();
     streamer.start();
@@ -48,7 +53,7 @@ int main(int argc, char* argv[])
 
     streamer.stop();
     motionDetector.stop();
-    viewer.stop();
+    //viewer.stop();
     viewerFgMasks.stop();
 
     cv::destroyAllWindows();

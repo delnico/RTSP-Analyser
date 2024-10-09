@@ -8,6 +8,7 @@
         "ffmpeg",
         "opengl",
         "vulkan",
+        "cuda",
         "eigen"
       ]
     },
