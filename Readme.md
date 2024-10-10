@@ -34,7 +34,7 @@ sudo apt install libgstreamer-plugins-good1.0-0 libgstreamer-plugins-good1.0-dev
 
 ```bash
 sudo apt update
-sudo apt install -y git wget curl build-essential make cmake ninja-build bison
+sudo apt install -y git wget curl build-essential make cmake ninja-build
 sudo apt install -y bison meson autoconf libtool libx11-dev libxft-dev libxext-dev libxi-dev libxtst-dev libxrandr-dev nasm gcc-11
 sudo apt install -y ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data
 

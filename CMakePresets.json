@@ -2,9 +2,17 @@
     "version": 2,
     "configurePresets": [
       {
-        "name": "default",
+        "name": "x86_64-linux",
         "generator": "Ninja",
-        "binaryDir": "${sourceDir}/build",
+        "binaryDir": "${sourceDir}/build/x86_64",
+        "cacheVariables": {
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        }
+      },
+      {
+        "name": "arm-linux",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/arm",
         "cacheVariables": {
           "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         }
