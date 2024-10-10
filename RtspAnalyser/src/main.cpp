@@ -20,10 +20,10 @@ using namespace Nico::RtspAnalyser::Motion;
 
 int main(int argc, char* argv[])
 {
-    cv::setNumThreads(0);
+    //cv::setNumThreads(0);
 
 
-    Config conf("/mnt/data/dev/perso/rstp_analyser/rtsp_config.json");
+    Config conf("/mnt/data/dev/perso/rtsp_analyser/rtsp_config.json");
 
     Stream stream;
     stream.url = conf.getStreamUrl(0);
