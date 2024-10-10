@@ -10,8 +10,6 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <opencv2/core/cuda.hpp>
-
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
 using namespace Nico::RtspAnalyser::Motion;
@@ -27,8 +25,9 @@ MotionDetector::MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat>
     cv_motion_var_threshold(60),
     cv_motion_detect_shadows(false)
 {
-    zones.push_back(cv::Rect(0, 300, 1100, 420));
-    zones.push_back(cv::Rect(500, 100, 650, 200));
+    // zone depend of screen resolution and scale
+    zones.push_back(cv::Rect(0, 150, 550, 210));
+    zones.push_back(cv::Rect(250, 50, 325, 100));
 }
 
 MotionDetector::~MotionDetector() {}
@@ -53,7 +52,7 @@ void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
 void MotionDetector::run() {
     cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
 
-    cv::cuda::GpuMat frame, fgMask, roiMask, grayFrame;
+    cv::Mat frame, fgMask, roiMask, grayFrame;
     cv::Mat tmp;
 
     bool motionDetected = false;
@@ -68,14 +67,11 @@ void MotionDetector::run() {
 
         auto start = std::chrono::high_resolution_clock::now();
 
-        // convert Mat to Cuda Mat
-        frame.upload(tmp);
-
-        // cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
-        //cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
+        cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
+        cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
 
         bgSubtractor->apply(frame, fgMask);
-        roiMask = cv::cuda::GpuMat(cv::Mat::zeros(fgMask.size(), fgMask.type()));
+        roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());
 
         for(const auto & zone : zones) {
             fgMask(zone).copyTo(roiMask(zone));
@@ -84,7 +80,7 @@ void MotionDetector::run() {
             cv::erode(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
             cv::dilate(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
 
-            // cv::GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(5, 5), 0);
+            cv::GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(5, 5), 0);
 
             std::vector<std::vector<cv::Point>> outlines;
             cv::findContours(roiMask(zone), outlines, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
