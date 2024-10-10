@@ -64,12 +64,15 @@ void Streamer::run()
         auto start = std::chrono::high_resolution_clock::now();
         cap >> frame;
 
-        if(listeners.size() > 0)
+        if(! frame.empty() && frame.size().width > 0 && frame.size().height > 0)
         {
-            frames.push_back(frame);
-            for(auto listener : listeners)
+            if(listeners.size() > 0)
             {
-                listener->notify();
+                frames.push_back(frame);
+                for(auto listener : listeners)
+                {
+                    listener->notify();
+                }
             }
         }
         auto end = std::chrono::high_resolution_clock::now();

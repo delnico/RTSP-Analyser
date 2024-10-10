@@ -53,7 +53,6 @@ void MotionDetector::run() {
     cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
 
     cv::Mat frame, fgMask, roiMask, grayFrame;
-    cv::Mat tmp;
 
     bool motionDetected = false;
     while (isEnabled.test())
@@ -62,7 +61,7 @@ void MotionDetector::run() {
         wait();
         if(frames.empty())
             continue;
-        tmp = frames.front();
+        frame = frames.front();
         frames.pop_front();
 
         auto start = std::chrono::high_resolution_clock::now();
