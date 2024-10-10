@@ -45,9 +45,6 @@ git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 export VCPKG_FORCE_SYSTEM_BINARIES=arm
 ./bootstrap-vcpkg.sh -disableMetrics
-
-# changé param install vcpkg en arm
-
 ```
 
 ## TO DO
