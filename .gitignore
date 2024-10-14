@@ -1,5 +1,6 @@
 build
 .vscode
+.idea
 rtsp_config.json
 LICENSE
 rpi_mount_samba.sh

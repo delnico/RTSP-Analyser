@@ -34,9 +34,12 @@ sudo apt install libgstreamer-plugins-good1.0-0 libgstreamer-plugins-good1.0-dev
 
 ```bash
 sudo apt update
-sudo apt install -y git wget curl build-essential make cmake ninja-build
-sudo apt install -y bison meson autoconf libtool libx11-dev libxft-dev libxext-dev libxi-dev libxtst-dev libxrandr-dev nasm gcc-11
+sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-config autoconf automake libtool bison meson
+sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+sudo apt install -y libx11-dev libxft-dev libxext-dev libxi-dev libxtst-dev libxrandr-dev nasm gcc-11 libgles2-mesa-dev libdbus-1-dev:arm64 libsystemd-dev libglib2.0-dev libatspi2.0-dev
 sudo apt install -y ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data
+
+sudo pip install --upgrade --break-system-packages meson ninja
 
 
 # Vcpkg install https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started?pivots=shell-bash
@@ -44,8 +47,17 @@ sudo apt install -y ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdete
 git clone https://github.com/microsoft/vcpkg.git
 
 cd vcpkg
-export VCPKG_FORCE_SYSTEM_BINARIES=arm
+export VCPKG_FORCE_SYSTEM_BINARIES=1
 ./bootstrap-vcpkg.sh -disableMetrics
+```
+
+Modify **.bashrc**
+
+```bash
+export VCPKG_ROOT="/home/pi/vcpkg"
+
+export PATH="$PATH:$VCPKG_ROOT"
+export VCPKG_FORCE_SYSTEM_BINARIES=1
 ```
 
 ## TO DO

@@ -1,14 +1,12 @@
 {
+  "name" : "rtspanalyser",
+  "version-string": "0.1",
   "dependencies": [
     {
       "name": "opencv4",
       "version>=": "4.7.0",
       "features": [
-        "contrib",
-        "ffmpeg",
-        "opengl",
-        "vulkan",
-        "eigen"
+        "ffmpeg"
       ]
     },
     {
