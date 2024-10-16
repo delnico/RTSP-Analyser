@@ -1,21 +1,39 @@
 {
-    "version": 2,
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 24,
+      "patch": 0
+    },
     "configurePresets": [
       {
-        "name": "x86_64-linux",
+        "name": "x86_64-linux-debug",
         "generator": "Ninja",
-        "binaryDir": "${sourceDir}/build/x86_64",
+        "binaryDir": "${sourceDir}/build/x86_64/debug",
         "cacheVariables": {
           "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         }
       },
       {
-        "name": "arm-linux",
+        "name": "arm-linux-debug",
         "generator": "Ninja",
-        "binaryDir": "${sourceDir}/build/arm",
+        "binaryDir": "${sourceDir}/build/arm/debug",
         "cacheVariables": {
-          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          "CMAKE_C_COMPILER": "aarch64-linux-gnu-gcc",
+          "CMAKE_CXX_COMPILER": "aarch64-linux-gnu-g++",
+          "CMAKE_TOOLCHAIN_FILE": "toolchain-aarch64.cmake",
+          "VCPKG_TARGET_TRIPLET": "arm64-linux"
         }
+      }
+    ],
+    "buildPresets": [
+      {
+        "name": "x86_64-linux-debug",
+        "configurePreset": "x86_64-linux-debug"
+      },
+      {
+        "name": "arm-linux-debug",
+        "configurePreset": "arm-linux-debug"
       }
     ]
   }

@@ -60,6 +60,17 @@ export PATH="$PATH:$VCPKG_ROOT"
 export VCPKG_FORCE_SYSTEM_BINARIES=1
 ```
 
+# Compile to ARM from x86_64 architecture
+
+Thanks to ![www.luisllamas.es](https://www.luisllamas.es/en/how-to-cross-compile-c-for-arm-from-an-x86-x64-computer/)
+
+```bash
+sudo apt-get install libc6-armel-cross libc6-dev-armel-cross binutils-arm-linux-gnueabi libncurses5-dev build-essential bison flex libssl-dev bc
+
+# So Raspberry PI 4 work with aarch64 CPU
+sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+```
+
 ## TO DO
 
 - Test & Impl Mouvement detectection
