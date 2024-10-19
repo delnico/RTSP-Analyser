@@ -71,6 +71,33 @@ sudo apt-get install libc6-armel-cross libc6-dev-armel-cross binutils-arm-linux-
 sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 ```
 
+## Install dependencies
+
+### nlohmann json
+
+```bash
+git clone https://github.com/nlohmann/json.git
+mkdir build
+cd build
+cmake ..
+make -j$(nproc)
+sudo make install
+```
+
+### OpenCV with contrib
+
+```bash
+mkdir opencvlib
+cd opencvlib
+git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+mkdir build
+cd build
+cmake -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv
+cmake --build . -j $(nproc)
+sudo make install
+```
+
 ## TO DO
 
 - Test & Impl Mouvement detectection

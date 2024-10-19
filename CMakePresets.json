@@ -17,6 +17,16 @@
         }
       },
       {
+        "name": "arm-linux-debug",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/arm/debug",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug",
+          "ENABLE_TESTS": false,
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        }
+      },
+      {
         "name": "arm-linux-debug-cross",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build/arm/debug",
@@ -35,6 +45,10 @@
       {
         "name": "x86_64-linux-debug",
         "configurePreset": "x86_64-linux-debug"
+      },
+      {
+        "name": "arm-linux-debug",
+        "configurePreset": "arm-linux-debug"
       },
       {
         "name": "arm-linux-debug-cross",
