@@ -9,7 +9,7 @@ using namespace Nico::RtspAnalyser::Libs;
 using json = nlohmann::json;
 using namespace std;
 
-Config::Config() : Config("./rtsp_config.json"){}
+Config::Config() : Config("config.json"){}
 
 Config::Config(const std::string& file) {
     std::ifstream ifs(file);

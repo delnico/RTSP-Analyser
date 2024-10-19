@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     //cv::setNumThreads(0);
 
 
-    Config conf("/mnt/data/dev/perso/rtsp_analyser/rtsp_config.json");
+    Config conf("config.json");
 
     Stream stream;
     stream.url = conf.getStreamUrl(0);

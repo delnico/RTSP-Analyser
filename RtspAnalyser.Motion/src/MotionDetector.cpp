@@ -7,6 +7,7 @@
 // to remove
 #include <iostream>
 #include <chrono>
+#include <cstdint>
 
 #include <opencv2/opencv.hpp>
 
@@ -55,6 +56,7 @@ void MotionDetector::run() {
     cv::Mat frame, fgMask, roiMask, grayFrame;
 
     bool motionDetected = false;
+    int64_t tooMuschTime = 0;
     while (isEnabled.test())
     {
         motionDetected = false;
@@ -112,7 +114,10 @@ void MotionDetector::run() {
 
         auto end = std::chrono::high_resolution_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-        std::cout << "MotionDetector Elapsed time: " << elapsed.count() << " ms" << std::endl;
+        if(elapsed.count() > 33) {
+            tooMuschTime++;
+            std::cout << "MotionDetector too much time: " << tooMuschTime << std::endl;
+        }
     }
 }
 
