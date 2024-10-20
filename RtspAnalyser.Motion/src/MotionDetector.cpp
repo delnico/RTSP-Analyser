@@ -116,7 +116,7 @@ void MotionDetector::run() {
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         if(elapsed.count() > 33) {
             tooMuschTime++;
-            std::cout << "MotionDetector too much time: " << tooMuschTime << std::endl;
+            std::cout << "MotionDetector too much " << tooMuschTime << " time: " << elapsed.count() << std::endl;
         }
     }
 }

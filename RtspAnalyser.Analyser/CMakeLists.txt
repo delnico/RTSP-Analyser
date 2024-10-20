@@ -24,9 +24,10 @@ target_include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-        Threads::Threads
+    PRIVATE
         ${OpenCV_LIBS}
         RtspAnalyser.Libs
+    PUBLIC
+        Threads::Threads
 )
 

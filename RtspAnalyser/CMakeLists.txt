@@ -20,8 +20,10 @@ include_directories(
 
 link_directories( ${OpenCV_LIB_DIR} )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(${PROJECT_NAME} PRIVATE
     ${OpenCV_LIBS}
+    Boost::asio
+    Boost::program_options
     RtspAnalyser.Libs
     RtspAnalyser.Streamer
     RtspAnalyser.Analyser

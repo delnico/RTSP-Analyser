@@ -1,0 +1,12 @@
+{
+    "name" : "rtspanalyser",
+    "version-string": "0.1",
+    "dependencies": [
+      {
+        "name" : "boost"
+      },
+      {
+        "name" : "boost-asio"
+      }
+    ]
+  }

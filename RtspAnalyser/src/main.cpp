@@ -4,6 +4,8 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <boost/program_options.hpp>
+
 #include "Nico/RtspAnalyser/RtspAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
 #include "Nico/RtspAnalyser/Libs/Stream.h"
@@ -22,8 +24,26 @@ int main(int argc, char* argv[])
 {
     //cv::setNumThreads(0);
 
+    std::string configFile = "config.json";
+    boost::program_options::options_description desc("Allowed options");
+    desc.add_options()
+        ("help", "produce help message")
+        ("config,c", boost::program_options::value<std::string>(), "json configuration file");
+    
+    boost::program_options::variables_map vm;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+    boost::program_options::notify(vm);
 
-    Config conf("config.json");
+    if(vm.count("help")) {
+        std::cout << desc << std::endl;
+        return EXIT_SUCCESS;
+    }
+
+    if(vm.count("config")) {
+        configFile = vm["config"].as<std::string>();
+    }
+
+    Config conf(configFile);
 
     Stream stream;
     stream.url = conf.getStreamUrl(0);

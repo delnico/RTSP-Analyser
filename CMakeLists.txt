@@ -22,6 +22,9 @@ find_package(nlohmann_json CONFIG REQUIRED)
 
 find_package(Threads)
 
+find_package(Boost REQUIRED COMPONENTS asio)
+find_package(Boost REQUIRED COMPONENTS program_options)
+
 # Add Libraries
 add_subdirectory(RtspAnalyser.Libs)
 
