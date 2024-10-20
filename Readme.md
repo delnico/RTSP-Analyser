@@ -33,6 +33,24 @@ sudo apt install -y ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdete
 sudo pip install --upgrade --break-system-packages meson ninja
 ```
 
+### Vcpkg
+
+```bash
+# Vcpkg install https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started?pivots=shell-bash
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+export VCPKG_FORCE_SYSTEM_BINARIES=1
+./bootstrap-vcpkg.sh -disableMetrics
+```
+
+Modify **.bashrc**
+
+```bash
+export VCPKG_ROOT="/home/pi/vcpkg"
+export PATH="$PATH:$VCPKG_ROOT"
+export VCPKG_FORCE_SYSTEM_BINARIES=1
+```
+
 ## Install dependencies
 
 ### nlohmann json
