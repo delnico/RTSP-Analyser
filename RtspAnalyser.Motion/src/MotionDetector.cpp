@@ -8,6 +8,7 @@
 #include <iostream>
 #include <chrono>
 #include <cstdint>
+#include <vector>
 
 #include <opencv2/opencv.hpp>
 
@@ -57,6 +58,9 @@ void MotionDetector::run() {
 
     bool motionDetected = false;
     int64_t tooMuschTime = 0;
+
+    std::vector<int64_t> times;
+
     while (isEnabled.test())
     {
         motionDetected = false;
@@ -66,7 +70,7 @@ void MotionDetector::run() {
         frame = frames.front();
         frames.pop_front();
 
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::steady_clock::now();
 
         cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
         cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
@@ -112,13 +116,37 @@ void MotionDetector::run() {
             viewer->notify();
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         if(elapsed.count() > 33) {
             tooMuschTime++;
             std::cout << "MotionDetector too much " << tooMuschTime << " time: " << elapsed.count() << std::endl;
         }
+        times.push_back(elapsed.count());
     }
+
+    int64_t average_time = 0;
+    int64_t max_time = 0;
+    int64_t min_time = 1000;
+    int64_t sum_time = 0;
+    int64_t median_time = 0;
+    for(const auto & time : times) {
+        average_time += time;
+        sum_time += time;
+        if(time > max_time)
+            max_time = time;
+        if(time < min_time)
+            min_time = time;
+    }
+    average_time /= times.size();
+    std::sort(times.begin(), times.end());
+    median_time = times.at(times.size() / 2);
+
+    std::cout << "MotionDetector average time: " << average_time << std::endl;
+    std::cout << "MotionDetector max time: " << max_time << std::endl;
+    std::cout << "MotionDetector min time: " << min_time << std::endl;
+    std::cout << "MotionDetector median time: " << median_time << std::endl;
+
 }
 
 void MotionDetector::notify() {
