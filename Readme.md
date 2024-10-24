@@ -21,125 +21,55 @@ Make lightweight to be execute on RPI 4.
 - Boost
 - Boost Asio
 
-## Raspberry Pi OS - Raspbian
+## Raspberry Pi 4 --> Ubuntu 24.04.1 LTS
 
 ```bash
 sudo apt update
-sudo apt-get install ocl-icd-opencl-dev
-sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-config autoconf automake libtool bison meson autoconf-archive
-sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-sudo apt install -y libx11-dev libxft-dev libxext-dev libxi-dev libxtst-dev libxrandr-dev nasm gcc-11 libgles2-mesa-dev libdbus-1-dev:arm64 libsystemd-dev libglib2.0-dev libatspi2.0-dev libgtk2.0-dev
-sudo apt install -y ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data
-
-sudo apt install ocl-icd-opencl-dev ocl-icd-dev opencl-headers clinfo libraspberrypi-dev
-sudo apt-get install clang clang-format clang-tidy
-
-sudo pip install --upgrade --break-system-packages meson ninja
+sudo apt upgrade -y
 ```
 
-```bash
-# from https://yunusmuhammad007.medium.com/build-and-install-opencv-4-5-3-on-raspberry-pi-3-with-opencl-opengl-and-gstreamer-enable-8c493fc992f0
-
-sudo apt-get install -y \
-        build-essential \
-        cmake \
-        git \
-        gfortran \
-        libatlas-base-dev \
-        libavcodec-dev \
-        libavformat-dev \
-        libavresample-dev \
-        libcanberra-gtk3-module \
-        libeigen3-dev \
-        libglew-dev \
-        libgstreamer-plugins-base1.0-dev \
-        libgstreamer-plugins-bad1.0-dev \
-        libgstreamer1.0-dev \
-        gstreamer1.0-plugins-ugly \
-        gstreamer1.0-tools \
-        gstreamer1.0-gl \
-        libgtk-3-dev \
-        libjpeg62-turbo-dev \
-        libjpeg-dev \
-        libturbojpeg0-dev \
-        liblapack-dev \
-        liblapacke-dev \
-        libopenblas-dev \
-        libpng-dev \
-        libpostproc-dev \
-        libswscale-dev \
-        libtbb-dev \
-        libtesseract-dev \
-        libtiff-dev \
-        libv4l-dev \
-        libxine2-dev \
-        libxvidcore-dev \
-        libx264-dev \
-        pkg-config \
-        python3-dev \
-        python3-numpy \
-        python3-matplotlib \
-        qv4l2 \
-        v4l-utils \
-        zlib1g-dev
-```
-
-## OpenCL driver
-
-Thanks to [https://qengineering.eu/install-opencl-on-raspberry-pi-3.html](https://qengineering.eu/install-opencl-on-raspberry-pi-3.html)
+### Drivers : OpenCL & Vulkan
 
 ```bash
-mkdir -p ~/opencl
-cd ~/opencl
-git clone https://github.com/doe300/VC4CLStdLib.git
-git clone https://github.com/doe300/VC4CL.git
-git clone https://github.com/doe300/VC4C.git
+sudo apt install -y mesa-opencl-icd clinfo vulkan-tools
 
-# first VC4CLStdLib
-cd ~/opencl/VC4CLStdLib
-mkdir build
-cd build
-cmake ..
-make -j$(nproc)
-sudo make install
-sudo ldconfig
-
-# next VC4C
-cd ~/opencl/VC4C
-mkdir build
-cd build
-cmake ..
-make -j$(nproc)
-sudo make install
-sudo ldconfig
-
-# last VC4CL
-cd ~/opencl/VC4CL
-mkdir build
-cd build
-cmake ..
-make -j$(nproc)
-sudo make install
-sudo ldconfig
-
-# check with clinfo after reboot
+# check with clinfo & vulkaninfo
 clinfo
+
+vulkaninfo
 ```
 
-## Vcpkg
+### Compiler, ...
 
 ```bash
-# Vcpkg install https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started?pivots=shell-bash
+sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-config autoconf automake libtool bison meson autoconf-archive
+```
+
+### Libs
+
+```bash
+sudo apt install -y libx11-dev libxft-dev libxext-dev libxi-dev libxtst-dev libxrandr-dev nasm gcc-11 libgles2-mesa-dev libdbus-1-dev libsystemd-dev libglib2.0-dev libatspi2.0-dev \
+libgtk2.0-dev ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev opencv-data opencl-headers libgtk-3-dev \
+libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libx265-dev libjpeg-dev libpng-dev libtiff-dev \
+gfortran openexr libatlas-base-dev python3-dev python3-numpy libtbb12 libtbb-dev libdc1394-25 libdc1394-dev libopenexr-dev \
+libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev ocl-icd-opencl-dev libvulkan-dev libglew-dev ocl-icd-dev
+```
+
+### Vcpkg
+
+[Microsoft Guide Vcpkg installation](https://learn.microsoft.com/fr-fr/vcpkg/get_started/get-started?pivots=shell-bash)
+
+```bash
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 export VCPKG_FORCE_SYSTEM_BINARIES=1
 ./bootstrap-vcpkg.sh -disableMetrics
 ```
 
-Modify **.bashrc**
+#### Add to **~/.bashrc**
 
 ```bash
-export VCPKG_ROOT="/home/pi/vcpkg"
+export VCPKG_ROOT="/home/$USER/vcpkg"
 export PATH="$PATH:$VCPKG_ROOT"
 export VCPKG_FORCE_SYSTEM_BINARIES=1
 ```
@@ -151,8 +81,7 @@ export VCPKG_FORCE_SYSTEM_BINARIES=1
 ```bash
 git clone https://github.com/nlohmann/json.git
 cd json
-mkdir build
-cd build
+mkdir build && cd build
 cmake ..
 make -j$(nproc)
 sudo make install
@@ -161,14 +90,20 @@ sudo make install
 ### OpenCV with contrib
 
 ```bash
-mkdir opencvlib
-cd opencvlib
+mkdir opencvlib && cd opencvlib
 git clone https://github.com/opencv/opencv.git
 git clone https://github.com/opencv/opencv_contrib.git
-mkdir build
-cd build
-#cmake -D ENABLE_NEON=ON -DWITH_OPENCL=ON -DWITH_OPENCL_D3D11_NV=OFF -DWITH_OPENCL_SVM=OFF -D WITH_GTK=ON -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv
-cmake -D ENABLE_NEON=ON -D WITH_GTK=ON -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv
+mkdir build && cd build
+cmake \
+  -D ENABLE_NEON=ON \
+  -D WITH_GTK=ON \
+  -D WITH_OPENCL=ON \
+  -D WITH_VULKAN=ON \
+  -D WITH_OPENGL=ON \
+  -D WITH_TBB=ON \
+  -D BUILD_EXAMPLES=OFF \
+  -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
+  ../opencv
 cmake --build . -j $(nproc)
 sudo make install
 ```
