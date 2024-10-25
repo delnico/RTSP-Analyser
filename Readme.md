@@ -106,6 +106,10 @@ cmake \
   ../opencv
 cmake --build . -j $(nproc)
 sudo make install
+sudo ldconfig
+
+# verify with
+python3 -c "import cv2; print(cv2.getBuildInformation())"
 ```
 
 ## TO DO

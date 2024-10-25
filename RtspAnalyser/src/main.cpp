@@ -24,8 +24,6 @@ int main(int argc, char* argv[])
 {
     //cv::setNumThreads(0);
 
-    std::cout << "Opencv features: " << cv::getBuildInformation() << std::endl;
-
     std::string configFile = "config.json";
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
