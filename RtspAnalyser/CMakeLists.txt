@@ -25,7 +25,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Boost::asio
     Boost::program_options
     RtspAnalyser.Libs
-    RtspAnalyser.Streamer
+    RtspAnalyser.Streamers
     RtspAnalyser.Analyser
     RtspAnalyser.Motion
+    RtspAnalyser.WatchdogLib
 )

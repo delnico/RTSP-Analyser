@@ -5,12 +5,14 @@
 #include <atomic>
 #include <deque>
 #include <vector>
+#include <cstdint>
 
 #include <opencv2/opencv.hpp>
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Analyser/Viewer.h"
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "Nico/RtspAnalyser/Libs/Spinlock.h"
 
 namespace Nico {
     namespace RtspAnalyser {
@@ -18,12 +20,18 @@ namespace Nico {
             class MotionDetector : public Nico::RtspAnalyser::Analyser::IAnalyser {
                 public:
                     MotionDetector() = delete;
-                    MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat> & fgMasks);
+                    MotionDetector(
+                        std::deque<cv::Mat> & frames,
+                        std::deque<cv::Mat> & fgMasks,
+                        int64_t ms_one_frame
+                    );
                     ~MotionDetector();
 
                     void start();
                     void stop();
                     void setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer);
+
+                    void watchdog();
 
                 private:
                     Nico::RtspAnalyser::Libs::ConditionalVariable cond;
@@ -36,6 +44,13 @@ namespace Nico {
                     int cv_motion_history;
                     double cv_motion_var_threshold;
                     bool cv_motion_detect_shadows;
+
+                    int64_t ms_one_frame;
+                    int64_t ms_one_frame_original;
+                    Nico::RtspAnalyser::Libs::Spinlock slock_processing_times;
+                    std::deque<int64_t> processing_times;
+                    int64_t frame_skipping;
+                    int64_t frames_count;
 
                     void run();
 

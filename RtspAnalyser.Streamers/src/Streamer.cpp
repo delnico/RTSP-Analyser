@@ -10,7 +10,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 
-#include "Nico/RtspAnalyser/Streamer/Streamer.h"
+#include "Nico/RtspAnalyser/Streamers/Streamer.h"
 #include "Nico/RtspAnalyser/Libs/Stream.h"
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 

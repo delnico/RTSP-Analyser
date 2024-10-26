@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.24.0)
 
-project(RtspAnalyser.Streamer VERSION 0.0.1)
+project(RtspAnalyser.Streamers VERSION 0.0.1)
 
 set(SOURCES
     src/Streamer.cpp
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/Streamer/Streamer.h
+    includes/Nico/RtspAnalyser/Streamers/Streamer.h
 )
 
 add_library(${PROJECT_NAME}

@@ -12,15 +12,18 @@
 #include "Nico/RtspAnalyser/Libs/Config.h"
 #include "Nico/RtspAnalyser/Libs/Stream.h"
 #include "Nico/RtspAnalyser/Libs/Codec.h"
-#include "Nico/RtspAnalyser/Streamer/Streamer.h"
+#include "Nico/RtspAnalyser/Streamers/Streamer.h"
 #include "Nico/RtspAnalyser/Analyser/Viewer.h"
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
+
+#include "Nico/RtspAnalyser/WatchdogLib/Watchdog.h"
 
 using namespace Nico::RtspAnalyser;
 using namespace Nico::RtspAnalyser::Libs;
 using namespace Nico::RtspAnalyser::Streamers;
 using namespace Nico::RtspAnalyser::Analyser;
 using namespace Nico::RtspAnalyser::Motion;
+using namespace Nico::RtspAnalyser::WatchdogLib;
 
 int main(int argc, char* argv[])
 {
@@ -62,20 +65,27 @@ int main(int argc, char* argv[])
         frames
     );
 
-    Viewer viewer(frames, "rtsp");
-    //Viewer viewerFgMasks(fgMasks, "fgMasks");
+    //Viewer viewer(frames, "rtsp");
+    Viewer viewerFgMasks(fgMasks, "fgMasks");
 
-    //MotionDetector motionDetector(frames, fgMasks);
-    //motionDetector.setViewer(&viewerFgMasks);
+    MotionDetector motionDetector(
+        frames,
+        fgMasks,
+        1000LL / 30
+    );
+    motionDetector.setViewer(&viewerFgMasks);
 
-    streamer.subscribe(&viewer);
+    Watchdog watchdog(&streamer, &motionDetector);
+    watchdog.start();
 
-    //streamer.subscribe(&motionDetector);
+    //streamer.subscribe(&viewer);
 
-    //viewerFgMasks.start();
-    viewer.start();
+    streamer.subscribe(&motionDetector);
 
-    //motionDetector.start();
+    viewerFgMasks.start();
+    //viewer.start();
+
+    motionDetector.start();
     streamer.start(boost_io_service);
 
     std::thread boost_io_thread(
@@ -88,9 +98,10 @@ int main(int argc, char* argv[])
     std::cin.get();
 
     streamer.stop();
-    //motionDetector.stop();
-    viewer.stop();
-    //viewerFgMasks.stop();
+    motionDetector.stop();
+    //viewer.stop();
+    viewerFgMasks.stop();
+    watchdog.stop();
 
     boost_io_service.stop();
     boost_io_thread.join();

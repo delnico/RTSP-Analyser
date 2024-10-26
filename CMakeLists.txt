@@ -28,11 +28,13 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 # Add Libraries
 add_subdirectory(RtspAnalyser.Libs)
 
-add_subdirectory(RtspAnalyser.Streamer)
+add_subdirectory(RtspAnalyser.Streamers)
 
 add_subdirectory(RtspAnalyser.Analyser)
 
 add_subdirectory(RtspAnalyser.Motion)
+
+add_subdirectory(RtspAnalyser.WatchdogLib)
 
 add_subdirectory(RtspAnalyser)
 

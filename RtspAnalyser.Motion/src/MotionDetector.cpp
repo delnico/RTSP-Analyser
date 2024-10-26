@@ -3,12 +3,13 @@
 #include <atomic>
 #include <deque>
 #include <memory>
+#include <vector>
+#include <cstdint>
+#include <cmath>
 
 // to remove
 #include <iostream>
 #include <chrono>
-#include <cstdint>
-#include <vector>
 
 #include <opencv2/opencv.hpp>
 
@@ -16,7 +17,11 @@
 
 using namespace Nico::RtspAnalyser::Motion;
 
-MotionDetector::MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat> & fgMasks) :
+MotionDetector::MotionDetector(
+    std::deque<cv::Mat> & frames,
+    std::deque<cv::Mat> & fgMasks,
+    int64_t ms_one_frame
+) :
     cond(),
     isEnabled(false),
     zones(),
@@ -25,7 +30,11 @@ MotionDetector::MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat>
     viewer(nullptr),
     cv_motion_history(500),
     cv_motion_var_threshold(60),
-    cv_motion_detect_shadows(false)
+    cv_motion_detect_shadows(false),
+    ms_one_frame(ms_one_frame),
+    ms_one_frame_original(ms_one_frame),
+    frame_skipping(0),
+    frames_count(0)
 {
     // zone depend of screen resolution and scale
     zones.push_back(cv::Rect(0, 150, 550, 210));
@@ -61,8 +70,6 @@ void MotionDetector::run() {
     bool motionDetected = false;
     int64_t tooMuschTime = 0;
 
-    std::vector<int64_t> times;
-
     while (isEnabled)
     {
         motionDetected = false;
@@ -71,6 +78,12 @@ void MotionDetector::run() {
             continue;
         frame = frames.front();
         frames.pop_front();
+
+        if(frame_skipping != 0) {
+            if(frames_count % frame_skipping != 0)
+                continue;
+        }
+        frames_count++;
 
         auto start = std::chrono::steady_clock::now();
 
@@ -120,35 +133,11 @@ void MotionDetector::run() {
 
         auto end = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-        if(elapsed.count() > 33) {
-            tooMuschTime++;
-            std::cout << "MotionDetector too much " << tooMuschTime << " time: " << elapsed.count() << std::endl;
+        {
+            std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_processing_times);
+            processing_times.push_back(elapsed.count());
         }
-        times.push_back(elapsed.count());
     }
-
-    int64_t average_time = 0;
-    int64_t max_time = 0;
-    int64_t min_time = 1000;
-    int64_t sum_time = 0;
-    int64_t median_time = 0;
-    for(const auto & time : times) {
-        average_time += time;
-        sum_time += time;
-        if(time > max_time)
-            max_time = time;
-        if(time < min_time)
-            min_time = time;
-    }
-    average_time /= times.size();
-    std::sort(times.begin(), times.end());
-    median_time = times.at(times.size() / 2);
-
-    std::cout << "MotionDetector average time: " << average_time << std::endl;
-    std::cout << "MotionDetector max time: " << max_time << std::endl;
-    std::cout << "MotionDetector min time: " << min_time << std::endl;
-    std::cout << "MotionDetector median time: " << median_time << std::endl;
-
 }
 
 void MotionDetector::notify() {
@@ -162,4 +151,29 @@ void MotionDetector::wait() {
 bool MotionDetector::operator==(const MotionDetector & other) const
 {
     return &other == this;
+}
+
+void MotionDetector::watchdog() {
+    std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_processing_times);
+    auto size = processing_times.size();
+    if(size > 10) {
+        int64_t sum = 0;
+        for(auto & time : processing_times) {
+            sum += time;
+        }
+        auto avg = sum / size;
+        if(avg > ms_one_frame) {
+            frame_skipping = std::ceil(avg / ms_one_frame);
+            ms_one_frame = ms_one_frame * frame_skipping;
+            std::cout << "frame_skipping: " << frame_skipping << " ms frame :" << ms_one_frame << std::endl;
+        }
+        else {
+            if(avg < ms_one_frame_original) {
+                frame_skipping = 0;
+                ms_one_frame = ms_one_frame_original;
+                std::cout << "frame_skipping: " << frame_skipping << " ms frame :" << ms_one_frame << std::endl;
+            }
+        }
+        processing_times.clear();
+    }
 }
