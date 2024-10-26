@@ -18,7 +18,7 @@ using namespace Nico::RtspAnalyser::Motion;
 
 MotionDetector::MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat> & fgMasks) :
     cond(),
-    isEnabled(ATOMIC_FLAG_INIT),
+    isEnabled(false),
     zones(),
     frames(frames),
     fgMasks(fgMasks),
@@ -35,13 +35,15 @@ MotionDetector::MotionDetector(std::deque<cv::Mat> & frames, std::deque<cv::Mat>
 MotionDetector::~MotionDetector() {}
 
 void MotionDetector::start() {
-    if(! isEnabled.test_and_set(std::memory_order_acquire))
+    if(! isEnabled.load()) {
+        isEnabled.store(true);
         thread = std::thread(&MotionDetector::run, this);
+    }
 }
 
 void MotionDetector::stop() {
     if(thread.joinable()) {
-        isEnabled.clear(std::memory_order_release);
+        isEnabled.store(false);
         notify();
         thread.join();
     }
@@ -61,7 +63,7 @@ void MotionDetector::run() {
 
     std::vector<int64_t> times;
 
-    while (isEnabled.test())
+    while (isEnabled)
     {
         motionDetected = false;
         wait();

@@ -26,6 +26,7 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         ${OpenCV_LIBS}
+        Boost::asio
         RtspAnalyser.Libs
         RtspAnalyser.Analyser
     PUBLIC

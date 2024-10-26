@@ -1,10 +1,12 @@
 #include <iostream>
 #include <memory>
 #include <deque>
+#include <thread>
 
 #include <opencv2/opencv.hpp>
 
 #include <boost/program_options.hpp>
+#include <boost/asio.hpp>
 
 #include "Nico/RtspAnalyser/RtspAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
@@ -45,36 +47,53 @@ int main(int argc, char* argv[])
 
     Config conf(configFile);
 
+    boost::asio::io_service boost_io_service;
+
     Stream stream;
     stream.url = conf.getStreamUrl(0);
     stream.codec = conf.getStreamCodec(0);
+    stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
 
     std::deque<cv::Mat> frames, fgMasks;
 
-    Streamer streamer(stream, frames);
+    Streamer streamer(
+        boost_io_service,
+        stream,
+        frames
+    );
 
-    //Viewer viewer(frames, "rtsp");
+    Viewer viewer(frames, "rtsp");
     //Viewer viewerFgMasks(fgMasks, "fgMasks");
 
-    MotionDetector motionDetector(frames, fgMasks);
+    //MotionDetector motionDetector(frames, fgMasks);
     //motionDetector.setViewer(&viewerFgMasks);
 
-    //streamer.subscribe(&viewer);
+    streamer.subscribe(&viewer);
 
-    streamer.subscribe(&motionDetector);
+    //streamer.subscribe(&motionDetector);
 
     //viewerFgMasks.start();
-    //viewer.start();
+    viewer.start();
 
-    motionDetector.start();
-    streamer.start();
+    //motionDetector.start();
+    streamer.start(boost_io_service);
+
+    std::thread boost_io_thread(
+        [](boost::asio::io_service & io) {
+            io.run();
+        },
+        std::ref(boost_io_service)
+    );
 
     std::cin.get();
 
     streamer.stop();
-    motionDetector.stop();
-    //viewer.stop();
+    //motionDetector.stop();
+    viewer.stop();
     //viewerFgMasks.stop();
+
+    boost_io_service.stop();
+    boost_io_thread.join();
 
     cv::destroyAllWindows();
 

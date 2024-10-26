@@ -7,6 +7,8 @@
 #include <cstdint>
 
 #include <opencv2/opencv.hpp>
+#include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
 
 #include "Nico/RtspAnalyser/Streamer/Streamer.h"
 #include "Nico/RtspAnalyser/Libs/Stream.h"
@@ -15,12 +17,16 @@
 using namespace Nico::RtspAnalyser::Streamers;
 
 
-Streamer::Streamer(const Nico::RtspAnalyser::Libs::Stream & stream, std::deque<cv::Mat> & frames) :
-    isEnabled(ATOMIC_FLAG_INIT),
+Streamer::Streamer(
+    boost::asio::io_service & io_service,
+    const Nico::RtspAnalyser::Libs::Stream & stream,
+    std::deque<cv::Mat> & frames
+) :
+    isEnabled(false),
+    timer(boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()))),
     stream(stream),
     cap(),
-    frames(frames),
-    thread()
+    frames(frames)
 {
 }
 
@@ -29,21 +35,22 @@ Streamer::~Streamer()
     stop();
 }
 
-void Streamer::start()
+void Streamer::start(boost::asio::io_service & io_service)
 {
     isEnabled.store(true);
     cap.open(stream.url, cv::CAP_FFMPEG);
     if(!cap.isOpened())
         throw std::runtime_error("Failed to open stream");
-    thread = std::thread(&Streamer::run, this);
+    timer = boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()));
+    timer.async_wait(boost::bind(&Streamer::run, this));
 }
 
 void Streamer::stop()
 {
-    if(thread.joinable())
+    if(isEnabled.load())
     {
         isEnabled.store(false);
-        thread.join();
+        timer.cancel();
     }
 }
 
@@ -74,9 +81,13 @@ void Streamer::goToLive()
 void Streamer::run()
 {
     cv::Mat frame;
-    while (isEnabled.load())
+    std::chrono::duration<double> elapsed(0);
+    while (isEnabled)
     {
-        auto start = std::chrono::high_resolution_clock::now();
+        auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count() - (elapsed.count() * 1000)));
+        timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
+        timer.async_wait(boost::bind(&Streamer::run, this));
+        auto start = std::chrono::steady_clock::now();
         cap >> frame;
 
         if(! frame.empty() && frame.size().width > 0 && frame.size().height > 0)
@@ -87,8 +98,7 @@ void Streamer::run()
                 listener->notify();
             }
         }
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000/30) - elapsed);
+        auto end = std::chrono::steady_clock::now();
+        elapsed = end - start;
     }
 }

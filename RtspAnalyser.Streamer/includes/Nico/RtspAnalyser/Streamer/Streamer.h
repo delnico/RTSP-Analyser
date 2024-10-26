@@ -10,6 +10,7 @@
 #include <cstdint>
 
 #include <opencv2/opencv.hpp>
+#include <boost/asio.hpp>
 
 #include "Nico/RtspAnalyser/Libs/Stream.h"
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
@@ -20,9 +21,13 @@ namespace Nico {
           class Streamer {
             public:
                 Streamer() = delete;
-                Streamer(const Nico::RtspAnalyser::Libs::Stream & stream, std::deque<cv::Mat> & frames);
+                Streamer(
+                    boost::asio::io_service & io_service,
+                    const Nico::RtspAnalyser::Libs::Stream & stream,
+                    std::deque<cv::Mat> & frames
+                );
                 ~Streamer();
-                void start();
+                void start(boost::asio::io_service & io_service);
                 void stop();
                 void subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
                 void unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
@@ -32,10 +37,10 @@ namespace Nico {
 
             private:
                 std::atomic<bool> isEnabled;
+                boost::asio::deadline_timer timer;
                 Nico::RtspAnalyser::Libs::Stream stream;
                 cv::VideoCapture cap;
                 std::deque<cv::Mat> & frames;
-                std::thread thread;
 
                 Nico::RtspAnalyser::Analyser::IAnalyser * listener;
 

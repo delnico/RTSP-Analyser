@@ -27,7 +27,7 @@ namespace Nico {
 
                 private:
                     Nico::RtspAnalyser::Libs::ConditionalVariable cond;
-                    std::atomic_flag isEnabled;
+                    std::atomic<bool> isEnabled;
                     std::thread thread;
                     std::list<cv::Rect> zones;
                     std::deque<cv::Mat> & frames;

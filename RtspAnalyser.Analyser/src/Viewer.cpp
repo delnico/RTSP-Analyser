@@ -11,7 +11,7 @@ using namespace Nico::RtspAnalyser::Analyser;
 
 Viewer::Viewer(std::deque<cv::Mat> & frames, std::string windowName) :
     cond(),
-    isEnabled(ATOMIC_FLAG_INIT),
+    isEnabled(false),
     thread(),
     windowName(windowName),
     frames(frames)
@@ -25,15 +25,15 @@ Viewer::~Viewer()
 
 void Viewer::start()
 {
-    if(! isEnabled.test_and_set(std::memory_order_acquire))
-        thread = std::thread(&Viewer::run, this);
+    isEnabled.store(true);
+    thread = std::thread(&Viewer::run, this);
 }
 
 void Viewer::stop()
 {
     if(thread.joinable())
     {
-        isEnabled.clear(std::memory_order_release);
+        isEnabled.store(false);
         notify();
         thread.join();
     }
@@ -43,7 +43,7 @@ void Viewer::run()
 {
     cv::namedWindow(windowName, cv::WINDOW_NORMAL);
     cv::Mat frame;
-    while (isEnabled.test())
+    while (isEnabled)
     {
         wait();
         if(frames.empty())
