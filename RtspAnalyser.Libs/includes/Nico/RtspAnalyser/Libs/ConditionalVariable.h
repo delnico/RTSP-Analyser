@@ -2,6 +2,9 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <atomic>
+
+#include "Nico/RtspAnalyser/Libs/Spinlock.h"
 
 namespace Nico
 {
@@ -17,9 +20,9 @@ namespace Nico
                     void notify();
                     void wait();
                 private:
-                    std::mutex lock;
-                    std::condition_variable cond;
-                    bool status;
+                    Nico::RtspAnalyser::Libs::Spinlock spinlock;
+                    std::condition_variable_any cond;
+                    std::atomic<bool> status;
             };
         }
     }

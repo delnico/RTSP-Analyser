@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "Nico/RtspAnalyser/Libs/Spinlock.h"
 
 using namespace Nico::RtspAnalyser::Libs;
 
@@ -12,15 +13,15 @@ ConditionalVariable::ConditionalVariable() :
 
 void ConditionalVariable::notify()
 {
-    std::lock_guard<std::mutex> lock(this->lock);
+    std::unique_lock<Nico::RtspAnalyser::Libs::Spinlock> lock(this->spinlock);
     status = true;
     cond.notify_all();
 }
 
 void ConditionalVariable::wait()
 {
-    std::unique_lock<std::mutex> lock(this->lock);
-    cond.wait(lock, [this] { return status; });
+    std::unique_lock<Nico::RtspAnalyser::Libs::Spinlock> lock(this->spinlock);
+    cond.wait(lock, [this] { return status.load(); });
     status = false;
 }
 
