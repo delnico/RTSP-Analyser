@@ -7,6 +7,7 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 #include <opencv2/opencv.hpp>
 
@@ -25,13 +26,18 @@ namespace Nico {
                 void stop();
                 void subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
                 void unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
+
+                int64_t queueSize() const;
+                void goToLive();
+
             private:
-                std::atomic_flag isEnabled;
+                std::atomic<bool> isEnabled;
                 Nico::RtspAnalyser::Libs::Stream stream;
                 cv::VideoCapture cap;
                 std::deque<cv::Mat> & frames;
                 std::thread thread;
-                std::vector<Nico::RtspAnalyser::Analyser::IAnalyser *> listeners;
+
+                Nico::RtspAnalyser::Analyser::IAnalyser * listener;
 
                 void run();
             };

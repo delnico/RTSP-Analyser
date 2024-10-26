@@ -54,16 +54,16 @@ int main(int argc, char* argv[])
     Streamer streamer(stream, frames);
 
     //Viewer viewer(frames, "rtsp");
-    Viewer viewerFgMasks(fgMasks, "fgMasks");
+    //Viewer viewerFgMasks(fgMasks, "fgMasks");
 
     MotionDetector motionDetector(frames, fgMasks);
-    motionDetector.setViewer(&viewerFgMasks);
+    //motionDetector.setViewer(&viewerFgMasks);
 
     //streamer.subscribe(&viewer);
 
     streamer.subscribe(&motionDetector);
 
-    viewerFgMasks.start();
+    //viewerFgMasks.start();
     //viewer.start();
 
     motionDetector.start();
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
     streamer.stop();
     motionDetector.stop();
     //viewer.stop();
-    viewerFgMasks.stop();
+    //viewerFgMasks.stop();
 
     cv::destroyAllWindows();
 

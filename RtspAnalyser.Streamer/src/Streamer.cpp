@@ -4,6 +4,7 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 #include <opencv2/opencv.hpp>
 
@@ -30,7 +31,7 @@ Streamer::~Streamer()
 
 void Streamer::start()
 {
-    isEnabled.test_and_set(std::memory_order_release);
+    isEnabled.store(true);
     cap.open(stream.url, cv::CAP_FFMPEG);
     if(!cap.isOpened())
         throw std::runtime_error("Failed to open stream");
@@ -41,38 +42,49 @@ void Streamer::stop()
 {
     if(thread.joinable())
     {
-        isEnabled.clear(std::memory_order_release);
+        isEnabled.store(false);
         thread.join();
     }
 }
 
 void Streamer::subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
 {
-    listeners.push_back(analyser);
+    listener = analyser;
 }
 
 void Streamer::unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
 {
-    listeners.erase(std::remove(listeners.begin(), listeners.end(), analyser), listeners.end());
+    listener = nullptr;
+}
+
+int64_t Streamer::queueSize() const
+{
+    return frames.size();
+}
+
+void Streamer::goToLive()
+{
+    // let clear frames queue but keep the last frame (and one before, for secure queue)
+    while(frames.size() > 2)
+    {
+        frames.pop_front();
+    }
 }
 
 void Streamer::run()
 {
     cv::Mat frame;
-    while (isEnabled.test_and_set(std::memory_order_acquire))
+    while (isEnabled.load())
     {
         auto start = std::chrono::high_resolution_clock::now();
         cap >> frame;
 
         if(! frame.empty() && frame.size().width > 0 && frame.size().height > 0)
         {
-            if(listeners.size() > 0)
+            if(listener != nullptr)
             {
                 frames.push_back(frame);
-                for(auto listener : listeners)
-                {
-                    listener->notify();
-                }
+                listener->notify();
             }
         }
         auto end = std::chrono::high_resolution_clock::now();

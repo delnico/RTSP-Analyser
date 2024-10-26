@@ -65,7 +65,7 @@ void MotionDetector::run() {
     {
         motionDetected = false;
         wait();
-        if(frames.empty())
+        if(frames.size() < 2)
             continue;
         frame = frames.front();
         frames.pop_front();
