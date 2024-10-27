@@ -6,9 +6,7 @@
 #include <vector>
 #include <cstdint>
 #include <cmath>
-
-// to remove
-#include <iostream>
+#include <format>
 #include <chrono>
 
 #include <opencv2/opencv.hpp>
@@ -161,7 +159,8 @@ bool MotionDetector::operator==(const MotionDetector & other) const
     return &other == this;
 }
 
-void MotionDetector::watchdog() {
+std::string MotionDetector::watchdog() {
+    std::string result = "";
     std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_processing_times);
     auto size = processing_times.size();
     if(size > fps) {    // > ~ 1s
@@ -183,9 +182,9 @@ void MotionDetector::watchdog() {
 
         if(tmp != frame_skipping) {
             frame_skipping = tmp;
-            std::cout   << "WATCHDOG : MotionDetector switched to frames skipping : "
-                        << frame_skipping << " at ms : " << ms_one_frame << std::endl;
+            result = std::format("WATCHDOG : MotionDetector : Frame skipping set to {}, frame ms set to {}", frame_skipping, ms_one_frame);
         }
         processing_times.clear();
     }
+    return result;
 }

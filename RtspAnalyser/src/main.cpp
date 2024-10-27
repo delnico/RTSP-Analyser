@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     std::deque<cv::Mat> frames, fgMasks;
 
     Logger logger("log.txt");
-    logger.start();
+    //logger.start();
 
     Streamer streamer(
         boost_io_service,
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 
     cv::destroyAllWindows();
 
-    logger.stop();
+    //logger.stop();
 
     return EXIT_SUCCESS;
 }

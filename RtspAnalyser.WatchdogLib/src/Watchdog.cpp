@@ -43,7 +43,10 @@ void Watchdog::run() {
     while(isEnabled.load()) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         if(motionDetector != nullptr) {
-            motionDetector->watchdog();
+            std::string res = motionDetector->watchdog();
+            if(res != "") {
+                logger->log(res);
+            }
         }
         if(streamer != nullptr) {
             streamer->watchdog();

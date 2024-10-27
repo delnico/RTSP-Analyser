@@ -31,7 +31,7 @@ namespace Nico {
                     void stop();
                     void setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer);
 
-                    void watchdog();
+                    std::string watchdog();
 
                 private:
                     Nico::RtspAnalyser::Libs::ConditionalVariable cond;

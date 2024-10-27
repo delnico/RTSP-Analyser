@@ -64,12 +64,15 @@ void Logger::run()
 {
     while(isEnabled.load()) {
         std::string message;
+        cond.wait();
         {
             std::unique_lock<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_logs);
-            cond.wait();
             message = logs.front();
             logs.pop_front();
         }
         file << message << std::endl;
+        file.flush();
+        std::cout << message << std::endl;
+        std::cout.flush();
     }
 }
