@@ -23,7 +23,8 @@ namespace Nico {
                     MotionDetector(
                         std::deque<cv::Mat> & frames,
                         std::deque<cv::Mat> & fgMasks,
-                        int64_t fps
+                        int64_t fps,
+                        int64_t frame_skipping = 1
                     );
                     ~MotionDetector();
 

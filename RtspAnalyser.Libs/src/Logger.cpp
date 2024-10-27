@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <deque>
+#include <chrono>
 
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "Nico/RtspAnalyser/Libs/Spinlock.h"
@@ -63,6 +64,7 @@ void Logger::log(const std::string & message)
 void Logger::run()
 {
     std::string message;
+    std::string str_now;
     while(isEnabled.load()) {
         cond.wait();
         {
@@ -72,9 +74,10 @@ void Logger::run()
                 logs.pop_front();
             }
         }
-        file << message << std::endl;
+        auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        str_now = std::ctime(&now);
+        str_now[str_now.size()-1] = '\0';
+        file << str_now << " : " << message << std::endl;
         file.flush();
-        std::cout << message << std::endl;
-        std::cout.flush();
     }
 }

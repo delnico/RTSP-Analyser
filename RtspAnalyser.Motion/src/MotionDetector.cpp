@@ -8,6 +8,7 @@
 #include <cmath>
 #include <format>
 #include <chrono>
+#include <cmath>
 
 #include <opencv2/opencv.hpp>
 
@@ -18,7 +19,8 @@ using namespace Nico::RtspAnalyser::Motion;
 MotionDetector::MotionDetector(
     std::deque<cv::Mat> & frames,
     std::deque<cv::Mat> & fgMasks,
-    int64_t fps
+    int64_t fps,
+    int64_t frame_skipping
 ) :
     cond(),
     isEnabled(false),
@@ -26,13 +28,13 @@ MotionDetector::MotionDetector(
     frames(frames),
     fgMasks(fgMasks),
     viewer(nullptr),
-    cv_motion_history(500),
-    cv_motion_var_threshold(60),
+    cv_motion_history(1800),
+    cv_motion_var_threshold(1024),
     cv_motion_detect_shadows(false),
     ms_one_frame(1000LL / fps),
     ms_one_frame_original(1000LL / fps),
     fps(fps),
-    frame_skipping(1),
+    frame_skipping(frame_skipping),
     frames_count(0)
 {
     // zone depend of screen resolution and scale
@@ -62,7 +64,8 @@ void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
 }
 
 void MotionDetector::run() {
-    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
+    //cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
+    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorKNN();
 
     cv::Mat frame, fgMask, roiMask, grayFrame;
 
@@ -73,23 +76,26 @@ void MotionDetector::run() {
     {
         motionDetected = false;
         wait();
-        if(frames.size() < 2)
-            continue;
-        frame = frames.front();
-        frames.pop_front();
 
+        try {
+            if(frames.size() < 2)
+                continue;
+            frame = frames.front();
+            frames.pop_front();
+        }
+        catch(const std::exception & e) {
+            // call logger
+            continue;
+        }
+        
         if(frame.empty() || frame.size().width == 0 || frame.size().height == 0)
             continue;
 
-        if(frame_skipping != 1) {
+        if(frame_skipping > 1) {
             if(frames_count % (frame_skipping-1) != 0)
-            {
-                frames_count = 0;
                 continue;
-            }
-            else
-                frames_count++;
         }
+        frames_count++;
 
         auto start = std::chrono::steady_clock::now();
 
@@ -168,23 +174,24 @@ std::string MotionDetector::watchdog() {
         for(auto & time : processing_times) {
             sum += time;
         }
-        auto avg = sum / size;
-        auto ratio = std::ceil(avg / ms_one_frame);
+        double max = *std::max_element(processing_times.begin(), processing_times.end());
+        double ratio = max / (double)ms_one_frame;
+        double ratioround = std::ceil(ratio);
         int64_t tmp = frame_skipping;
-        if(ratio > 1) {
-            tmp = ratio;
-            ms_one_frame = ms_one_frame_original * ratio;
+        /*if(max > ms_one_frame) {
+            tmp++;
+            ms_one_frame = ms_one_frame + ms_one_frame_original;
         }
-        else if(ratio < 0.5) {
-            tmp = 1;
-            ms_one_frame = ms_one_frame_original;
+        else if(max < (ms_one_frame - ms_one_frame_original) && frame_skipping > 1) {
+            tmp--;
+            ms_one_frame = ms_one_frame - ms_one_frame_original;
         }
 
         if(tmp != frame_skipping) {
             frame_skipping = tmp;
-            result = std::format("WATCHDOG : MotionDetector : Frame skipping set to {}, frame ms set to {}", frame_skipping, ms_one_frame);
-        }
+        }*/
         processing_times.clear();
+        result = std::format("WATCHDOG : MotionDetector : Frame skipping at {}, frame ms at {}, max = {}, ratio = {} ratioround = {}", frame_skipping, ms_one_frame, max, ratio, ratioround);
     }
     return result;
 }

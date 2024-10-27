@@ -85,7 +85,8 @@ int main(int argc, char* argv[])
     MotionDetector motionDetector(
         frames,
         fgMasks,
-        30
+        30,
+        2
     );
     // motionDetector.setViewer(&viewerFgMasks);
 
