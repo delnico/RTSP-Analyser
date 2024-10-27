@@ -43,7 +43,7 @@ void Logger::start()
 
 void Logger::stop()
 {
-    if(thread.joinable()) {
+    if(isEnabled.load()) {
         isEnabled.store(false);
         cond.notify();
         thread.join();
@@ -62,13 +62,15 @@ void Logger::log(const std::string & message)
 
 void Logger::run()
 {
+    std::string message;
     while(isEnabled.load()) {
-        std::string message;
+        cond.wait();
         {
-            std::unique_lock<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_logs);
-            cond.wait();
-            message = logs.front();
-            logs.pop_front();
+            std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_logs);
+            if(! logs.empty()) {
+                message = logs.front();
+                logs.pop_front();
+            }
         }
         file << message << std::endl;
         file.flush();
