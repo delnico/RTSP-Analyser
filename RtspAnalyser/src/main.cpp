@@ -31,10 +31,12 @@ int main(int argc, char* argv[])
     //cv::setNumThreads(0);
 
     std::string configFile = "config.json";
+    std::string logFile = "";
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
-        ("config,c", boost::program_options::value<std::string>(), "json configuration file");
+        ("config,c", boost::program_options::value<std::string>(), "json configuration file")
+        ("log,l", boost::program_options::value<std::string>(), "log file");
     
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
@@ -49,7 +51,15 @@ int main(int argc, char* argv[])
         configFile = vm["config"].as<std::string>();
     }
 
+    if(vm.count("log")) {
+        logFile = vm["log"].as<std::string>();
+    }
+
     Config conf(configFile);
+
+    if(logFile == "") {
+        logFile = conf.getLogsFilePath();
+    }
 
     boost::asio::io_service boost_io_service;
 
@@ -60,7 +70,7 @@ int main(int argc, char* argv[])
 
     std::deque<cv::Mat> frames, fgMasks;
 
-    Logger logger("log.txt");
+    Logger logger(logFile);
     //logger.start();
 
     Streamer streamer(

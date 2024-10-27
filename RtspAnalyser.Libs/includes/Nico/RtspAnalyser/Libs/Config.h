@@ -14,10 +14,14 @@ namespace Nico {
                     Config(const std::string& file);
                     Config(const Config& orig) = delete;
                     Config& operator=(const Config& orig) = delete;
+                    ~Config();
+                    
                     int getHowManyStreams() const;
                     std::string getStreamUrl(int index) const;
                     Codec getStreamCodec(int index) const;
-                    ~Config();
+
+                    std::string getLogsFilePath() const;
+
                 private:
                     std::string nvr_ip;
                     int nvr_port;
@@ -25,6 +29,7 @@ namespace Nico {
                     std::string nvr_password;
                     std::string nvr_protocol;
                     std::vector<struct Stream> streams;
+                    std::string log_file_path;
             };
         }
     }

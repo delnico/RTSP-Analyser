@@ -41,7 +41,11 @@ Config::Config(const std::string& file) {
         }
         this->streams.push_back(s);
     }
+
+    log_file_path = j["logs_file_path"];
 }
+
+Config::~Config(){}
 
 int Config::getHowManyStreams() const {
     return streams.size();
@@ -55,4 +59,6 @@ Codec Config::getStreamCodec(int index) const {
     return streams[index].codec;
 }
 
-Config::~Config(){}
+std::string Config::getLogsFilePath() const {
+    return log_file_path;
+}

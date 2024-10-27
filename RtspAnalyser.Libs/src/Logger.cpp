@@ -14,7 +14,7 @@ using namespace Nico::RtspAnalyser::Libs;
 
 Logger::Logger(const std::string & filename) :
     slock_logs(),
-    cond(slock_logs),
+    cond(),
     isEnabled(false),
     thread(),
     filename(filename),
@@ -64,9 +64,9 @@ void Logger::run()
 {
     while(isEnabled.load()) {
         std::string message;
-        cond.wait();
         {
             std::unique_lock<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_logs);
+            cond.wait();
             message = logs.front();
             logs.pop_front();
         }
