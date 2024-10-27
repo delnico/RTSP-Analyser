@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
     );
 
     //Viewer viewer(frames, "rtsp");
-    // Viewer viewerFgMasks(fgMasks, "fgMasks");
+    Viewer viewerFgMasks(fgMasks, "fgMasks");
 
     MotionDetector motionDetector(
         frames,
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         30,
         2
     );
-    // motionDetector.setViewer(&viewerFgMasks);
+    motionDetector.setViewer(&viewerFgMasks);
 
     Watchdog watchdog(
         &streamer,
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
     streamer.subscribe(&motionDetector);
 
-    // viewerFgMasks.start();
+    viewerFgMasks.start();
     //viewer.start();
 
     motionDetector.start();
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
     streamer.stop();
     motionDetector.stop();
     //viewer.stop();
-    // viewerFgMasks.stop();
+    viewerFgMasks.stop();
     watchdog.stop();
 
     boost_io_service.stop();
