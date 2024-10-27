@@ -5,6 +5,7 @@ project(RtspAnalyser.Libs VERSION 0.0.1)
 set(SOURCES
     src/ConditionalVariable.cpp
     src/Config.cpp
+    src/Logger.cpp
     src/Spinlock.cpp
 )
 
@@ -12,6 +13,7 @@ set(INCLUDES
     includes/Nico/RtspAnalyser/Libs/Codec.h
     includes/Nico/RtspAnalyser/Libs/ConditionalVariable.h
     includes/Nico/RtspAnalyser/Libs/Config.h
+    includes/Nico/RtspAnalyser/Libs/Logger.h
     includes/Nico/RtspAnalyser/Libs/Spinlock.h
     includes/Nico/RtspAnalyser/Libs/Stream.h
 )

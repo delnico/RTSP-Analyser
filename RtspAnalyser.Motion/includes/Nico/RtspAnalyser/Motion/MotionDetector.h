@@ -23,7 +23,7 @@ namespace Nico {
                     MotionDetector(
                         std::deque<cv::Mat> & frames,
                         std::deque<cv::Mat> & fgMasks,
-                        int64_t ms_one_frame
+                        int64_t fps
                     );
                     ~MotionDetector();
 
@@ -47,6 +47,7 @@ namespace Nico {
 
                     int64_t ms_one_frame;
                     int64_t ms_one_frame_original;
+                    int64_t fps;
                     Nico::RtspAnalyser::Libs::Spinlock slock_processing_times;
                     std::deque<int64_t> processing_times;
                     int64_t frame_skipping;

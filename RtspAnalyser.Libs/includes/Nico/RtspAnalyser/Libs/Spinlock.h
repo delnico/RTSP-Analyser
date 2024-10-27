@@ -8,8 +8,11 @@ namespace Nico {
             class Spinlock {
                 public:
                     Spinlock();
+                    Spinlock(const Spinlock &);
                     void lock();
                     void unlock();
+
+                    bool getValue() const;
 
                 private:
                     std::atomic_flag flag;

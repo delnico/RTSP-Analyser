@@ -5,17 +5,20 @@
 #include "Nico/RtspAnalyser/WatchdogLib/Watchdog.h"
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 #include "Nico/RtspAnalyser/Streamers/Streamer.h"
+#include "Nico/RtspAnalyser/Libs/Logger.h"
 
 using namespace Nico::RtspAnalyser::WatchdogLib;
 
 Watchdog::Watchdog(
     Nico::RtspAnalyser::Streamers::Streamer * streamer,
-    Nico::RtspAnalyser::Motion::MotionDetector * motionDetector
+    Nico::RtspAnalyser::Motion::MotionDetector * motionDetector,
+    Nico::RtspAnalyser::Libs::Logger * logger
 ) :
     isEnabled(false),
     thread(),
     streamer(streamer),
-    motionDetector(motionDetector)
+    motionDetector(motionDetector),
+    logger(logger)
 {}
 
 Watchdog::~Watchdog() {
@@ -43,9 +46,7 @@ void Watchdog::run() {
             motionDetector->watchdog();
         }
         if(streamer != nullptr) {
-            if(streamer->queueSize() > 3) {
-                streamer->goToLive();
-            }
+            streamer->watchdog();
         }
     }
 }

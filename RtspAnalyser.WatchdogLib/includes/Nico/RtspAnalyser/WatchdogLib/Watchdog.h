@@ -5,6 +5,7 @@
 
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 #include "Nico/RtspAnalyser/Streamers/Streamer.h"
+#include "Nico/RtspAnalyser/Libs/Logger.h"
 
 namespace Nico {
     namespace RtspAnalyser {
@@ -14,7 +15,8 @@ namespace Nico {
                     Watchdog() = delete;
                     Watchdog(
                         Nico::RtspAnalyser::Streamers::Streamer * streamer,
-                        Nico::RtspAnalyser::Motion::MotionDetector * motionDetector
+                        Nico::RtspAnalyser::Motion::MotionDetector * motionDetector,
+                        Nico::RtspAnalyser::Libs::Logger * logger
                     );
                     ~Watchdog();
 
@@ -27,6 +29,7 @@ namespace Nico {
 
                     Nico::RtspAnalyser::Streamers::Streamer * streamer;
                     Nico::RtspAnalyser::Motion::MotionDetector * motionDetector;
+                    Nico::RtspAnalyser::Libs::Logger * logger;
 
                     void run();
             };

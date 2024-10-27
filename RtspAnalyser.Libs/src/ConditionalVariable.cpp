@@ -11,6 +11,12 @@ ConditionalVariable::ConditionalVariable() :
 {
 }
 
+ConditionalVariable::ConditionalVariable(Spinlock & spinlock) :
+    spinlock(spinlock),
+    status(false)
+{
+}
+
 void ConditionalVariable::notify()
 {
     std::unique_lock<Nico::RtspAnalyser::Libs::Spinlock> lock(this->spinlock);

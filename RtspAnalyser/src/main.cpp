@@ -17,6 +17,7 @@
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
 #include "Nico/RtspAnalyser/WatchdogLib/Watchdog.h"
+#include "Nico/RtspAnalyser/Libs/Logger.h"
 
 using namespace Nico::RtspAnalyser;
 using namespace Nico::RtspAnalyser::Libs;
@@ -59,6 +60,9 @@ int main(int argc, char* argv[])
 
     std::deque<cv::Mat> frames, fgMasks;
 
+    Logger logger("log.txt");
+    logger.start();
+
     Streamer streamer(
         boost_io_service,
         stream,
@@ -66,23 +70,27 @@ int main(int argc, char* argv[])
     );
 
     //Viewer viewer(frames, "rtsp");
-    Viewer viewerFgMasks(fgMasks, "fgMasks");
+    // Viewer viewerFgMasks(fgMasks, "fgMasks");
 
     MotionDetector motionDetector(
         frames,
         fgMasks,
-        1000LL / 30
+        30
     );
-    motionDetector.setViewer(&viewerFgMasks);
+    // motionDetector.setViewer(&viewerFgMasks);
 
-    Watchdog watchdog(&streamer, &motionDetector);
+    Watchdog watchdog(
+        &streamer,
+        &motionDetector,
+        &logger
+    );
     watchdog.start();
 
     //streamer.subscribe(&viewer);
 
     streamer.subscribe(&motionDetector);
 
-    viewerFgMasks.start();
+    // viewerFgMasks.start();
     //viewer.start();
 
     motionDetector.start();
@@ -100,13 +108,15 @@ int main(int argc, char* argv[])
     streamer.stop();
     motionDetector.stop();
     //viewer.stop();
-    viewerFgMasks.stop();
+    // viewerFgMasks.stop();
     watchdog.stop();
 
     boost_io_service.stop();
     boost_io_thread.join();
 
     cv::destroyAllWindows();
+
+    logger.stop();
 
     return EXIT_SUCCESS;
 }

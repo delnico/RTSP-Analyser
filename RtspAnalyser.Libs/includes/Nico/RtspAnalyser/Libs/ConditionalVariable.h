@@ -16,6 +16,7 @@ namespace Nico
             {
                 public:
                     ConditionalVariable();
+                    ConditionalVariable(Spinlock & spinlock);
                     ~ConditionalVariable() = default;
                     void notify();
                     void wait();

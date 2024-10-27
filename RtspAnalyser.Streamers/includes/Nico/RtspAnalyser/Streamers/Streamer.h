@@ -32,10 +32,13 @@ namespace Nico {
                 void subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
                 void unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
 
-                int64_t queueSize() const;
-                void goToLive();
+                void watchdog();
 
             private:
+                int64_t queueSize() const;
+                void goToLive();
+                void run();
+
                 std::atomic<bool> isEnabled;
                 boost::asio::deadline_timer timer;
                 Nico::RtspAnalyser::Libs::Stream stream;
@@ -43,8 +46,6 @@ namespace Nico {
                 std::deque<cv::Mat> & frames;
 
                 Nico::RtspAnalyser::Analyser::IAnalyser * listener;
-
-                void run();
             };
         }
     }

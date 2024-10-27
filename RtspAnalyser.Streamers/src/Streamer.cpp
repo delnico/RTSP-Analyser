@@ -64,6 +64,13 @@ void Streamer::unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
     listener = nullptr;
 }
 
+void Streamer::watchdog()
+{
+    if(queueSize() > 3) {
+        goToLive();
+    }
+}
+
 int64_t Streamer::queueSize() const
 {
     return frames.size();
@@ -84,9 +91,6 @@ void Streamer::run()
     std::chrono::duration<double> elapsed(0);
     while (isEnabled)
     {
-        auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count() - (elapsed.count() * 1000)));
-        timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
-        timer.async_wait(boost::bind(&Streamer::run, this));
         auto start = std::chrono::steady_clock::now();
         cap >> frame;
 
@@ -100,5 +104,8 @@ void Streamer::run()
         }
         auto end = std::chrono::steady_clock::now();
         elapsed = end - start;
+        auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count() - (elapsed.count() * 1000)));
+        timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
+        timer.async_wait(boost::bind(&Streamer::run, this));
     }
 }

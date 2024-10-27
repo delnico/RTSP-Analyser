@@ -20,7 +20,7 @@ using namespace Nico::RtspAnalyser::Motion;
 MotionDetector::MotionDetector(
     std::deque<cv::Mat> & frames,
     std::deque<cv::Mat> & fgMasks,
-    int64_t ms_one_frame
+    int64_t fps
 ) :
     cond(),
     isEnabled(false),
@@ -31,9 +31,10 @@ MotionDetector::MotionDetector(
     cv_motion_history(500),
     cv_motion_var_threshold(60),
     cv_motion_detect_shadows(false),
-    ms_one_frame(ms_one_frame),
-    ms_one_frame_original(ms_one_frame),
-    frame_skipping(0),
+    ms_one_frame(1000LL / fps),
+    ms_one_frame_original(1000LL / fps),
+    fps(fps),
+    frame_skipping(1),
     frames_count(0)
 {
     // zone depend of screen resolution and scale
@@ -79,11 +80,18 @@ void MotionDetector::run() {
         frame = frames.front();
         frames.pop_front();
 
-        if(frame_skipping != 0) {
-            if(frames_count % frame_skipping != 0)
+        if(frame.empty() || frame.size().width == 0 || frame.size().height == 0)
+            continue;
+
+        if(frame_skipping != 1) {
+            if(frames_count % (frame_skipping-1) != 0)
+            {
+                frames_count = 0;
                 continue;
+            }
+            else
+                frames_count++;
         }
-        frames_count++;
 
         auto start = std::chrono::steady_clock::now();
 
@@ -156,23 +164,27 @@ bool MotionDetector::operator==(const MotionDetector & other) const
 void MotionDetector::watchdog() {
     std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_processing_times);
     auto size = processing_times.size();
-    if(size > 10) {
+    if(size > fps) {    // > ~ 1s
         int64_t sum = 0;
         for(auto & time : processing_times) {
             sum += time;
         }
         auto avg = sum / size;
-        if(avg > ms_one_frame) {
-            frame_skipping = std::ceil(avg / ms_one_frame);
-            ms_one_frame = ms_one_frame * frame_skipping;
-            std::cout << "frame_skipping: " << frame_skipping << " ms frame :" << ms_one_frame << std::endl;
+        auto ratio = std::ceil(avg / ms_one_frame);
+        int64_t tmp = frame_skipping;
+        if(ratio > 1) {
+            tmp = ratio;
+            ms_one_frame = ms_one_frame_original * ratio;
         }
-        else {
-            if(avg < ms_one_frame_original) {
-                frame_skipping = 0;
-                ms_one_frame = ms_one_frame_original;
-                std::cout << "frame_skipping: " << frame_skipping << " ms frame :" << ms_one_frame << std::endl;
-            }
+        else if(ratio < 0.5) {
+            tmp = 1;
+            ms_one_frame = ms_one_frame_original;
+        }
+
+        if(tmp != frame_skipping) {
+            frame_skipping = tmp;
+            std::cout   << "WATCHDOG : MotionDetector switched to frames skipping : "
+                        << frame_skipping << " at ms : " << ms_one_frame << std::endl;
         }
         processing_times.clear();
     }
