@@ -28,7 +28,7 @@ using namespace Nico::RtspAnalyser::WatchdogLib;
 
 int main(int argc, char* argv[])
 {
-    //cv::setNumThreads(0);
+    cv::setNumThreads(0);
 
     std::string configFile = "config.json";
     std::string logFile = "";
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
         frames,
         fgMasks,
         30,
-        2
+        3
     );
     motionDetector.setViewer(&viewerFgMasks);
 

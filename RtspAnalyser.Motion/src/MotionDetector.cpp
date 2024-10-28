@@ -90,16 +90,13 @@ void MotionDetector::run() {
         if(frame.empty() || frame.size().width == 0 || frame.size().height == 0)
             continue;
 
+        frames_count++;
         if(frame_skipping > 1) {
-            if(frames_count % (frame_skipping-1) != 0)
+            if(frames_count % frame_skipping != 0)
                 continue;
         }
-        frames_count++;
 
         auto start = std::chrono::steady_clock::now();
-
-        cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
-
         
         cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
         cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
@@ -142,11 +139,8 @@ void MotionDetector::run() {
         }
 
         if(viewer != nullptr) {
-            if(thresholdFrame.size().width > 0 && thresholdFrame.size().height > 0)
-            {
-                fgMasks.push_back(cv::Mat(thresholdFrame));
-                viewer->notify();
-            }
+            fgMasks.push_back(cv::Mat(roiMask));
+            viewer->notify();
         }
 
         auto end = std::chrono::steady_clock::now();
