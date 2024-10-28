@@ -39,10 +39,25 @@ Config::Config(const std::string& file) {
         } else {
             throw std::runtime_error("Codec inconnu.");
         }
+
+        auto zones = stream["zones"];
+
+        // for(auto& zone : zones)
+
         this->streams.push_back(s);
     }
 
     log_file_path = j["logs_file_path"];
+
+    auto opencv_model_set = j["opencv_model_set"];
+    opencv_model_history = opencv_model_set["history"];
+    opencv_model_var_threshold = opencv_model_set["var_threshold"];
+    opencv_model_detect_shadows = opencv_model_set["detect_shadows"];
+    opencv_model_erode = opencv_model_set["erode"];
+    opencv_model_dilate = opencv_model_set["dilate"];
+    opencv_model_gaussian_size = opencv_model_set["gaussian_size"];
+    opencv_model_gaussian_sigma = opencv_model_set["gaussian_sigma"];
+    opencv_model_min_area = opencv_model_set["min_area"];
 }
 
 Config::~Config(){}
@@ -61,4 +76,37 @@ Codec Config::getStreamCodec(int index) const {
 
 std::string Config::getLogsFilePath() const {
     return log_file_path;
+}
+
+
+int Config::getOpenCvModelHistory() const {
+    return opencv_model_history;
+}
+
+int Config::getOpenCvModelVarThreshold() const {
+    return opencv_model_var_threshold;
+}
+
+bool Config::getOpenCvModelDetectShadows() const {
+    return opencv_model_detect_shadows;
+}
+
+int Config::getOpenCvModelErode() const {
+    return opencv_model_erode;
+}
+
+int Config::getOpenCvModelDilate() const {
+    return opencv_model_dilate;
+}
+
+int Config::getOpenCvModelGaussianSize() const {
+    return opencv_model_gaussian_size;
+}
+
+int Config::getOpenCvModelGaussianSigma() const {
+    return opencv_model_gaussian_sigma;
+}
+
+int Config::getOpenCvModelMinArea() const {
+    return opencv_model_min_area;
 }

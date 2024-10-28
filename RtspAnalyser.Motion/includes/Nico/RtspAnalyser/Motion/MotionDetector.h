@@ -12,6 +12,7 @@
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Analyser/Viewer.h"
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "Nico/RtspAnalyser/Libs/Config.h"
 #include "Nico/RtspAnalyser/Libs/Spinlock.h"
 
 namespace Nico {
@@ -21,10 +22,10 @@ namespace Nico {
                 public:
                     MotionDetector() = delete;
                     MotionDetector(
+                        Nico::RtspAnalyser::Libs::Config & config,
                         std::deque<cv::Mat> & frames,
                         std::deque<cv::Mat> & fgMasks,
-                        int64_t fps,
-                        int64_t frame_skipping = 1
+                        int64_t fps
                     );
                     ~MotionDetector();
 
@@ -51,8 +52,6 @@ namespace Nico {
                     int64_t fps;
                     Nico::RtspAnalyser::Libs::Spinlock slock_processing_times;
                     std::deque<int64_t> processing_times;
-                    int64_t frame_skipping;
-                    int64_t frames_count;
 
                     void run();
 

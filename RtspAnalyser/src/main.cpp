@@ -88,10 +88,10 @@ int main(int argc, char* argv[])
     Viewer viewerFgMasks(fgMasks, "fgMasks");
 
     MotionDetector motionDetector(
+        conf,
         motio_detect_frames,
         fgMasks,
-        30,
-        3
+        30
     );
     motionDetector.setViewer(&viewerFgMasks);
 
