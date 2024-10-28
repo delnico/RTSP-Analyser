@@ -28,8 +28,8 @@ MotionDetector::MotionDetector(
     frames(frames),
     fgMasks(fgMasks),
     viewer(nullptr),
-    cv_motion_history(5),
-    cv_motion_var_threshold(1024),
+    cv_motion_history(500),
+    cv_motion_var_threshold(60),
     cv_motion_detect_shadows(false),
     ms_one_frame(1000LL / fps),
     ms_one_frame_original(1000LL / fps),
@@ -64,15 +64,12 @@ void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
 }
 
 void MotionDetector::run() {
-    //cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
-    //cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorKNN();
+    // cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
+    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorKNN();
 
-    cv::Mat frame, grayFrame, avgFrame, diffFrame, thresholdFrame;
-
-    std::deque<cv::Mat> previousFrames;
+    cv::Mat frame, fgMask, roiMask, grayFrame;
 
     bool motionDetected = false;
-    int64_t tooMuschTime = 0;
 
     while (isEnabled)
     {
@@ -101,32 +98,42 @@ void MotionDetector::run() {
 
         auto start = std::chrono::steady_clock::now();
 
+        cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
+
+        
+        cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
         cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
 
-        if(previousFrames.size() > cv_motion_history)
-            previousFrames.pop_front();
-        
-        previousFrames.push_back(grayFrame);
+        bgSubtractor->apply(frame, fgMask);
+        roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());
 
-        if(previousFrames.size() == cv_motion_history) {
-            avgFrame = cv::Mat::zeros(grayFrame.size(), CV_32F);
+        for(const auto & zone : zones) {
+            fgMask(zone).copyTo(roiMask(zone));
 
-            for(auto & previousFrame : previousFrames) {
-                cv::Mat floatFrame;
-                previousFrame.convertTo(floatFrame, CV_32F);
-                avgFrame += floatFrame;
+            // remove small area - noise
+            cv::erode(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
+            cv::dilate(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
+
+            cv::GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(5, 5), 0);
+
+            std::vector<std::vector<cv::Point>> outlines;
+            cv::findContours(roiMask(zone), outlines, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+
+            if(outlines.size() > 0) {
+                motionDetected = true;
             }
 
-            avgFrame /= cv_motion_history;
+            if(viewer != nullptr) {
+                for(size_t i = 0; i < outlines.size(); i++) {
+                    cv::Rect rect = cv::boundingRect(outlines[i]);
+                    if(rect.area() > 500) {
+                        cv::rectangle(frame, rect, cv::Scalar(0, 0, 255), 2);
+                    }
+                }
 
-            cv::Mat avgFrame8U;
-            avgFrame.convertTo(avgFrame8U, CV_8U);
-
-            cv::absdiff(grayFrame, avgFrame8U, diffFrame);
-
-            cv::threshold(diffFrame, thresholdFrame, 25, 255, cv::THRESH_BINARY);
-
-            motionDetected = cv::countNonZero(thresholdFrame) > 0;
+                cv::rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);
+            }
         }
         
 
