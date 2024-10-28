@@ -30,7 +30,7 @@ using namespace Nico::RtspAnalyser::WatchdogLib;
 
 int main(int argc, char* argv[])
 {
-    cv::setNumThreads(0);
+    cv::setNumThreads(1);
 
     std::string configFile = "config.json";
     std::string logFile = "";
@@ -95,15 +95,8 @@ int main(int argc, char* argv[])
     );
     motionDetector.setViewer(&viewerFgMasks);
 
-    OutputStream os_viewer, os_motiondetector;
-
-    os_viewer.output = &viewer;
-    os_viewer.frames = viewer_frames;
-    os_viewer.frame_skipping = 1;
-
-    os_motiondetector.output = &motionDetector;
-    os_motiondetector.frames = motio_detect_frames;
-    os_motiondetector.frame_skipping = 3;
+    OutputStream os_viewer(&viewer, viewer_frames, 1);
+    OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 3);
 
     multiplexer.subscribe(&os_viewer);
     multiplexer.subscribe(&os_motiondetector);

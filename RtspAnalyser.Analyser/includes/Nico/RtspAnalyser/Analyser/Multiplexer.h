@@ -39,7 +39,7 @@ namespace Nico {
                     int64_t frame_count;
 
                     void run();
-                    void multiplex(cv::Mat & frame);
+                    void multiplex(cv::Mat frame);
             };
         }
     }

@@ -74,13 +74,14 @@ void Multiplexer::run() {
     }
 }
 
-void Multiplexer::multiplex(cv::Mat & frame) {
+void Multiplexer::multiplex(cv::Mat frame) {
     for(OutputStream * oc : output_clients) {
-        if(oc->frame_skipping > 1) {
-            if(frame_count % oc->frame_skipping != 0)
+        int64_t frame_skipping = oc->getFrameSkipping();
+        if(frame_skipping > 1) {
+            if(frame_count % frame_skipping != 0)
                 continue;
         }
-        oc->frames.push_back(frame);
-        oc->output->notify();
+        oc->addFrame(frame);
+        oc->notify();
     }
 }

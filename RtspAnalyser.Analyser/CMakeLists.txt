@@ -5,6 +5,7 @@ project(RtspAnalyser.Analyser VERSION 0.0.1)
 set(SOURCES
     src/IAnalyser.cpp
     src/Multiplexer.cpp
+    src/OutputStream.cpp
     src/Viewer.cpp
 )
 
