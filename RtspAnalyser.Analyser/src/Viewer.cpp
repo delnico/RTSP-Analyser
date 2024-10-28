@@ -45,7 +45,7 @@ void Viewer::run()
     cv::Mat frame;
     while (isEnabled)
     {
-        wait();
+        cond.wait();
         if(frames.empty())
             continue;
         frame = frames.front();
@@ -59,11 +59,6 @@ void Viewer::run()
 void Viewer::notify()
 {
     cond.notify();
-}
-
-void Viewer::wait()
-{
-    cond.wait();
 }
 
 

@@ -13,6 +13,8 @@
 #include "Nico/RtspAnalyser/Libs/Stream.h"
 #include "Nico/RtspAnalyser/Libs/Codec.h"
 #include "Nico/RtspAnalyser/Streamers/Streamer.h"
+#include "Nico/RtspAnalyser/Analyser/Multiplexer.h"
+#include "Nico/RtspAnalyser/Analyser/OutputStream.h"
 #include "Nico/RtspAnalyser/Analyser/Viewer.h"
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
@@ -68,7 +70,7 @@ int main(int argc, char* argv[])
     stream.codec = conf.getStreamCodec(0);
     stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
 
-    std::deque<cv::Mat> frames, fgMasks;
+    std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks;
 
     Logger logger(logFile);
     logger.start();
@@ -76,19 +78,37 @@ int main(int argc, char* argv[])
     Streamer streamer(
         boost_io_service,
         stream,
-        frames
+        stream_frames
     );
 
-    //Viewer viewer(frames, "rtsp");
+    Multiplexer multiplexer(stream_frames);
+
+    Viewer viewer(viewer_frames, "rtsp");
+
     Viewer viewerFgMasks(fgMasks, "fgMasks");
 
     MotionDetector motionDetector(
-        frames,
+        motio_detect_frames,
         fgMasks,
         30,
         3
     );
     motionDetector.setViewer(&viewerFgMasks);
+
+    OutputStream os_viewer, os_motiondetector;
+
+    os_viewer.output = &viewer;
+    os_viewer.frames = viewer_frames;
+    os_viewer.frame_skipping = 1;
+
+    os_motiondetector.output = &motionDetector;
+    os_motiondetector.frames = motio_detect_frames;
+    os_motiondetector.frame_skipping = 3;
+
+    multiplexer.subscribe(&os_viewer);
+    multiplexer.subscribe(&os_motiondetector);
+
+    multiplexer.start();
 
     Watchdog watchdog(
         &streamer,
@@ -97,12 +117,10 @@ int main(int argc, char* argv[])
     );
     watchdog.start();
 
-    //streamer.subscribe(&viewer);
+    streamer.subscribe(&multiplexer);
 
-    streamer.subscribe(&motionDetector);
-
+    viewer.start();
     viewerFgMasks.start();
-    //viewer.start();
 
     motionDetector.start();
     streamer.start(boost_io_service);
@@ -118,9 +136,11 @@ int main(int argc, char* argv[])
 
     streamer.stop();
     motionDetector.stop();
-    //viewer.stop();
+    viewer.stop();
     viewerFgMasks.stop();
     watchdog.stop();
+
+    multiplexer.stop();
 
     boost_io_service.stop();
     boost_io_thread.join();

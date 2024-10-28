@@ -1,6 +1,6 @@
 #pragma once
 
-// Analyser interface
+// Analyser abstract class
 
 namespace Nico {
     namespace RtspAnalyser {

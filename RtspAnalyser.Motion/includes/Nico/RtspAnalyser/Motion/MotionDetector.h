@@ -57,7 +57,6 @@ namespace Nico {
                     void run();
 
                     void notify() override;
-                    void wait() override;
 
                     bool operator==(const MotionDetector & other) const;
             };

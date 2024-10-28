@@ -74,7 +74,7 @@ void MotionDetector::run() {
     while (isEnabled)
     {
         motionDetected = false;
-        wait();
+        cond.wait();
 
         try {
             if(frames.size() < 2)
@@ -154,10 +154,6 @@ void MotionDetector::run() {
 
 void MotionDetector::notify() {
     cond.notify();
-}
-
-void MotionDetector::wait() {
-    cond.wait();
 }
 
 bool MotionDetector::operator==(const MotionDetector & other) const

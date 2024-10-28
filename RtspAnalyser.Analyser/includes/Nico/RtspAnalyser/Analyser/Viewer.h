@@ -16,7 +16,7 @@ namespace Nico {
             class Viewer : public IAnalyser {
                 public:
                     Viewer();
-                    // windowName is can't be empty, can't be a space, can't be a tabulation, ...
+                    // windowName is can't be empty, can't be with a space, can't be with a tabulation, ...
                     Viewer(std::deque<cv::Mat> & frames, std::string windowName = "Viewer");
                     ~Viewer();
                     Viewer(const Viewer & other) = delete;
@@ -33,7 +33,6 @@ namespace Nico {
                     std::string windowName;
 
                     void run();
-                    void wait() override;
 
                     bool operator==(const Viewer & other) const;
             };

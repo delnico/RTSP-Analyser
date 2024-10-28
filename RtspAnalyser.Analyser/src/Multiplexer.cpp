@@ -1,0 +1,86 @@
+#include <thread>
+#include <atomic>
+#include <vector>
+#include <deque>
+#include <cstdint>
+
+#include <opencv2/opencv.hpp>
+
+#include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
+#include "Nico/RtspAnalyser/Analyser/OutputStream.h"
+#include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
+
+#include "Nico/RtspAnalyser/Analyser/Multiplexer.h"
+
+using namespace Nico::RtspAnalyser::Analyser;
+
+Multiplexer::Multiplexer(
+    std::deque<cv::Mat> & input_frames
+) :
+    isEnabled(false),
+    thread(),
+    input_cond(),
+    input_frames(input_frames),
+    output_clients(),
+    frame_count(0)
+{}
+
+
+Multiplexer::~Multiplexer() {
+    stop();
+}
+
+void Multiplexer::subscribe(OutputStream * output_client) {
+    output_clients.push_back(output_client);
+}
+
+void Multiplexer::unsubscribe(OutputStream * output_client) {
+    output_clients.remove(output_client);
+}
+
+void Multiplexer::start() {
+    if(! isEnabled.load()) {
+        isEnabled.store(true);
+        thread = std::thread(&Multiplexer::run, this);
+    }
+}
+
+void Multiplexer::stop() {
+    if(isEnabled.load()) {
+        isEnabled.store(false);
+        input_cond.notify();
+        thread.join();
+    }
+}
+
+void Multiplexer::notify() {
+    input_cond.notify();
+}
+
+void Multiplexer::run() {
+    cv::Mat frame;
+    while(isEnabled.load()) {
+        input_cond.wait();
+
+        frame_count++;
+        
+        if(! input_frames.empty())
+        {
+            frame = input_frames.front();
+            input_frames.pop_front();
+
+            multiplex(frame);
+        }
+    }
+}
+
+void Multiplexer::multiplex(cv::Mat & frame) {
+    for(OutputStream * oc : output_clients) {
+        if(oc->frame_skipping > 1) {
+            if(frame_count % oc->frame_skipping != 0)
+                continue;
+        }
+        oc->frames.push_back(frame);
+        oc->output->notify();
+    }
+}
