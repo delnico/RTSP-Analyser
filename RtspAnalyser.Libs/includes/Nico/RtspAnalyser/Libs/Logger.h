@@ -15,6 +15,10 @@ namespace Nico {
         namespace Libs {
             class Logger {
                 public:
+                    static Logger * main_logger;
+                    static void log_main(const std::string & message);
+
+
                     Logger() = delete;
                     Logger(const std::string & filename);
                     ~Logger();
