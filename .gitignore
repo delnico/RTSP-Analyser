@@ -6,3 +6,4 @@ LICENSE
 rpi_mount_samba.sh
 copy.sh
 log.txt
+exec.sh

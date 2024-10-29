@@ -66,7 +66,7 @@ void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
 void MotionDetector::run() {
     // cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
 
-    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::bgsegm::createBackgroundSubtractorCNT();
+    cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::bgsegm::createBackgroundSubtractorCNT(6, false, 900, false);
 
     cv::Mat frame, fgMask, roiMask, grayFrame;
 
@@ -186,4 +186,17 @@ std::string MotionDetector::watchdog() {
         result = std::format("WATCHDOG : MotionDetector : max = {}", max);
     }
     return result;
+}
+
+void MotionDetector::reloadConfig(Nico::RtspAnalyser::Libs::Config & config) {
+    cv_motion_history = config.getOpenCvModelHistory();
+    cv_motion_var_threshold = config.getOpenCvModelVarThreshold();
+    cv_motion_detect_shadows = config.getOpenCvModelDetectShadows();
+
+    stop();
+
+    start();
+
+    std::cout << "MotionDetector reloaded" << std::endl;
+    std::cout.flush();
 }

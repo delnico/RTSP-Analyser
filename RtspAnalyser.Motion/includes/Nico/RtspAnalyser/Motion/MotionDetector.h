@@ -35,6 +35,8 @@ namespace Nico {
 
                     std::string watchdog();
 
+                    void reloadConfig(Nico::RtspAnalyser::Libs::Config & config);
+
                 private:
                     Nico::RtspAnalyser::Libs::ConditionalVariable cond;
                     std::atomic<bool> isEnabled;
@@ -43,9 +45,10 @@ namespace Nico {
                     std::deque<cv::Mat> & frames;
                     std::deque<cv::Mat> & fgMasks;
                     Nico::RtspAnalyser::Analyser::Viewer * viewer;
-                    int cv_motion_history;
-                    double cv_motion_var_threshold;
-                    bool cv_motion_detect_shadows;
+                    
+                    std::atomic<int> cv_motion_history;
+                    std::atomic<double> cv_motion_var_threshold;
+                    std::atomic<bool> cv_motion_detect_shadows;
 
                     int64_t ms_one_frame;
                     int64_t ms_one_frame_original;

@@ -125,7 +125,22 @@ int main(int argc, char* argv[])
         std::ref(boost_io_service)
     );
 
-    std::cin.get();
+
+    std::string input;
+    bool enabled = true;
+    while(enabled) {
+        std::cin >> input;
+        switch(input[0]) {
+            case 'q':
+                enabled = false;
+                break;
+            case 'r':
+                motionDetector.reloadConfig(conf);
+                break;
+            default:
+                break;
+        }
+    }
 
     streamer.stop();
     motionDetector.stop();
