@@ -25,6 +25,9 @@ find_package(Threads)
 find_package(Boost REQUIRED COMPONENTS asio)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
+
+find_package(TensorflowCC REQUIRED)
+
 # Add Libraries
 add_subdirectory(RtspAnalyser.Libs)
 

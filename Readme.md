@@ -8,18 +8,13 @@ Make lightweight to be execute on RPI 4.
 
 ![Workflow](./doc/uml/out/workflow.png)
 
-## Tools to build
-
-- CMake
-- Vcpkg
-- Ninja
-
 ## Dependencies
 
 - OpenCV 4
 - Niels Lohmann JSON
 - Boost
 - Boost Asio
+- TensorFlow CC
 
 ## Raspberry Pi 4 --> Ubuntu 24.04.1 LTS
 
@@ -47,12 +42,14 @@ sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-con
 
 ### Bazel
 
+[https://github.com/bazelbuild/bazel/releases/tag/5.4.1](https://github.com/bazelbuild/bazel/releases/tag/5.4.1)
+
 ```bash
-wget https://github.com/bazelbuild/bazel/releases/download/6.1.2/bazel-6.1.2-linux-arm64
+wget https://github.com/bazelbuild/bazel/releases/download/5.1.1/bazel-5.1.1-linux-arm64
 
 # or for x64
 
-wget https://github.com/bazelbuild/bazel/releases/download/6.1.2/bazel-6.1.2-linux-x86_64
+wget https://github.com/bazelbuild/bazel/releases/download/5.1.1/bazel-5.1.1-linux-x86_64
 
 sudo mv bazel* /usr/local/bin/bazel
 sudo chmod 0777 /usr/local/bin/bazel
@@ -98,6 +95,7 @@ export VCPKG_FORCE_SYSTEM_BINARIES=1
 ### nlohmann json
 
 ```bash
+cd ~/libs
 git clone https://github.com/nlohmann/json.git
 cd json
 mkdir build && cd build
@@ -109,6 +107,7 @@ sudo make install
 ### OpenCV with contrib
 
 ```bash
+cd ~/libs
 mkdir opencvlib && cd opencvlib
 git clone https://github.com/opencv/opencv.git
 git clone https://github.com/opencv/opencv_contrib.git
@@ -131,22 +130,33 @@ sudo ldconfig
 python3 -c "import cv2; print(cv2.getBuildInformation())"
 ```
 
-### Tensorflow
+### TensorFlow CC
+
+Thanks to [https://github.com/FloopCZ/tensorflow_cc](https://github.com/FloopCZ/tensorflow_cc)
 
 ```bash
-sudo apt install clang gcc-11 g++-11
-git clone https://github.com/tensorflow/tensorflow.git
-cd tensorflow
+cd ~/libs
 
-# configure with gcc
-./configure
+git clone https://github.com/FloopCZ/tensorflow_cc.git
+cd tensorflow_cc/tensorflow_cc/
+mkdir build && cd build
+cmake ..
+
+
+# if you dev on a machine with Cuda tools installed but we didn't need in our case
+# the goal is to compile on a Raspberry
+# we modify the CMakeLists.txt
+# change " option(ALLOW_CUDA "Try to find and use CUDA." ON) "
+# to " option(ALLOW_CUDA "Try to find and use CUDA." OFF) "
+# That will disable Cuda support for TensorFlow
+
 
 export CC=/usr/bin/gcc-11
 export CXX=/usr/bin/g++-11
 
-bazel build //tensorflow:libtensorflow_cc.so
-bazel build --define tflite_with_xnnpack=false //tensorflow/lite:libtensorflowlite.so
-
+make -j$(nproc)
+sudo make install
+sudo ldconfig
 ```
 
 ## TO DO
