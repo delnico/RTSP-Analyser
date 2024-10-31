@@ -45,6 +45,22 @@ vulkaninfo
 sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-config autoconf automake libtool bison meson autoconf-archive
 ```
 
+### Bazel
+
+```bash
+wget https://github.com/bazelbuild/bazel/releases/download/6.1.2/bazel-6.1.2-linux-arm64
+
+# or for x64
+
+wget https://github.com/bazelbuild/bazel/releases/download/6.1.2/bazel-6.1.2-linux-x86_64
+
+sudo mv bazel* /usr/local/bin/bazel
+sudo chmod 0777 /usr/local/bin/bazel
+
+# verify with
+bazel --version
+```
+
 ### Libs
 
 ```bash
@@ -53,6 +69,9 @@ libgtk2.0-dev ffmpeg libopencv-dev libopencv-highgui-dev libopencv-objdetect-dev
 libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libx265-dev libjpeg-dev libpng-dev libtiff-dev \
 gfortran openexr libatlas-base-dev python3-dev python3-numpy libtbb12 libtbb-dev libdc1394-25 libdc1394-dev libopenexr-dev \
 libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev ocl-icd-opencl-dev libvulkan-dev libglew-dev ocl-icd-dev
+
+sudo apt install -y git python3 python3-pip python3-dev
+pip install --break-system-packages numpy
 ```
 
 ### Vcpkg
@@ -110,6 +129,24 @@ sudo ldconfig
 
 # verify with
 python3 -c "import cv2; print(cv2.getBuildInformation())"
+```
+
+### Tensorflow
+
+```bash
+sudo apt install clang gcc-11 g++-11
+git clone https://github.com/tensorflow/tensorflow.git
+cd tensorflow
+
+# configure with gcc
+./configure
+
+export CC=/usr/bin/gcc-11
+export CXX=/usr/bin/g++-11
+
+bazel build //tensorflow:libtensorflow_cc.so
+bazel build --define tflite_with_xnnpack=false //tensorflow/lite:libtensorflowlite.so
+
 ```
 
 ## TO DO

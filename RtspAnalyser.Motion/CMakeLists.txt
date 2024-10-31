@@ -5,11 +5,13 @@ project(RtspAnalyser.Motion VERSION 0.0.1)
 set(SOURCES
     src/MotionDetector.cpp
     src/MotionEvent.cpp
+    src/MotionManager.cpp
 )
 
 set(INCLUDES
     includes/Nico/RtspAnalyser/Motion/MotionDetector.h
     includes/Nico/RtspAnalyser/Motion/MotionEvent.h
+    includes/Nico/RtspAnalyser/Motion/MotionManager.h
 )
 
 add_library(${PROJECT_NAME}

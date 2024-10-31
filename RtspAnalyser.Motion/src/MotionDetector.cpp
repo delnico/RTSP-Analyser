@@ -14,6 +14,7 @@
 #include <opencv2/bgsegm.hpp>
 
 #include "Nico/RtspAnalyser/Libs/Config.h"
+#include "Nico/RtspAnalyser/Libs/Logger.h"
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
 
 using namespace Nico::RtspAnalyser::Motion;
@@ -84,7 +85,7 @@ void MotionDetector::run() {
             frames.pop_front();
         }
         catch(const std::exception & e) {
-            // call logger
+            Nico::RtspAnalyser::Libs::Logger::log_main(std::format("MotionDetector::run error : {}", e.what()));
             continue;
         }
         
@@ -197,6 +198,5 @@ void MotionDetector::reloadConfig(Nico::RtspAnalyser::Libs::Config & config) {
 
     start();
 
-    std::cout << "MotionDetector reloaded" << std::endl;
-    std::cout.flush();
+    Nico::RtspAnalyser::Libs::Logger::log_main("MotionDetector::reloadConfig : MotionDetector reloaded");
 }
