@@ -135,13 +135,11 @@ python3 -c "import cv2; print(cv2.getBuildInformation())"
 Thanks to [https://github.com/FloopCZ/tensorflow_cc](https://github.com/FloopCZ/tensorflow_cc)
 
 ```bash
+sudo apt install g++-11
 cd ~/libs
 
 git clone https://github.com/FloopCZ/tensorflow_cc.git
 cd tensorflow_cc/tensorflow_cc/
-mkdir build && cd build
-cmake ..
-
 
 # if you dev on a machine with Cuda tools installed but we didn't need in our case
 # the goal is to compile on a Raspberry
@@ -150,11 +148,15 @@ cmake ..
 # to " option(ALLOW_CUDA "Try to find and use CUDA." OFF) "
 # That will disable Cuda support for TensorFlow
 
+mkdir build && cd build
 
 export CC=/usr/bin/gcc-11
 export CXX=/usr/bin/g++-11
+export CC_OPT_FLAGS="-march=native"
 
-make -j$(nproc)
+cmake -DLOCAL_RAM_RESOURCES=2048 -DLOCAL_CPU_RESOURCES=1 ..
+
+make
 sudo make install
 sudo ldconfig
 ```
