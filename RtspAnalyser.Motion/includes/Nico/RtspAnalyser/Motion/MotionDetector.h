@@ -15,6 +15,8 @@
 #include "Nico/RtspAnalyser/Libs/Config.h"
 #include "Nico/RtspAnalyser/Libs/Spinlock.h"
 
+#include "Nico/RtspAnalyser/Motion/MotionManager.h"
+
 namespace Nico {
     namespace RtspAnalyser {
         namespace Motion {
@@ -32,6 +34,7 @@ namespace Nico {
                     void start();
                     void stop();
                     void setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer);
+                    void setMotionManager(MotionManager * motionManager);
 
                     std::string watchdog();
 
@@ -45,6 +48,7 @@ namespace Nico {
                     std::deque<cv::Mat> & frames;
                     std::deque<cv::Mat> & fgMasks;
                     Nico::RtspAnalyser::Analyser::Viewer * viewer;
+                    MotionManager * motionManager;
                     
                     std::atomic<int> cv_motion_history;
                     std::atomic<double> cv_motion_var_threshold;

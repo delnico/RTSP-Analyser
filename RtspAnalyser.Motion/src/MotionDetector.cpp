@@ -13,9 +13,11 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/bgsegm.hpp>
 
+#include "Nico/RtspAnalyser/Analyser/Viewer.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
 #include "Nico/RtspAnalyser/Libs/Logger.h"
 #include "Nico/RtspAnalyser/Motion/MotionDetector.h"
+#include "Nico/RtspAnalyser/Motion/MotionManager.h"
 
 using namespace Nico::RtspAnalyser::Motion;
 
@@ -31,6 +33,7 @@ MotionDetector::MotionDetector(
     frames(frames),
     fgMasks(fgMasks),
     viewer(nullptr),
+    motionManager(nullptr),
     cv_motion_history(config.getOpenCvModelHistory()),
     cv_motion_var_threshold(config.getOpenCvModelVarThreshold()),
     cv_motion_detect_shadows(false),
@@ -62,6 +65,10 @@ void MotionDetector::stop() {
 
 void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
     this->viewer = viewer;
+}
+
+void MotionDetector::setMotionManager(MotionManager * motionManager) {
+    this->motionManager = motionManager;
 }
 
 void MotionDetector::run() {
@@ -132,6 +139,9 @@ void MotionDetector::run() {
 
         if(motionDetected) {
             // trigger event to MotionManager thread
+            if(motionManager != nullptr) {
+                motionManager->notify();
+            }
         }
 
         if(viewer != nullptr) {

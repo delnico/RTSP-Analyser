@@ -6,6 +6,7 @@ set(SOURCES
     src/IAnalyser.cpp
     src/Multiplexer.cpp
     src/OutputStream.cpp
+    src/TfHumanDetector.cpp
     src/Viewer.cpp
 )
 
@@ -13,6 +14,7 @@ set(INCLUDES
     includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
     includes/Nico/RtspAnalyser/Analyser/Multiplexer.h
     includes/Nico/RtspAnalyser/Analyser/OutputStream.h
+    includes/Nico/RtspAnalyser/Analyser/TfHumanDetector.h
     includes/Nico/RtspAnalyser/Analyser/Viewer.h
 )
 
