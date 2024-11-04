@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     cv::setNumThreads(1);
 
     std::string configFile = "config.json";
-    std::string logFile = "";
+    std::string logFile;
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
@@ -59,8 +59,8 @@ int main(int argc, char* argv[])
 
     Config conf(configFile);
 
-    if(logFile == "") {
-        logFile = conf.getLogsFilePath();
+    if(logFile.empty()) {
+        logFile = conf.get<std::string>("log_file_path");
     }
 
     boost::asio::io_service boost_io_service;

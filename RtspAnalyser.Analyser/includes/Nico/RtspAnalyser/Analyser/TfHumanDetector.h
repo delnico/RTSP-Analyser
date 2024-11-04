@@ -3,37 +3,47 @@
 #include <thread>
 #include <atomic>
 #include <deque>
+#include <vector>
 
 #include <opencv2/opencv.hpp>
 
+//#include <tensorflow/core/public/session.h>
+//#include <tensorflow/core/platform/env.h>
+
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "Nico/RtspAnalyser/Libs/Config.h"
 
-namespace Nico {
-    namespace RtspAnalyser {
-        namespace Analyser {
-            class TfHumanDetector : public IAnalyser {
-                public:
-                    TfHumanDetector() = delete;
-                    TfHumanDetector(
-                        std::deque<cv::Mat> & input_frames
-                    );
-                    ~TfHumanDetector();
 
-                    void start();
-                    void stop();
 
-                    void notify() override;
+namespace Nico::RtspAnalyser::Analyser {
+    class TfHumanDetector : public IAnalyser {
+        public:
+            TfHumanDetector() = delete;
+            TfHumanDetector(
+                std::deque<cv::Mat> & input_frames,
+                Nico::RtspAnalyser::Libs::Config & config
+            );
+            ~TfHumanDetector();
 
-                private:
-                    void run();
-                    void detect(cv::Mat frame);
+            void start();
+            void stop();
 
-                    std::atomic<bool> isEnabled;
-                    std::thread thread;
-                    std::deque<cv::Mat> & input_frames;
-                    Nico::RtspAnalyser::Libs::ConditionalVariable input_cond;
-            };
-        }
-    }
+            void notify() override;
+
+        private:
+            void run();
+            void detect(cv::Mat frame);
+
+            void load_model_labels();
+
+            std::atomic<bool> isEnabled;
+            std::thread thread;
+            std::deque<cv::Mat> & input_frames;
+            Nico::RtspAnalyser::Libs::ConditionalVariable input_cond;
+            Nico::RtspAnalyser::Libs::Config & config;
+
+            std::vector<std::string> model_labels;
+    };
 }
+

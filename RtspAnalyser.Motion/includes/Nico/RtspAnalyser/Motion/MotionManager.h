@@ -11,39 +11,38 @@
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "Nico/RtspAnalyser/Motion/MotionEvent.h"
 
-namespace Nico {
-    namespace RtspAnalyser {
-        namespace Motion {
-            class MotionManager {
-            public:
-                MotionManager() = delete;
-                MotionManager(
-                    boost::asio::io_service & boost_io_service,
-                    Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events,
-                    std::chrono::seconds guard_time_new_event,
-                    Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer
-                );
-                ~MotionManager();
 
-                void start();
-                void stop();
 
-                void notify();
+namespace Nico::RtspAnalyser::Motion {
+    class MotionManager {
+    public:
+        MotionManager() = delete;
+        MotionManager(
+            boost::asio::io_service & boost_io_service,
+            Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events,
+            std::chrono::seconds guard_time_new_event,
+            Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer
+        );
+        ~MotionManager();
 
-            private:
-                void run();
+        void start();
+        void stop();
 
-                void stop_stream_redirect_tensorflow();
+        void notify();
 
-                boost::asio::io_service & boost_io_service;
-                boost::asio::deadline_timer timer_stream_redirect_tensorflow;
-                std::thread thread;
-                std::atomic<bool> isEnabled;
-                std::deque<MotionEvent> events;
-                Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events;
-                std::chrono::seconds guard_time_new_event;
-                Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer;
-            };
-        }
-    }
+    private:
+        void run();
+
+        void stop_stream_redirect_tensorflow();
+
+        boost::asio::io_service & boost_io_service;
+        boost::asio::deadline_timer timer_stream_redirect_tensorflow;
+        std::thread thread;
+        std::atomic<bool> isEnabled;
+        std::deque<MotionEvent> events;
+        Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events;
+        std::chrono::seconds guard_time_new_event;
+        Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer;
+    };
 }
+

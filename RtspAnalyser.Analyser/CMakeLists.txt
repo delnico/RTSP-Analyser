@@ -32,6 +32,7 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         ${OpenCV_LIBS}
+        TensorflowCC::TensorflowCC
         RtspAnalyser.Libs
     PUBLIC
         Threads::Threads

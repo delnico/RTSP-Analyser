@@ -1,4 +1,5 @@
 #include <fstream>
+#include <stdexcept>
 #include <nlohmann/json.hpp>
 
 #include "Nico/RtspAnalyser/Libs/Config.h"
@@ -8,8 +9,6 @@
 using namespace Nico::RtspAnalyser::Libs;
 using json = nlohmann::json;
 using namespace std;
-
-Config::Config() : Config("config.json"){}
 
 Config::Config(const std::string& file) {
     std::ifstream ifs(file);
@@ -60,7 +59,34 @@ Config::Config(const std::string& file) {
     opencv_model_min_area = opencv_model_set["min_area"];
 }
 
-Config::~Config(){}
+template<typename T>
+T Config::get(const std::string & key) const {
+    if constexpr (std::is_same<T, std::string>::value)
+    {
+        if(key == "nvr_ip") return nvr_ip;
+        if(key == "nvr_user") return nvr_user;
+        if(key == "nvr_password") return nvr_password;
+        if(key == "nvr_protocol") return nvr_protocol;
+        if(key == "log_file_path") return log_file_path;
+    }
+    else if constexpr (std::is_same<T, int>::value)
+    {
+        if(key == "nvr_port") return nvr_port;
+        if(key == "opencv_model_history") return opencv_model_history;
+        if(key == "opencv_model_var_threshold") return opencv_model_var_threshold;
+        if(key == "opencv_model_erode") return opencv_model_erode;
+        if(key == "opencv_model_dilate") return opencv_model_dilate;
+        if(key == "opencv_model_gaussian_size") return opencv_model_gaussian_size;
+        if(key == "opencv_model_gaussian_sigma") return opencv_model_gaussian_sigma;
+        if(key == "opencv_model_min_area") return opencv_model_min_area;
+    }
+    else if constexpr (std::is_same<T, bool>::value)
+    {
+        if(key == "opencv_model_detect_shadows") return opencv_model_detect_shadows;
+    }
+
+    throw std::runtime_error("Unknown key.");
+}
 
 int Config::getHowManyStreams() const {
     return streams.size();
@@ -74,39 +100,3 @@ Codec Config::getStreamCodec(int index) const {
     return streams[index].codec;
 }
 
-std::string Config::getLogsFilePath() const {
-    return log_file_path;
-}
-
-
-int Config::getOpenCvModelHistory() const {
-    return opencv_model_history;
-}
-
-int Config::getOpenCvModelVarThreshold() const {
-    return opencv_model_var_threshold;
-}
-
-bool Config::getOpenCvModelDetectShadows() const {
-    return opencv_model_detect_shadows;
-}
-
-int Config::getOpenCvModelErode() const {
-    return opencv_model_erode;
-}
-
-int Config::getOpenCvModelDilate() const {
-    return opencv_model_dilate;
-}
-
-int Config::getOpenCvModelGaussianSize() const {
-    return opencv_model_gaussian_size;
-}
-
-int Config::getOpenCvModelGaussianSigma() const {
-    return opencv_model_gaussian_sigma;
-}
-
-int Config::getOpenCvModelMinArea() const {
-    return opencv_model_min_area;
-}

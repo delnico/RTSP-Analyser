@@ -36,7 +36,7 @@ bool MotionEvent::isHumanDetected() const {
     return humanDetected;
 }
 
-bool MotionEvent::isMotionTimeCloseTo(int64_t guard_time) {
+bool MotionEvent::isMotionTimeCloseTo(int64_t guard_time) const {
     auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     return now - end_timestamp < guard_time;
 }

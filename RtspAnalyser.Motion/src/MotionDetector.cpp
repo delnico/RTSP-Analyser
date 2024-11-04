@@ -34,9 +34,9 @@ MotionDetector::MotionDetector(
     fgMasks(fgMasks),
     viewer(nullptr),
     motionManager(nullptr),
-    cv_motion_history(config.getOpenCvModelHistory()),
-    cv_motion_var_threshold(config.getOpenCvModelVarThreshold()),
-    cv_motion_detect_shadows(false),
+    cv_motion_history(config.get<int>("opencv_model_history")),
+    cv_motion_var_threshold(config.get<int>("opencv_model_var_threshold")),
+    cv_motion_detect_shadows(config.get<bool>("opencv_model_detect_shadows")),
     ms_one_frame(1000LL / fps),
     ms_one_frame_original(1000LL / fps),
     fps(fps)
@@ -125,8 +125,8 @@ void MotionDetector::run() {
             }
 
             if(viewer != nullptr) {
-                for(size_t i = 0; i < outlines.size(); i++) {
-                    cv::Rect rect = cv::boundingRect(outlines[i]);
+                for(const auto & outline : outlines) {
+                    cv::Rect rect = cv::boundingRect(outline);
                     if(rect.area() > 500) {
                         cv::rectangle(frame, rect, cv::Scalar(0, 0, 255), 2);
                     }
@@ -200,9 +200,9 @@ std::string MotionDetector::watchdog() {
 }
 
 void MotionDetector::reloadConfig(Nico::RtspAnalyser::Libs::Config & config) {
-    cv_motion_history = config.getOpenCvModelHistory();
-    cv_motion_var_threshold = config.getOpenCvModelVarThreshold();
-    cv_motion_detect_shadows = config.getOpenCvModelDetectShadows();
+    cv_motion_history = config.get<int>("opencv_model_history");
+    cv_motion_var_threshold = config.get<int>("opencv_model_var_threshold");
+    cv_motion_detect_shadows = config.get<bool>("opencv_model_detect_shadows");
 
     stop();
 

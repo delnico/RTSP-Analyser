@@ -1,21 +1,27 @@
 #include <thread>
 #include <atomic>
 #include <deque>
+#include <vector>
+#include <iostream>
+#include <fstream>
 
 #include <opencv2/opencv.hpp>
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Analyser/TfHumanDetector.h"
+#include "Nico/RtspAnalyser/Libs/Config.h"
 
 using namespace Nico::RtspAnalyser::Analyser;
 
 TfHumanDetector::TfHumanDetector(
-    std::deque<cv::Mat> & input_frames
+    std::deque<cv::Mat> & input_frames,
+    Nico::RtspAnalyser::Libs::Config & config
 ) :
     isEnabled(false),
     thread(),
     input_frames(input_frames),
-    input_cond()
+    input_cond(),
+    config(config)
 {}
 
 TfHumanDetector::~TfHumanDetector() {
@@ -56,5 +62,15 @@ void TfHumanDetector::detect(cv::Mat frame) {
     // classify frame with MobilenetV2
     // check if contains person
     // if yes, notify MotionManager
+}
+
+void TfHumanDetector::load_model_labels() {
+    // TODO
+    // load labels from file
+    // labels are in the format: "0: person", "1: bicycle", ...
+    // store them in model_labels
+
+    // get file path from config
+    auto labels_file_path = config.get<std::string>("labels_file_path");
 }
 

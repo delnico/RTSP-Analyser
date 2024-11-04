@@ -7,32 +7,32 @@
 #include "Nico/RtspAnalyser/Streamers/Streamer.h"
 #include "Nico/RtspAnalyser/Libs/Logger.h"
 
-namespace Nico {
-    namespace RtspAnalyser {
-        namespace WatchdogLib {
-            class Watchdog {
-                public:
-                    Watchdog() = delete;
-                    Watchdog(
-                        Nico::RtspAnalyser::Streamers::Streamer * streamer,
-                        Nico::RtspAnalyser::Motion::MotionDetector * motionDetector,
-                        Nico::RtspAnalyser::Libs::Logger * logger
-                    );
-                    ~Watchdog();
 
-                    void start();
-                    void stop();
 
-                private:
-                    std::atomic<bool> isEnabled;
-                    std::thread thread;
+namespace Nico::RtspAnalyser::WatchdogLib {
+    class Watchdog {
+        public:
+            Watchdog() = delete;
+            Watchdog(
+                Nico::RtspAnalyser::Streamers::Streamer * streamer,
+                Nico::RtspAnalyser::Motion::MotionDetector * motionDetector,
+                Nico::RtspAnalyser::Libs::Logger * logger
+            );
+            ~Watchdog();
 
-                    Nico::RtspAnalyser::Streamers::Streamer * streamer;
-                    Nico::RtspAnalyser::Motion::MotionDetector * motionDetector;
-                    Nico::RtspAnalyser::Libs::Logger * logger;
+            void start();
+            void stop();
 
-                    void run();
-            };
-        }
-    }
+        private:
+            std::atomic<bool> isEnabled;
+            std::thread thread;
+
+            Nico::RtspAnalyser::Streamers::Streamer * streamer;
+            Nico::RtspAnalyser::Motion::MotionDetector * motionDetector;
+            Nico::RtspAnalyser::Libs::Logger * logger;
+
+            void run();
+    };
 }
+
+

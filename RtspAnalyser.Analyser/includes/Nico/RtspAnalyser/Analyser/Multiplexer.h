@@ -10,46 +10,46 @@
 #include "Nico/RtspAnalyser/Analyser/TfHumanDetector.h"
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
 
-namespace Nico {
-    namespace RtspAnalyser {
-        namespace Analyser {
-            class Multiplexer : public IAnalyser {
-                public:
-                    Multiplexer() = delete;
-                    Multiplexer(
-                        std::deque<cv::Mat> & input_frames
-                    );
-                    ~Multiplexer();
 
-                    void subscribe(OutputStream * output_client);
-                    void unsubscribe(OutputStream * output_client);
 
-                    void start();
-                    void stop();
+namespace Nico::RtspAnalyser::Analyser {
+    class Multiplexer : public IAnalyser {
+        public:
+            Multiplexer() = delete;
+            Multiplexer(
+                std::deque<cv::Mat> & input_frames
+            );
+            ~Multiplexer();
 
-                    void notify() override;
+            void subscribe(OutputStream * output_client);
+            void unsubscribe(OutputStream * output_client);
 
-                    void setTfHumanDetector(TfHumanDetector * tfHumanDetector);
+            void start();
+            void stop();
 
-                    void start_stream_redirect_tensorflow();
-                    void stop_stream_redirect_tensorflow();
+            void notify() override;
 
-                private:
-                    void run();
-                    void multiplex(cv::Mat frame);
+            void setTfHumanDetector(TfHumanDetector * tfHumanDetector);
 
-                    std::atomic<bool> isEnabled;
-                    std::thread thread;
-                    Libs::ConditionalVariable input_cond;
+            void start_stream_redirect_tensorflow();
+            void stop_stream_redirect_tensorflow();
 
-                    std::deque<cv::Mat> & input_frames;
+        private:
+            void run();
+            void multiplex(cv::Mat frame);
 
-                    std::list<OutputStream *> output_clients;
-                    int64_t frame_count;
+            std::atomic<bool> isEnabled;
+            std::thread thread;
+            Libs::ConditionalVariable input_cond;
 
-                    std::atomic<bool> isStreamRedirecting;
-                    TfHumanDetector * tfHumanDetector;
-            };
-        }
-    }
+            std::deque<cv::Mat> & input_frames;
+
+            std::list<OutputStream *> output_clients;
+            int64_t frame_count;
+
+            std::atomic<bool> isStreamRedirecting;
+            TfHumanDetector * tfHumanDetector;
+    };
 }
+
+
