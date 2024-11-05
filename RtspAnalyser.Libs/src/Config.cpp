@@ -59,35 +59,6 @@ Config::Config(const std::string& file) {
     opencv_model_min_area = opencv_model_set["min_area"];
 }
 
-template<typename T>
-T Config::get(const std::string & key) const {
-    if constexpr (std::is_same<T, std::string>::value)
-    {
-        if(key == "nvr_ip") return nvr_ip;
-        if(key == "nvr_user") return nvr_user;
-        if(key == "nvr_password") return nvr_password;
-        if(key == "nvr_protocol") return nvr_protocol;
-        if(key == "log_file_path") return log_file_path;
-    }
-    else if constexpr (std::is_same<T, int>::value)
-    {
-        if(key == "nvr_port") return nvr_port;
-        if(key == "opencv_model_history") return opencv_model_history;
-        if(key == "opencv_model_var_threshold") return opencv_model_var_threshold;
-        if(key == "opencv_model_erode") return opencv_model_erode;
-        if(key == "opencv_model_dilate") return opencv_model_dilate;
-        if(key == "opencv_model_gaussian_size") return opencv_model_gaussian_size;
-        if(key == "opencv_model_gaussian_sigma") return opencv_model_gaussian_sigma;
-        if(key == "opencv_model_min_area") return opencv_model_min_area;
-    }
-    else if constexpr (std::is_same<T, bool>::value)
-    {
-        if(key == "opencv_model_detect_shadows") return opencv_model_detect_shadows;
-    }
-
-    throw std::runtime_error("Unknown key.");
-}
-
 int Config::getHowManyStreams() const {
     return streams.size();
 }
