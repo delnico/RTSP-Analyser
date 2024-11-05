@@ -19,9 +19,9 @@ namespace Nico::RtspAnalyser::Motion {
         MotionManager() = delete;
         MotionManager(
             boost::asio::io_service & boost_io_service,
-            Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events,
+            Libs::ConditionalVariable & cond_events,
             std::chrono::seconds guard_time_new_event,
-            Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer
+            Analyser::Multiplexer * multiplexer
         );
         ~MotionManager();
 
@@ -40,9 +40,9 @@ namespace Nico::RtspAnalyser::Motion {
         std::thread thread;
         std::atomic<bool> isEnabled;
         std::deque<MotionEvent> events;
-        Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events;
+        Libs::ConditionalVariable & cond_events;
         std::chrono::seconds guard_time_new_event;
-        Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer;
+        Analyser::Multiplexer * multiplexer;
     };
 }
 

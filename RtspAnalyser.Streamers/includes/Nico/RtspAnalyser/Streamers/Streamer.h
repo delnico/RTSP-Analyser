@@ -2,10 +2,7 @@
 #pragma once
 
 #include <atomic>
-#include <string>
 #include <deque>
-#include <thread>
-#include <vector>
 #include <memory>
 #include <cstdint>
 
@@ -23,14 +20,14 @@ namespace Nico::RtspAnalyser::Streamers {
         Streamer() = delete;
         Streamer(
             boost::asio::io_service & io_service,
-            const Nico::RtspAnalyser::Libs::Stream & stream,
+            const Libs::Stream & stream,
             std::deque<cv::Mat> & frames
         );
         ~Streamer();
         void start(boost::asio::io_service & io_service);
         void stop();
-        void subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
-        void unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser);
+        void subscribe(Analyser::IAnalyser * analyser);
+        void unsubscribe(Analyser::IAnalyser * analyser);
 
         void watchdog();
 
@@ -41,11 +38,11 @@ namespace Nico::RtspAnalyser::Streamers {
 
         std::atomic<bool> isEnabled;
         boost::asio::deadline_timer timer;
-        Nico::RtspAnalyser::Libs::Stream stream;
+        Libs::Stream stream;
         cv::VideoCapture cap;
         std::deque<cv::Mat> & frames;
 
-        Nico::RtspAnalyser::Analyser::IAnalyser * listener;
+        Analyser::IAnalyser * listener;
     };
 }
 

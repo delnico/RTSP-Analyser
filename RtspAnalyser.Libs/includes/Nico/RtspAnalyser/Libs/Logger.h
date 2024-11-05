@@ -2,14 +2,12 @@
 
 #include <string>
 #include <fstream>
-#include <iostream>
 #include <thread>
 #include <atomic>
 #include <deque>
 
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "Nico/RtspAnalyser/Libs/Spinlock.h"
-
 
 
 namespace Nico::RtspAnalyser::Libs {
@@ -31,8 +29,8 @@ namespace Nico::RtspAnalyser::Libs {
         private:
             void run();
 
-            Nico::RtspAnalyser::Libs::Spinlock slock_logs;
-            Nico::RtspAnalyser::Libs::ConditionalVariable cond;
+            Spinlock slock_logs;
+            ConditionalVariable cond;
             std::deque<std::string> logs;
 
             std::atomic<bool> isEnabled;
@@ -42,4 +40,3 @@ namespace Nico::RtspAnalyser::Libs {
             std::ofstream file;
     };
 }
-

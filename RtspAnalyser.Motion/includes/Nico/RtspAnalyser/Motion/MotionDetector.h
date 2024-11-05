@@ -4,7 +4,6 @@
 #include <list>
 #include <atomic>
 #include <deque>
-#include <vector>
 #include <cstdint>
 
 #include <opencv2/opencv.hpp>
@@ -20,34 +19,34 @@
 
 
 namespace Nico::RtspAnalyser::Motion {
-    class MotionDetector : public Nico::RtspAnalyser::Analyser::IAnalyser {
+    class MotionDetector : public Analyser::IAnalyser {
         public:
             MotionDetector() = delete;
             MotionDetector(
-                Nico::RtspAnalyser::Libs::Config & config,
+                Libs::Config & config,
                 std::deque<cv::Mat> & frames,
                 std::deque<cv::Mat> & fgMasks,
                 int64_t fps
             );
-            ~MotionDetector();
+            ~MotionDetector() override;
 
             void start();
             void stop();
-            void setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer);
+            void setViewer(Analyser::Viewer * viewer);
             void setMotionManager(MotionManager * motionManager);
 
             std::string watchdog();
 
-            void reloadConfig(Nico::RtspAnalyser::Libs::Config & config);
+            void reloadConfig(Libs::Config & config);
 
         private:
-            Nico::RtspAnalyser::Libs::ConditionalVariable cond;
+            Libs::ConditionalVariable cond;
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::list<cv::Rect> zones;
             std::deque<cv::Mat> & frames;
             std::deque<cv::Mat> & fgMasks;
-            Nico::RtspAnalyser::Analyser::Viewer * viewer;
+            Analyser::Viewer * viewer;
             MotionManager * motionManager;
 
             std::atomic<int> cv_motion_history;
@@ -57,7 +56,7 @@ namespace Nico::RtspAnalyser::Motion {
             int64_t ms_one_frame;
             int64_t ms_one_frame_original;
             int64_t fps;
-            Nico::RtspAnalyser::Libs::Spinlock slock_processing_times;
+            Libs::Spinlock slock_processing_times;
             std::deque<int64_t> processing_times;
 
             void run();

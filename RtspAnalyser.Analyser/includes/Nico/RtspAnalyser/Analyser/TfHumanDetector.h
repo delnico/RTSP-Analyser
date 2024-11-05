@@ -22,9 +22,9 @@ namespace Nico::RtspAnalyser::Analyser {
             TfHumanDetector() = delete;
             TfHumanDetector(
                 std::deque<cv::Mat> & input_frames,
-                Nico::RtspAnalyser::Libs::Config & config
+                Libs::Config & config
             );
-            ~TfHumanDetector();
+            ~TfHumanDetector() override;
 
             void start();
             void stop();
@@ -40,8 +40,8 @@ namespace Nico::RtspAnalyser::Analyser {
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::deque<cv::Mat> & input_frames;
-            Nico::RtspAnalyser::Libs::ConditionalVariable input_cond;
-            Nico::RtspAnalyser::Libs::Config & config;
+            Libs::ConditionalVariable input_cond;
+            Libs::Config & config;
 
             std::vector<std::string> model_labels;
     };

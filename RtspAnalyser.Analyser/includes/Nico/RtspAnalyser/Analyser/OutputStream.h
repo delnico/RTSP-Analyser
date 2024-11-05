@@ -8,7 +8,6 @@
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 
 
-
 namespace Nico::RtspAnalyser::Analyser {
     class OutputStream {
         public:
@@ -26,7 +25,7 @@ namespace Nico::RtspAnalyser::Analyser {
             int64_t getFrameSkipping();
 
         private:
-            Nico::RtspAnalyser::Analyser::IAnalyser * output;
+            IAnalyser * output;
             std::deque<cv::Mat> & frames;
             int64_t frame_skipping;
     };

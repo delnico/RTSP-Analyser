@@ -18,7 +18,7 @@ namespace Nico::RtspAnalyser::Analyser {
             Viewer();
             // windowName is can't be empty, can't be with a space, can't be with a tabulation, ...
             Viewer(std::deque<cv::Mat> & frames, std::string windowName = "Viewer");
-            ~Viewer();
+            ~Viewer() override;
             Viewer(const Viewer & other) = delete;
             Viewer & operator=(const Viewer & other) = delete;
             void start();
@@ -26,7 +26,7 @@ namespace Nico::RtspAnalyser::Analyser {
             void notify() override;
 
         private:
-            Nico::RtspAnalyser::Libs::ConditionalVariable cond;
+            Libs::ConditionalVariable cond;
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::deque<cv::Mat> & frames;

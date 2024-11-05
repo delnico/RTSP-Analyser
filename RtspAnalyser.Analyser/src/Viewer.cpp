@@ -41,7 +41,7 @@ void Viewer::stop()
 
 void Viewer::run()
 {
-    cv::namedWindow(windowName, cv::WINDOW_NORMAL);
+    namedWindow(windowName, cv::WINDOW_NORMAL);
     cv::Mat frame;
     while (isEnabled)
     {
@@ -50,7 +50,7 @@ void Viewer::run()
             continue;
         frame = frames.front();
         frames.pop_front();
-        cv::imshow(windowName, frame);
+        imshow(windowName, frame);
         cv::waitKey(1);                 // No pause, scheduled by Streamer thread
     }
     cv::destroyWindow(windowName);

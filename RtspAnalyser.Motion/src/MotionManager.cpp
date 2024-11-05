@@ -15,9 +15,9 @@ using namespace Nico::RtspAnalyser::Motion;
 
 MotionManager::MotionManager(
     boost::asio::io_service & boost_io_service,
-    Nico::RtspAnalyser::Libs::ConditionalVariable & cond_events,
+    Libs::ConditionalVariable & cond_events,
     std::chrono::seconds guard_time_new_event,
-    Nico::RtspAnalyser::Analyser::Multiplexer * multiplexer
+    Analyser::Multiplexer * multiplexer
 ) :
     boost_io_service(boost_io_service),
     timer_stream_redirect_tensorflow(

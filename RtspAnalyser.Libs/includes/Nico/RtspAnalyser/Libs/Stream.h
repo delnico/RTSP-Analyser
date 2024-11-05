@@ -5,7 +5,6 @@
 #include "Nico/RtspAnalyser/Libs/Codec.h"
 
 
-
 namespace Nico::RtspAnalyser::Libs {
     struct Stream {
         std::string url;

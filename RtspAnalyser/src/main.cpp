@@ -41,8 +41,8 @@ int main(int argc, char* argv[])
         ("log,l", boost::program_options::value<std::string>(), "log file");
     
     boost::program_options::variables_map vm;
-    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
-    boost::program_options::notify(vm);
+    store(parse_command_line(argc, argv, desc), vm);
+    notify(vm);
 
     if(vm.count("help")) {
         std::cout << desc << std::endl;

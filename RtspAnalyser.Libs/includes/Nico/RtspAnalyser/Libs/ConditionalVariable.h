@@ -1,11 +1,9 @@
 #pragma once
 
 #include <condition_variable>
-#include <mutex>
 #include <atomic>
 
 #include "Nico/RtspAnalyser/Libs/Spinlock.h"
-
 
 
 namespace Nico::RtspAnalyser::Libs
@@ -19,10 +17,8 @@ namespace Nico::RtspAnalyser::Libs
             void notify();
             void wait();
         private:
-            Nico::RtspAnalyser::Libs::Spinlock spinlock;
+            Spinlock spinlock;
             std::condition_variable_any cond;
             std::atomic<bool> status;
     };
 }
-
-

@@ -10,9 +10,9 @@
 using namespace Nico::RtspAnalyser::WatchdogLib;
 
 Watchdog::Watchdog(
-    Nico::RtspAnalyser::Streamers::Streamer * streamer,
-    Nico::RtspAnalyser::Motion::MotionDetector * motionDetector,
-    Nico::RtspAnalyser::Libs::Logger * logger
+    Streamers::Streamer * streamer,
+    Motion::MotionDetector * motionDetector,
+    Libs::Logger * logger
 ) :
     isEnabled(false),
     thread(),

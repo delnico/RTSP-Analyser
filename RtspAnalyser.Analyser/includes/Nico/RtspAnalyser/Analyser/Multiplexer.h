@@ -19,7 +19,7 @@ namespace Nico::RtspAnalyser::Analyser {
             Multiplexer(
                 std::deque<cv::Mat> & input_frames
             );
-            ~Multiplexer();
+            ~Multiplexer() override;
 
             void subscribe(OutputStream * output_client);
             void unsubscribe(OutputStream * output_client);

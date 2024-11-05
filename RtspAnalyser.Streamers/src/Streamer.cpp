@@ -19,7 +19,7 @@ using namespace Nico::RtspAnalyser::Streamers;
 
 Streamer::Streamer(
     boost::asio::io_service & io_service,
-    const Nico::RtspAnalyser::Libs::Stream & stream,
+    const Libs::Stream & stream,
     std::deque<cv::Mat> & frames
 ) :
     isEnabled(false),
@@ -54,12 +54,12 @@ void Streamer::stop()
     }
 }
 
-void Streamer::subscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
+void Streamer::subscribe(Analyser::IAnalyser * analyser)
 {
     listener = analyser;
 }
 
-void Streamer::unsubscribe(Nico::RtspAnalyser::Analyser::IAnalyser * analyser)
+void Streamer::unsubscribe(Analyser::IAnalyser * analyser)
 {
     listener = nullptr;
 }

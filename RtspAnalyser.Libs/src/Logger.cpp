@@ -75,7 +75,7 @@ void Logger::stop()
 void Logger::log(const std::string & message)
 {
     {
-        std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_logs);
+        std::lock_guard<Spinlock> lock(slock_logs);
         logs.push_back(message);
     }
     cond.notify();
@@ -88,7 +88,7 @@ void Logger::run()
     while(isEnabled.load()) {
         cond.wait();
         {
-            std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_logs);
+            std::lock_guard<Spinlock> lock(slock_logs);
             if(! logs.empty()) {
                 message = logs.front();
                 logs.pop_front();

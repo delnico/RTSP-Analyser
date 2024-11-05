@@ -22,14 +22,12 @@
 using namespace Nico::RtspAnalyser::Motion;
 
 MotionDetector::MotionDetector(
-    Nico::RtspAnalyser::Libs::Config & config,
+    Libs::Config & config,
     std::deque<cv::Mat> & frames,
     std::deque<cv::Mat> & fgMasks,
     int64_t fps
 ) :
-    cond(),
     isEnabled(false),
-    zones(),
     frames(frames),
     fgMasks(fgMasks),
     viewer(nullptr),
@@ -63,7 +61,7 @@ void MotionDetector::stop() {
     }
 }
 
-void MotionDetector::setViewer(Nico::RtspAnalyser::Analyser::Viewer * viewer) {
+void MotionDetector::setViewer(Analyser::Viewer * viewer) {
     this->viewer = viewer;
 }
 
@@ -92,7 +90,7 @@ void MotionDetector::run() {
             frames.pop_front();
         }
         catch(const std::exception & e) {
-            Nico::RtspAnalyser::Libs::Logger::log_main(std::format("MotionDetector::run error : {}", e.what()));
+            Libs::Logger::log_main(std::format("MotionDetector::run error : {}", e.what()));
             continue;
         }
         
@@ -101,8 +99,8 @@ void MotionDetector::run() {
 
         auto start = std::chrono::steady_clock::now();
         
-        cv::resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
-        cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
+        resize(frame, frame, cv::Size(frame.cols / 2, frame.rows / 2));
+        cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
 
         bgSubtractor->apply(frame, fgMask);
         roiMask = cv::Mat::zeros(fgMask.size(), fgMask.type());
@@ -111,13 +109,13 @@ void MotionDetector::run() {
             fgMask(zone).copyTo(roiMask(zone));
 
             // remove small area - noise
-            cv::erode(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
-            cv::dilate(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
+            erode(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
+            dilate(roiMask(zone), roiMask(zone), cv::Mat(), cv::Point(-1, -1), 1);
 
-            cv::GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(5, 5), 0);
+            GaussianBlur(roiMask(zone), roiMask(zone), cv::Size(5, 5), 0);
 
             std::vector<std::vector<cv::Point>> outlines;
-            cv::findContours(roiMask(zone), outlines, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+            findContours(roiMask(zone), outlines, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
 
             if(outlines.size() > 0) {
@@ -126,13 +124,13 @@ void MotionDetector::run() {
 
             if(viewer != nullptr) {
                 for(const auto & outline : outlines) {
-                    cv::Rect rect = cv::boundingRect(outline);
+                    cv::Rect rect = boundingRect(outline);
                     if(rect.area() > 500) {
-                        cv::rectangle(frame, rect, cv::Scalar(0, 0, 255), 2);
+                        rectangle(frame, rect, cv::Scalar(0, 0, 255), 2);
                     }
                 }
 
-                cv::rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);
+                rectangle(frame, zone, cv::Scalar(0, 255, 0), 2);
             }
         }
         
@@ -152,7 +150,7 @@ void MotionDetector::run() {
         auto end = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         {
-            std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_processing_times);
+            std::lock_guard<Libs::Spinlock> lock(slock_processing_times);
             processing_times.push_back(elapsed.count());
         }
     }
@@ -169,7 +167,7 @@ bool MotionDetector::operator==(const MotionDetector & other) const
 
 std::string MotionDetector::watchdog() {
     std::string result = "";
-    std::lock_guard<Nico::RtspAnalyser::Libs::Spinlock> lock(slock_processing_times);
+    std::lock_guard<Libs::Spinlock> lock(slock_processing_times);
     auto size = processing_times.size();
     if(size > fps) {    // > ~ 1s
         int64_t sum = 0;
@@ -199,7 +197,7 @@ std::string MotionDetector::watchdog() {
     return result;
 }
 
-void MotionDetector::reloadConfig(Nico::RtspAnalyser::Libs::Config & config) {
+void MotionDetector::reloadConfig(Libs::Config & config) {
     cv_motion_history = config.get<int>("opencv_model_history");
     cv_motion_var_threshold = config.get<int>("opencv_model_var_threshold");
     cv_motion_detect_shadows = config.get<bool>("opencv_model_detect_shadows");
@@ -208,5 +206,5 @@ void MotionDetector::reloadConfig(Nico::RtspAnalyser::Libs::Config & config) {
 
     start();
 
-    Nico::RtspAnalyser::Libs::Logger::log_main("MotionDetector::reloadConfig : MotionDetector reloaded");
+    Libs::Logger::log_main("MotionDetector::reloadConfig : MotionDetector reloaded");
 }

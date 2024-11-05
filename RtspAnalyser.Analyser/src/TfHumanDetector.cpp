@@ -15,7 +15,7 @@ using namespace Nico::RtspAnalyser::Analyser;
 
 TfHumanDetector::TfHumanDetector(
     std::deque<cv::Mat> & input_frames,
-    Nico::RtspAnalyser::Libs::Config & config
+    Libs::Config & config
 ) :
     isEnabled(false),
     thread(),

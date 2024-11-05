@@ -14,9 +14,9 @@ namespace Nico::RtspAnalyser::WatchdogLib {
         public:
             Watchdog() = delete;
             Watchdog(
-                Nico::RtspAnalyser::Streamers::Streamer * streamer,
-                Nico::RtspAnalyser::Motion::MotionDetector * motionDetector,
-                Nico::RtspAnalyser::Libs::Logger * logger
+                Streamers::Streamer * streamer,
+                Motion::MotionDetector * motionDetector,
+                Libs::Logger * logger
             );
             ~Watchdog();
 
@@ -27,9 +27,9 @@ namespace Nico::RtspAnalyser::WatchdogLib {
             std::atomic<bool> isEnabled;
             std::thread thread;
 
-            Nico::RtspAnalyser::Streamers::Streamer * streamer;
-            Nico::RtspAnalyser::Motion::MotionDetector * motionDetector;
-            Nico::RtspAnalyser::Libs::Logger * logger;
+            Streamers::Streamer * streamer;
+            Motion::MotionDetector * motionDetector;
+            Libs::Logger * logger;
 
             void run();
     };
