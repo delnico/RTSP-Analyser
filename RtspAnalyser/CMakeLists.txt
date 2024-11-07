@@ -24,6 +24,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${OpenCV_LIBS}
     Boost::asio
     Boost::program_options
+    TensorflowCC::TensorflowCC
     RtspAnalyser.Libs
     RtspAnalyser.Streamers
     RtspAnalyser.Analyser

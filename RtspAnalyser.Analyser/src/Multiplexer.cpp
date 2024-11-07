@@ -59,7 +59,7 @@ void Multiplexer::notify() {
     input_cond.notify();
 }
 
-void Multiplexer::setTfHumanDetector(TfHumanDetector * tfHumanDetector) {
+void Multiplexer::setTfHumanDetector(OutputStream * tfHumanDetector) {
     this->tfHumanDetector = tfHumanDetector;
 }
 
@@ -99,10 +99,12 @@ void Multiplexer::multiplex(cv::Mat frame) {
         oc->notify();
     }
     if(tfHumanDetector != nullptr && isStreamRedirecting.load()) {
-        // TODO 
-        // frame skipping
-        // push frame to ts queue
-
+        int64_t frame_skipping = tfHumanDetector->getFrameSkipping();
+        if(frame_skipping > 1) {
+            if(frame_count % frame_skipping != 0)
+                return;
+        }
+        tfHumanDetector->addFrame(frame);
         tfHumanDetector->notify();
     }
 }

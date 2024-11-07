@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.24.0)
 
 project(RtspAnalyser VERSION 0.0.1)
 
-# Compiler flags
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /VERBOSE")
-# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /VERBOSE")
-
 # Set C++20
 set(CMAKE_CXX_STANDARD 20)
 # Link static lib as shared
@@ -16,15 +12,13 @@ set(OpenCV_DIR "/usr/local/lib/cmake/opencv4")
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
+find_package(Threads)
+
 find_package(PkgConfig REQUIRED)
 
 find_package(nlohmann_json CONFIG REQUIRED)
 
-find_package(Threads)
-
-find_package(Boost REQUIRED COMPONENTS asio)
-find_package(Boost REQUIRED COMPONENTS program_options)
-
+find_package(Boost REQUIRED COMPONENTS asio program_options)
 
 find_package(TensorflowCC REQUIRED)
 

@@ -44,6 +44,9 @@ namespace Nico::RtspAnalyser::Libs {
             int opencv_model_gaussian_size;
             int opencv_model_gaussian_sigma;
             int opencv_model_min_area;
+
+            std::string mobilenet_v2_model_path;
+            std::string labels_file_path;
     };
 
     template<typename T>
@@ -56,6 +59,8 @@ namespace Nico::RtspAnalyser::Libs {
             if(key == "nvr_password") return nvr_password;
             if(key == "nvr_protocol") return nvr_protocol;
             if(key == "log_file_path") return log_file_path;
+            if(key == "mobilenet_v2_model_path") return mobilenet_v2_model_path;
+            if(key == "labels_file_path") return labels_file_path;
         }
         else if constexpr (std::is_same<T, int>::value)
         {

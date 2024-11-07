@@ -7,8 +7,8 @@
 
 #include <opencv2/opencv.hpp>
 
-//#include <tensorflow/core/public/session.h>
-//#include <tensorflow/core/platform/env.h>
+#include <tensorflow/core/public/session.h>
+#include <tensorflow/core/platform/env.h>
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
@@ -33,7 +33,7 @@ namespace Nico::RtspAnalyser::Analyser {
 
         private:
             void run();
-            void detect(cv::Mat frame);
+            void detect(cv::Mat & frame);
 
             void load_model_labels();
 
@@ -44,6 +44,11 @@ namespace Nico::RtspAnalyser::Analyser {
             Libs::Config & config;
 
             std::vector<std::string> model_labels;
+            std::string model_path;
+
+            tensorflow::Session * session;
+            tensorflow::Status status;
+            tensorflow::GraphDef graph_def;
     };
 }
 
