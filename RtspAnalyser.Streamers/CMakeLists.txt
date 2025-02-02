@@ -27,6 +27,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         ${OpenCV_LIBS}
         Boost::asio
+        fmt::fmt
         RtspAnalyser.Libs
         RtspAnalyser.Analyser
     PUBLIC

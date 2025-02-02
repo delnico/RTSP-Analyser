@@ -7,6 +7,9 @@
       },
       {
         "name" : "boost-asio"
+      },
+      {
+        "name" : "fmt"
       }
     ]
   }

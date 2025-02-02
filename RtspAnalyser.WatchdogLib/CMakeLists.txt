@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME}
         ${OpenCV_LIBS}
         Boost::asio
         TensorflowCC::TensorflowCC
+        fmt::fmt
         RtspAnalyser.Analyser
         RtspAnalyser.Motion
         RtspAnalyser.Streamers

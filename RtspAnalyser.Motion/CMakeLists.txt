@@ -32,6 +32,7 @@ target_link_libraries(${PROJECT_NAME}
         TensorflowCC::TensorflowCC
         RtspAnalyser.Libs
         RtspAnalyser.Analyser
+        fmt::fmt
     PUBLIC
         Threads::Threads
 )

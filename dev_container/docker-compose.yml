@@ -1,0 +1,28 @@
+
+services:
+  rtspanalyser-dev:
+    image: ubuntu:22.04
+    container_name: rtspanalyser-dev
+    build:
+      context: .
+    ports:
+      - "2222:22" # Redirection du port 22 pour SSH
+    volumes:
+      - ../:/workdir
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
+      - TZ=Europe/Paris
+      #- NVIDIA_VISIBLE_DEVICES=all
+      #- NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: 1
+#              capabilities: [gpu]
+#    #runtime: nvidia
+    privileged: true
+    stdin_open: true
+    tty: true

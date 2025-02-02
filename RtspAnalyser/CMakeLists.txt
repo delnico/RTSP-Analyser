@@ -25,6 +25,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Boost::asio
     Boost::program_options
     TensorflowCC::TensorflowCC
+    fmt::fmt
     RtspAnalyser.Libs
     RtspAnalyser.Streamers
     RtspAnalyser.Analyser

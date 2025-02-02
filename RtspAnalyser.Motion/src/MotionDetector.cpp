@@ -6,12 +6,13 @@
 #include <vector>
 #include <cstdint>
 #include <cmath>
-#include <format>
 #include <chrono>
 #include <cmath>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/bgsegm.hpp>
+
+#include <fmt/core.h>
 
 #include "Nico/RtspAnalyser/Analyser/Viewer.h"
 #include "Nico/RtspAnalyser/Libs/Config.h"
@@ -90,7 +91,7 @@ void MotionDetector::run() {
             frames.pop_front();
         }
         catch(const std::exception & e) {
-            Libs::Logger::log_main(std::format("MotionDetector::run error : {}", e.what()));
+            Libs::Logger::log_main(fmt::format("MotionDetector::run error : {}", e.what()));
             continue;
         }
         
@@ -192,7 +193,7 @@ std::string MotionDetector::watchdog() {
         }*/
         processing_times.clear();
         // result = std::format("WATCHDOG : MotionDetector : Frame skipping at {}, frame ms at {}, max = {}, ratio = {} ratioround = {}", frame_skipping, ms_one_frame, max, ratio, ratioround);
-        result = std::format("WATCHDOG : MotionDetector : max = {}", max);
+        result = fmt::format("WATCHDOG : MotionDetector : max = {}", max);
     }
     return result;
 }

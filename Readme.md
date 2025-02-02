@@ -15,6 +15,7 @@ Make lightweight to be execute on RPI 4.
 - Boost
 - Boost Asio
 - TensorFlow CC
+- fmt
 
 ## Raspberry Pi 4 --> Ubuntu 24.04.1 LTS
 
@@ -37,7 +38,22 @@ vulkaninfo
 ### Compiler, ...
 
 ```bash
-sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-config autoconf automake libtool bison meson autoconf-archive
+sudo apt install -y git wget curl build-essential make cmake ninja-build pkg-config autoconf automake libtool bison meson autoconf-archive libc++-dev
+```
+
+### CMake
+
+```bash
+sudo apt-get install libssl-dev
+
+wget https://github.com/Kitware/CMake/releases/download/v3.31.5/cmake-3.31.5.tar.gz
+tar -xzvf cmake-3.31.5.tar.gz
+cd cmake-3.31.5
+./bootstrap
+make -j$(nproc)
+sudo make install
+
+cmake --version
 ```
 
 ### Bazel
@@ -67,7 +83,7 @@ libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264
 gfortran openexr libatlas-base-dev python3-dev python3-numpy libtbb12 libtbb-dev libdc1394-25 libdc1394-dev libopenexr-dev \
 libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev ocl-icd-opencl-dev libvulkan-dev libglew-dev ocl-icd-dev
 
-sudo apt install -y git python3 python3-pip python3-dev
+sudo apt install -y python3 python3-pip python3-dev
 pip install --break-system-packages numpy
 ```
 
@@ -112,6 +128,19 @@ mkdir opencvlib && cd opencvlib
 git clone https://github.com/opencv/opencv.git
 git clone https://github.com/opencv/opencv_contrib.git
 mkdir build && cd build
+
+# on x86_64 arch
+cmake \
+  -D WITH_GTK=ON \
+  -D WITH_OPENCL=ON \
+  -D WITH_VULKAN=ON \
+  -D WITH_OPENGL=ON \
+  -D WITH_TBB=ON \
+  -D BUILD_EXAMPLES=OFF \
+  -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
+  ../opencv
+
+# on ARM arch
 cmake \
   -D ENABLE_NEON=ON \
   -D WITH_GTK=ON \
@@ -122,6 +151,8 @@ cmake \
   -D BUILD_EXAMPLES=OFF \
   -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
   ../opencv
+
+
 cmake --build . -j $(nproc)
 sudo make install
 sudo ldconfig
@@ -152,11 +183,18 @@ mkdir build && cd build
 
 export CC=/usr/bin/gcc-11
 export CXX=/usr/bin/g++-11
+
+# for arm build
 export CC_OPT_FLAGS="-march=native"
 
-cmake -DLOCAL_RAM_RESOURCES=2048 -DLOCAL_CPU_RESOURCES=1 ..
+# on x86_64 arch
+cmake ..
+make -j $(nproc)
 
+# on arm arch
+cmake -DLOCAL_RAM_RESOURCES=2048 -DLOCAL_CPU_RESOURCES=1 ..
 make
+
 sudo make install
 sudo ldconfig
 ```

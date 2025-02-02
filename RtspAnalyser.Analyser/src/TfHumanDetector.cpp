@@ -39,7 +39,7 @@ void TfHumanDetector::start() {
             throw std::runtime_error("Could not create tensorflow session");
         status = tensorflow::ReadBinaryProto(tensorflow::Env::Default(), model_path, &graph_def);
         if(! status.ok())
-            throw std::runtime_error("Could not read model file");
+            throw std::runtime_error("Could not read model file : \n \t" + status.error_message());
         status = session->Create(graph_def);
         if(! status.ok())
             throw std::runtime_error("Could not create graph");
