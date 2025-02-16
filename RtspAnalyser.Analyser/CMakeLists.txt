@@ -6,7 +6,6 @@ set(SOURCES
     src/IAnalyser.cpp
     src/Multiplexer.cpp
     src/OutputStream.cpp
-    src/TfHumanDetector.cpp
     src/Viewer.cpp
 )
 
@@ -14,7 +13,6 @@ set(INCLUDES
     includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
     includes/Nico/RtspAnalyser/Analyser/Multiplexer.h
     includes/Nico/RtspAnalyser/Analyser/OutputStream.h
-    includes/Nico/RtspAnalyser/Analyser/TfHumanDetector.h
     includes/Nico/RtspAnalyser/Analyser/Viewer.h
 )
 
@@ -32,7 +30,6 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         ${OpenCV_LIBS}
-        TensorflowCC::TensorflowCC
         fmt::fmt
         RtspAnalyser.Libs
     PUBLIC

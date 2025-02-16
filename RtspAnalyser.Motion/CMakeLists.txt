@@ -29,7 +29,6 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         ${OpenCV_LIBS}
         Boost::asio
-        TensorflowCC::TensorflowCC
         RtspAnalyser.Libs
         RtspAnalyser.Analyser
         fmt::fmt

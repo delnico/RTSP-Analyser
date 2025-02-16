@@ -23,8 +23,7 @@ Multiplexer::Multiplexer(
     input_frames(input_frames),
     output_clients(),
     frame_count(0),
-    isStreamRedirecting(false),
-    tfHumanDetector(nullptr)
+    isStreamRedirecting(false)
 {}
 
 
@@ -57,10 +56,6 @@ void Multiplexer::stop() {
 
 void Multiplexer::notify() {
     input_cond.notify();
-}
-
-void Multiplexer::setTfHumanDetector(OutputStream * tfHumanDetector) {
-    this->tfHumanDetector = tfHumanDetector;
 }
 
 void Multiplexer::start_stream_redirect_tensorflow() {
@@ -98,13 +93,12 @@ void Multiplexer::multiplex(cv::Mat frame) {
         oc->addFrame(frame);
         oc->notify();
     }
-    if(tfHumanDetector != nullptr && isStreamRedirecting.load()) {
-        int64_t frame_skipping = tfHumanDetector->getFrameSkipping();
+    if(isStreamRedirecting.load()) {
+        int64_t frame_skipping = 0; // get value
         if(frame_skipping > 1) {
             if(frame_count % frame_skipping != 0)
                 return;
         }
-        tfHumanDetector->addFrame(frame);
-        tfHumanDetector->notify();
+        // redirect stream to analysis
     }
 }

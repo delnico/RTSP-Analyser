@@ -7,7 +7,6 @@
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Analyser/OutputStream.h"
-#include "Nico/RtspAnalyser/Analyser/TfHumanDetector.h"
 #include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
 
 
@@ -29,8 +28,6 @@ namespace Nico::RtspAnalyser::Analyser {
 
             void notify() override;
 
-            void setTfHumanDetector(OutputStream * tfHumanDetector);
-
             void start_stream_redirect_tensorflow();
             void stop_stream_redirect_tensorflow();
 
@@ -48,7 +45,6 @@ namespace Nico::RtspAnalyser::Analyser {
             int64_t frame_count;
 
             std::atomic<bool> isStreamRedirecting;
-            OutputStream * tfHumanDetector;
     };
 }
 

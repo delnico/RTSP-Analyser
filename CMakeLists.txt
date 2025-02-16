@@ -25,8 +25,6 @@ find_package(nlohmann_json CONFIG REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS asio program_options)
 
-find_package(TensorflowCC REQUIRED)
-
 find_package(fmt CONFIG REQUIRED)
 
 # Add Libraries

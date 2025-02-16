@@ -14,7 +14,6 @@ Make lightweight to be execute on RPI 4.
 - Niels Lohmann JSON
 - Boost
 - Boost Asio
-- TensorFlow CC
 - fmt
 
 ## Raspberry Pi 4 --> Ubuntu 24.04.1 LTS
@@ -159,44 +158,6 @@ sudo ldconfig
 
 # verify with
 python3 -c "import cv2; print(cv2.getBuildInformation())"
-```
-
-### TensorFlow CC
-
-Thanks to [https://github.com/FloopCZ/tensorflow_cc](https://github.com/FloopCZ/tensorflow_cc)
-
-```bash
-sudo apt install g++-11
-cd ~/libs
-
-git clone https://github.com/FloopCZ/tensorflow_cc.git
-cd tensorflow_cc/tensorflow_cc/
-
-# if you dev on a machine with Cuda tools installed but we didn't need in our case
-# the goal is to compile on a Raspberry
-# we modify the CMakeLists.txt
-# change " option(ALLOW_CUDA "Try to find and use CUDA." ON) "
-# to " option(ALLOW_CUDA "Try to find and use CUDA." OFF) "
-# That will disable Cuda support for TensorFlow
-
-mkdir build && cd build
-
-export CC=/usr/bin/gcc-11
-export CXX=/usr/bin/g++-11
-
-# for arm build
-export CC_OPT_FLAGS="-march=native"
-
-# on x86_64 arch
-cmake ..
-make -j $(nproc)
-
-# on arm arch
-cmake -DLOCAL_RAM_RESOURCES=2048 -DLOCAL_CPU_RESOURCES=1 ..
-make
-
-sudo make install
-sudo ldconfig
 ```
 
 ## TO DO
