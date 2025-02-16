@@ -67,14 +67,14 @@ void MotionManager::run() {
             )
         );
         timer_stream_redirect_tensorflow.async_wait(
-            boost::bind(&MotionManager::stop_stream_redirect_tensorflow, this)
+            boost::bind(&MotionManager::stop_stream_redirect_human_detector, this)
         );
 
-        multiplexer->start_stream_redirect_tensorflow();
+        multiplexer->start_stream_redirect_human_detector();
     }
 }
 
-void MotionManager::stop_stream_redirect_tensorflow() {
+void MotionManager::stop_stream_redirect_human_detector() {
     timer_stream_redirect_tensorflow.cancel();
-    multiplexer->stop_stream_redirect_tensorflow();
+    multiplexer->stop_stream_redirect_human_detector();
 }

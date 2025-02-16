@@ -33,7 +33,7 @@ namespace Nico::RtspAnalyser::Motion {
     private:
         void run();
 
-        void stop_stream_redirect_tensorflow();
+        void stop_stream_redirect_human_detector();
 
         boost::asio::io_service & boost_io_service;
         boost::asio::deadline_timer timer_stream_redirect_tensorflow;

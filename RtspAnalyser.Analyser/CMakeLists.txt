@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.13.4)
 project(RtspAnalyser.Analyser VERSION 0.0.1)
 
 set(SOURCES
+    src/HumanDetector.cpp
     src/IAnalyser.cpp
     src/Multiplexer.cpp
     src/OutputStream.cpp
@@ -10,6 +11,7 @@ set(SOURCES
 )
 
 set(INCLUDES
+    includes/Nico/RtspAnalyser/Analyser/HumanDetector.h
     includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
     includes/Nico/RtspAnalyser/Analyser/Multiplexer.h
     includes/Nico/RtspAnalyser/Analyser/OutputStream.h

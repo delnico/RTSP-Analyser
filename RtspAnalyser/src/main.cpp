@@ -13,6 +13,7 @@
 #include "Nico/RtspAnalyser/Libs/Stream.h"
 #include "Nico/RtspAnalyser/Libs/Codec.h"
 #include "Nico/RtspAnalyser/Streamers/Streamer.h"
+#include "Nico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "Nico/RtspAnalyser/Analyser/Multiplexer.h"
 #include "Nico/RtspAnalyser/Analyser/OutputStream.h"
 #include "Nico/RtspAnalyser/Analyser/Viewer.h"
@@ -70,7 +71,7 @@ int main(int argc, char* argv[])
     stream.codec = conf.getStreamCodec(0);
     stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
 
-    std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks;
+    std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks, human_detect_frames;
 
     Logger logger(logFile);
     logger.start();
@@ -97,9 +98,13 @@ int main(int argc, char* argv[])
 
     OutputStream os_viewer(&viewer, viewer_frames, 1);
     OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 3);
+    OutputStream os_human_detector(&motionDetector, human_detect_frames, 3);
+
+    HumanDetector humanDetector(human_detect_frames);
 
     multiplexer.subscribe(&os_viewer);
     multiplexer.subscribe(&os_motiondetector);
+    multiplexer.set_stream_redirect_client(&os_human_detector);
 
     multiplexer.start();
 
@@ -116,6 +121,7 @@ int main(int argc, char* argv[])
     viewerFgMasks.start();
 
     motionDetector.start();
+    humanDetector.start();
     streamer.start(boost_io_service);
 
     std::thread boost_io_thread(
@@ -144,6 +150,7 @@ int main(int argc, char* argv[])
 
     streamer.stop();
     motionDetector.stop();
+    humanDetector.stop();
     viewer.stop();
     viewerFgMasks.stop();
 

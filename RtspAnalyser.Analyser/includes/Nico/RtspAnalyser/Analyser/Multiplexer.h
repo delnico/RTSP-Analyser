@@ -28,8 +28,9 @@ namespace Nico::RtspAnalyser::Analyser {
 
             void notify() override;
 
-            void start_stream_redirect_tensorflow();
-            void stop_stream_redirect_tensorflow();
+            void start_stream_redirect_human_detector();
+            void stop_stream_redirect_human_detector();
+            void set_stream_redirect_client(OutputStream * stream_redirect_client);
 
         private:
             void run();
@@ -44,7 +45,8 @@ namespace Nico::RtspAnalyser::Analyser {
             std::list<OutputStream *> output_clients;
             int64_t frame_count;
 
-            std::atomic<bool> isStreamRedirecting;
+            std::atomic<bool> is_stream_redirecting;
+            OutputStream * stream_redirect_client;
     };
 }
 

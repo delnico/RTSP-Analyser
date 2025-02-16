@@ -23,7 +23,8 @@ Multiplexer::Multiplexer(
     input_frames(input_frames),
     output_clients(),
     frame_count(0),
-    isStreamRedirecting(false)
+    is_stream_redirecting(false),
+    stream_redirect_client(nullptr)
 {}
 
 
@@ -58,12 +59,16 @@ void Multiplexer::notify() {
     input_cond.notify();
 }
 
-void Multiplexer::start_stream_redirect_tensorflow() {
-    isStreamRedirecting.store(true);
+void Multiplexer::start_stream_redirect_human_detector() {
+    is_stream_redirecting.store(true);
 }
 
-void Multiplexer::stop_stream_redirect_tensorflow() {
-    isStreamRedirecting.store(false);
+void Multiplexer::stop_stream_redirect_human_detector() {
+    is_stream_redirecting.store(false);
+}
+
+void Multiplexer::set_stream_redirect_client(OutputStream * stream_redirect_client) {
+    stream_redirect_client = stream_redirect_client;
 }
 
 void Multiplexer::run() {
@@ -93,12 +98,13 @@ void Multiplexer::multiplex(cv::Mat frame) {
         oc->addFrame(frame);
         oc->notify();
     }
-    if(isStreamRedirecting.load()) {
-        int64_t frame_skipping = 0; // get value
+    if(stream_redirect_client != nullptr && is_stream_redirecting.load()) {
+        int64_t frame_skipping = stream_redirect_client->getFrameSkipping();
         if(frame_skipping > 1) {
             if(frame_count % frame_skipping != 0)
                 return;
         }
-        // redirect stream to analysis
+        stream_redirect_client->addFrame(frame);
+        stream_redirect_client->notify();
     }
 }
