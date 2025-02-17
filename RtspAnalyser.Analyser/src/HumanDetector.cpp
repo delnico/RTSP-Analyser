@@ -4,11 +4,12 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "Nico/RtspAnalyser/Analyser/HumanDetector.h"
-#include "Nico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
+#include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
 
-using namespace Nico::RtspAnalyser::Analyser;
+using namespace DelNico::RtspAnalyser::Analyser;
+using namespace DelNico::RtspAnalyser::Libs;
 
 HumanDetector::HumanDetector(std::deque<cv::Mat> & frames) :
     cond(),

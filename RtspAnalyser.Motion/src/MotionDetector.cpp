@@ -14,13 +14,13 @@
 
 #include <fmt/core.h>
 
-#include "Nico/RtspAnalyser/Analyser/Viewer.h"
-#include "Nico/RtspAnalyser/Libs/Config.h"
-#include "Nico/RtspAnalyser/Libs/Logger.h"
-#include "Nico/RtspAnalyser/Motion/MotionDetector.h"
-#include "Nico/RtspAnalyser/Motion/MotionManager.h"
+#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Libs/Config.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 
-using namespace Nico::RtspAnalyser::Motion;
+using namespace DelNico::RtspAnalyser::Motion;
 
 MotionDetector::MotionDetector(
     Libs::Config & config,

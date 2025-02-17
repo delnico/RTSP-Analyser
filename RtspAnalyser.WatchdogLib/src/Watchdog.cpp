@@ -2,12 +2,12 @@
 #include <atomic>
 #include <chrono>
 
-#include "Nico/RtspAnalyser/WatchdogLib/Watchdog.h"
-#include "Nico/RtspAnalyser/Motion/MotionDetector.h"
-#include "Nico/RtspAnalyser/Streamers/Streamer.h"
-#include "Nico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
+#include "DelNico/RtspAnalyser/Streamers/Streamer.h"
+#include "DelNico/RtspAnalyser/WatchdogLib/Watchdog.h"
 
-using namespace Nico::RtspAnalyser::WatchdogLib;
+using namespace DelNico::RtspAnalyser::WatchdogLib;
 
 Watchdog::Watchdog(
     Streamers::Streamer * streamer,

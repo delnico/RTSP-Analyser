@@ -7,7 +7,7 @@ set(SOURCES
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/WatchdogLib/Watchdog.h
+    includes/DelNico/RtspAnalyser/WatchdogLib/Watchdog.h
 )
 
 add_library(${PROJECT_NAME}

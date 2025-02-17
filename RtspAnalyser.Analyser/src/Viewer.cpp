@@ -4,10 +4,10 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "Nico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
+#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
 
-using namespace Nico::RtspAnalyser::Analyser;
+using namespace DelNico::RtspAnalyser::Analyser;
 
 Viewer::Viewer(std::deque<cv::Mat> & frames, std::string windowName) :
     cond(),

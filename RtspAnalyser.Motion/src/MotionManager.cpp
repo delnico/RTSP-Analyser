@@ -6,12 +6,12 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 
-#include "Nico/RtspAnalyser/Analyser/Multiplexer.h"
-#include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
-#include "Nico/RtspAnalyser/Motion/MotionEvent.h"
-#include "Nico/RtspAnalyser/Motion/MotionManager.h"
+#include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
+#include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 
-using namespace Nico::RtspAnalyser::Motion;
+using namespace DelNico::RtspAnalyser::Motion;
 
 MotionManager::MotionManager(
     boost::asio::io_service & boost_io_service,

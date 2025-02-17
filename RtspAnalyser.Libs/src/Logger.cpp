@@ -6,12 +6,12 @@
 #include <deque>
 #include <chrono>
 
-#include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
-#include "Nico/RtspAnalyser/Libs/Spinlock.h"
+#include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 
-#include "Nico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
 
-using namespace Nico::RtspAnalyser::Libs;
+using namespace DelNico::RtspAnalyser::Libs;
 
 Logger * Logger::main_logger = nullptr;
 

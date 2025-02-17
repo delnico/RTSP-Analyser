@@ -3,10 +3,10 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "Nico/RtspAnalyser/Analyser/OutputStream.h"
+#include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
+#include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
 
-using namespace Nico::RtspAnalyser::Analyser;
+using namespace DelNico::RtspAnalyser::Analyser;
 
 OutputStream::OutputStream(
     IAnalyser * output,

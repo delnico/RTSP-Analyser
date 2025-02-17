@@ -11,11 +11,11 @@ set(SOURCES
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/Analyser/HumanDetector.h
-    includes/Nico/RtspAnalyser/Analyser/IAnalyser.h
-    includes/Nico/RtspAnalyser/Analyser/Multiplexer.h
-    includes/Nico/RtspAnalyser/Analyser/OutputStream.h
-    includes/Nico/RtspAnalyser/Analyser/Viewer.h
+    includes/DelNico/RtspAnalyser/Analyser/HumanDetector.h
+    includes/DelNico/RtspAnalyser/Analyser/IAnalyser.h
+    includes/DelNico/RtspAnalyser/Analyser/Multiplexer.h
+    includes/DelNico/RtspAnalyser/Analyser/OutputStream.h
+    includes/DelNico/RtspAnalyser/Analyser/Viewer.h
 )
 
 add_library(${PROJECT_NAME}

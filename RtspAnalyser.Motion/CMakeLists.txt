@@ -9,9 +9,9 @@ set(SOURCES
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/Motion/MotionDetector.h
-    includes/Nico/RtspAnalyser/Motion/MotionEvent.h
-    includes/Nico/RtspAnalyser/Motion/MotionManager.h
+    includes/DelNico/RtspAnalyser/Motion/MotionDetector.h
+    includes/DelNico/RtspAnalyser/Motion/MotionEvent.h
+    includes/DelNico/RtspAnalyser/Motion/MotionManager.h
 )
 
 add_library(${PROJECT_NAME}

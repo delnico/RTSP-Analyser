@@ -1,8 +1,8 @@
 #include <atomic>
 
-#include "Nico/RtspAnalyser/Libs/Spinlock.h"
+#include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 
-using namespace Nico::RtspAnalyser::Libs;
+using namespace DelNico::RtspAnalyser::Libs;
 
 Spinlock::Spinlock() :
     flag(ATOMIC_FLAG_INIT)

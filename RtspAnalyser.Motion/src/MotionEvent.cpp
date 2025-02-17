@@ -1,9 +1,9 @@
 #include <cstdint>
 #include <chrono>
 
-#include "Nico/RtspAnalyser/Motion/MotionEvent.h"
+#include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
 
-using namespace Nico::RtspAnalyser::Motion;
+using namespace DelNico::RtspAnalyser::Motion;
 
 MotionEvent::MotionEvent() :
     start_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()),

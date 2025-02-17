@@ -8,26 +8,26 @@
 #include <boost/program_options.hpp>
 #include <boost/asio.hpp>
 
-#include "Nico/RtspAnalyser/RtspAnalyser.h"
-#include "Nico/RtspAnalyser/Libs/Config.h"
-#include "Nico/RtspAnalyser/Libs/Stream.h"
-#include "Nico/RtspAnalyser/Libs/Codec.h"
-#include "Nico/RtspAnalyser/Streamers/Streamer.h"
-#include "Nico/RtspAnalyser/Analyser/HumanDetector.h"
-#include "Nico/RtspAnalyser/Analyser/Multiplexer.h"
-#include "Nico/RtspAnalyser/Analyser/OutputStream.h"
-#include "Nico/RtspAnalyser/Analyser/Viewer.h"
-#include "Nico/RtspAnalyser/Motion/MotionDetector.h"
+#include "DelNico/RtspAnalyser/RtspAnalyser.h"
+#include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
+#include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
+#include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
+#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Libs/Config.h"
+#include "DelNico/RtspAnalyser/Libs/Stream.h"
+#include "DelNico/RtspAnalyser/Libs/Codec.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
+#include "DelNico/RtspAnalyser/Streamers/Streamer.h"
+#include "DelNico/RtspAnalyser/WatchdogLib/Watchdog.h"
 
-#include "Nico/RtspAnalyser/WatchdogLib/Watchdog.h"
-#include "Nico/RtspAnalyser/Libs/Logger.h"
+using namespace DelNico::RtspAnalyser;
+using namespace DelNico::RtspAnalyser::Analyser;
+using namespace DelNico::RtspAnalyser::Libs;
+using namespace DelNico::RtspAnalyser::Motion;
+using namespace DelNico::RtspAnalyser::Streamers;
+using namespace DelNico::RtspAnalyser::WatchdogLib;
 
-using namespace Nico::RtspAnalyser;
-using namespace Nico::RtspAnalyser::Libs;
-using namespace Nico::RtspAnalyser::Streamers;
-using namespace Nico::RtspAnalyser::Analyser;
-using namespace Nico::RtspAnalyser::Motion;
-using namespace Nico::RtspAnalyser::WatchdogLib;
 
 int main(int argc, char* argv[])
 {

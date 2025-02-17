@@ -1,10 +1,10 @@
 #include <atomic>
 #include <memory>
 
-#include "Nico/RtspAnalyser/Libs/ConditionalVariable.h"
-#include "Nico/RtspAnalyser/Libs/Spinlock.h"
+#include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 
-using namespace Nico::RtspAnalyser::Libs;
+using namespace DelNico::RtspAnalyser::Libs;
 
 ConditionalVariable::ConditionalVariable() :
     status(false)

@@ -10,11 +10,11 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 
-#include "Nico/RtspAnalyser/Streamers/Streamer.h"
-#include "Nico/RtspAnalyser/Libs/Stream.h"
-#include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
+#include "DelNico/RtspAnalyser/Streamers/Streamer.h"
+#include "DelNico/RtspAnalyser/Libs/Stream.h"
+#include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 
-using namespace Nico::RtspAnalyser::Streamers;
+using namespace DelNico::RtspAnalyser::Streamers;
 
 
 Streamer::Streamer(

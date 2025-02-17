@@ -2,11 +2,11 @@
 #include <stdexcept>
 #include <nlohmann/json.hpp>
 
-#include "Nico/RtspAnalyser/Libs/Config.h"
-#include "Nico/RtspAnalyser/Libs/Codec.h"
-#include "Nico/RtspAnalyser/Libs/Stream.h"
+#include "DelNico/RtspAnalyser/Libs/Config.h"
+#include "DelNico/RtspAnalyser/Libs/Codec.h"
+#include "DelNico/RtspAnalyser/Libs/Stream.h"
 
-using namespace Nico::RtspAnalyser::Libs;
+using namespace DelNico::RtspAnalyser::Libs;
 using json = nlohmann::json;
 using namespace std;
 

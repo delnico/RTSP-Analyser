@@ -7,7 +7,7 @@ set(SOURCES
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/Streamers/Streamer.h
+    includes/DelNico/RtspAnalyser/Streamers/Streamer.h
 )
 
 add_library(${PROJECT_NAME}

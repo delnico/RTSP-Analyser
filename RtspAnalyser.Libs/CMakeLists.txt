@@ -10,12 +10,12 @@ set(SOURCES
 )
 
 set(INCLUDES
-    includes/Nico/RtspAnalyser/Libs/Codec.h
-    includes/Nico/RtspAnalyser/Libs/ConditionalVariable.h
-    includes/Nico/RtspAnalyser/Libs/Config.h
-    includes/Nico/RtspAnalyser/Libs/Logger.h
-    includes/Nico/RtspAnalyser/Libs/Spinlock.h
-    includes/Nico/RtspAnalyser/Libs/Stream.h
+    includes/DelNico/RtspAnalyser/Libs/Codec.h
+    includes/DelNico/RtspAnalyser/Libs/ConditionalVariable.h
+    includes/DelNico/RtspAnalyser/Libs/Config.h
+    includes/DelNico/RtspAnalyser/Libs/Logger.h
+    includes/DelNico/RtspAnalyser/Libs/Spinlock.h
+    includes/DelNico/RtspAnalyser/Libs/Stream.h
 )
 
 add_library(${PROJECT_NAME}
