@@ -19,6 +19,8 @@
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManagerCaller.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManagerCalling.h"
 
 using namespace DelNico::RtspAnalyser::Motion;
 
@@ -139,7 +141,7 @@ void MotionDetector::run() {
         if(motionDetected) {
             // trigger event to MotionManager thread
             if(motionManager != nullptr) {
-                motionManager->notify();
+                motionManager->notify(MotionManagerCalling(MotionManagerCaller::MOTION_DETECTOR, false));
             }
         }
 

@@ -9,7 +9,9 @@
 
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManagerCalling.h"
 
 
 
@@ -28,10 +30,12 @@ namespace DelNico::RtspAnalyser::Motion {
         void start();
         void stop();
 
-        void notify();
+        void notify(MotionManagerCalling motionManagerCalling);
 
     private:
         void run();
+        void run_called_by_motion_detector();
+        void run_called_by_human_detector();
 
         void stop_stream_redirect_human_detector();
 
@@ -43,6 +47,8 @@ namespace DelNico::RtspAnalyser::Motion {
         Libs::ConditionalVariable & cond_events;
         std::chrono::seconds guard_time_new_event;
         Analyser::Multiplexer * multiplexer;
+        std::deque<MotionManagerCalling> motionManagerCallings;
+        Libs::Spinlock slock_motionManagerCallings;
     };
 }
 

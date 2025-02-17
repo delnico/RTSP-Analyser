@@ -7,8 +7,8 @@ left to right direction
 "Streamer" --> "MotionDetector"
 "MotionDetector" --> "MotionManager"
 "Streamer" --> "MotionManager"
-"MotionManager" --> "TSHumanDetector"
-"TSHumanDetector" --> "MotionManager"
+"MotionManager" --> "HumanDetector"
+"HumanDetector" --> "MotionManager"
 "MotionManager" --> "TriggerAlert"
 
 @enduml

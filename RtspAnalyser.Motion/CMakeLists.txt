@@ -6,12 +6,15 @@ set(SOURCES
     src/MotionDetector.cpp
     src/MotionEvent.cpp
     src/MotionManager.cpp
+    src/MotionManagerCalling.cpp
 )
 
 set(INCLUDES
     includes/DelNico/RtspAnalyser/Motion/MotionDetector.h
     includes/DelNico/RtspAnalyser/Motion/MotionEvent.h
     includes/DelNico/RtspAnalyser/Motion/MotionManager.h
+    includes/DelNico/RtspAnalyser/Motion/MotionManagerCaller.h
+    includes/DelNico/RtspAnalyser/Motion/MotionManagerCalling.h
 )
 
 add_library(${PROJECT_NAME}
