@@ -163,8 +163,7 @@ python3 -c "import cv2; print(cv2.getBuildInformation())"
 ## TO DO
 
 - Test & Impl Mouvement detectection                Testing
-- Test & Impl Tensorflow Lite human detection  
-  via image classification thanks to MobilNetv2
+- Test & Impl Human detection                       Dev
 - Impl SMTP client to send e-mail
 - Use JSON for config file                          OK
 - ...

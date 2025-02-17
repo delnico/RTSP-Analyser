@@ -36,7 +36,7 @@ namespace Nico::RtspAnalyser::Motion {
         void stop_stream_redirect_human_detector();
 
         boost::asio::io_service & boost_io_service;
-        boost::asio::deadline_timer timer_stream_redirect_tensorflow;
+        boost::asio::deadline_timer timer_stream_redirect_human_detection;
         std::thread thread;
         std::atomic<bool> isEnabled;
         std::deque<MotionEvent> events;

@@ -6,6 +6,7 @@
 
 #include "Nico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "Nico/RtspAnalyser/Analyser/HumanDetector.h"
+#include "Nico/RtspAnalyser/Libs/Logger.h"
 
 using namespace Nico::RtspAnalyser::Analyser;
 
@@ -54,7 +55,7 @@ void HumanDetector::run()
         result = isHumanDetected(frame, true);
         if(std::get<0>(result))
         {
-            std::cout << "Human detected" << std::endl;
+            Logger::log_main("HumanDetector : detected");
             // Do something
         }
     }

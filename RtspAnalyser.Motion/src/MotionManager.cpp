@@ -20,7 +20,7 @@ MotionManager::MotionManager(
     Analyser::Multiplexer * multiplexer
 ) :
     boost_io_service(boost_io_service),
-    timer_stream_redirect_tensorflow(
+    timer_stream_redirect_human_detection(
         boost_io_service,
         boost::posix_time::microsec(
             std::chrono::duration_cast<std::chrono::microseconds>(guard_time_new_event).count()
@@ -59,14 +59,14 @@ void MotionManager::run() {
     while(isEnabled.load()) {
         cond_events.wait();
 
-        timer_stream_redirect_tensorflow.cancel();
-        timer_stream_redirect_tensorflow = boost::asio::deadline_timer(
+        timer_stream_redirect_human_detection.cancel();
+        timer_stream_redirect_human_detection = boost::asio::deadline_timer(
             boost_io_service,
             boost::posix_time::microsec(
                 std::chrono::duration_cast<std::chrono::microseconds>(guard_time_new_event).count()
             )
         );
-        timer_stream_redirect_tensorflow.async_wait(
+        timer_stream_redirect_human_detection.async_wait(
             boost::bind(&MotionManager::stop_stream_redirect_human_detector, this)
         );
 
@@ -75,6 +75,6 @@ void MotionManager::run() {
 }
 
 void MotionManager::stop_stream_redirect_human_detector() {
-    timer_stream_redirect_tensorflow.cancel();
+    timer_stream_redirect_human_detection.cancel();
     multiplexer->stop_stream_redirect_human_detector();
 }
