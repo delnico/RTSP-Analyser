@@ -66,7 +66,7 @@ void Multiplexer::stop_stream_redirect_human_detector() {
 }
 
 void Multiplexer::set_stream_redirect_client(OutputStream * stream_redirect_client) {
-    stream_redirect_client = stream_redirect_client;
+    this->stream_redirect_client = stream_redirect_client;
 }
 
 void Multiplexer::run() {

@@ -18,7 +18,6 @@ using namespace DelNico::RtspAnalyser::Motion;
 
 MotionManager::MotionManager(
     boost::asio::io_service & boost_io_service,
-    Libs::ConditionalVariable & cond_events,
     std::chrono::seconds guard_time_new_event,
     Analyser::Multiplexer * multiplexer
 ) :
@@ -31,8 +30,6 @@ MotionManager::MotionManager(
     ),
     thread(),
     isEnabled(false),
-    events(),
-    cond_events(cond_events),
     guard_time_new_event(guard_time_new_event),
     multiplexer(multiplexer)
 {}

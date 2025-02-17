@@ -8,13 +8,14 @@
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 
 
 namespace DelNico::RtspAnalyser::Analyser {
     class HumanDetector : public IAnalyser {
         public:
             HumanDetector() = delete;
-            HumanDetector(std::deque<cv::Mat> & frames);
+            HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager * motionManager);
             ~HumanDetector() override;
             HumanDetector(const HumanDetector & other) = delete;
             HumanDetector & operator=(const HumanDetector & other) = delete;
@@ -28,6 +29,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::thread thread;
             std::deque<cv::Mat> & frames;
             cv::HOGDescriptor hog;
+            Motion::MotionManager * motionManager;
 
             void run();
             std::tuple<bool, cv::Mat>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;

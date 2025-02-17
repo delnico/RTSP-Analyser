@@ -7,16 +7,20 @@
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManager.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManagerCaller.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManagerCalling.h"
 
 using namespace DelNico::RtspAnalyser::Analyser;
 using namespace DelNico::RtspAnalyser::Libs;
 
-HumanDetector::HumanDetector(std::deque<cv::Mat> & frames) :
+HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager * motionManager) :
     cond(),
     isEnabled(false),
     thread(),
     frames(frames),
-    hog()
+    hog(),
+    motionManager(motionManager)
 {
     hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
 }
@@ -57,7 +61,15 @@ void HumanDetector::run()
         if(std::get<0>(result))
         {
             Logger::log_main("HumanDetector : detected");
-            // Do something
+            motionManager->notify(
+                Motion::MotionManagerCalling(
+                    Motion::MotionManagerCaller::HUMAN_DETECTOR,
+                    true
+                )
+            );
+        }
+        else {
+            Logger::log_main("HumanDetector : undetected");
         }
     }
 }

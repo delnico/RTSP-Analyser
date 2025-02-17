@@ -34,6 +34,7 @@ target_link_libraries(${PROJECT_NAME}
         ${OpenCV_LIBS}
         fmt::fmt
         RtspAnalyser.Libs
+        RtspAnalyser.Motion
     PUBLIC
         Threads::Threads
 )

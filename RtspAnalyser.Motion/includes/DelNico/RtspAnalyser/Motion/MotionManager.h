@@ -21,7 +21,6 @@ namespace DelNico::RtspAnalyser::Motion {
         MotionManager() = delete;
         MotionManager(
             boost::asio::io_service & boost_io_service,
-            Libs::ConditionalVariable & cond_events,
             std::chrono::seconds guard_time_new_event,
             Analyser::Multiplexer * multiplexer
         );
@@ -44,7 +43,7 @@ namespace DelNico::RtspAnalyser::Motion {
         std::thread thread;
         std::atomic<bool> isEnabled;
         std::deque<MotionEvent> events;
-        Libs::ConditionalVariable & cond_events;
+        Libs::ConditionalVariable cond_events;
         std::chrono::seconds guard_time_new_event;
         Analyser::Multiplexer * multiplexer;
         std::deque<MotionManagerCalling> motionManagerCallings;

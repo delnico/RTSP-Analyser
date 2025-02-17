@@ -18,6 +18,7 @@
 #include "DelNico/RtspAnalyser/Libs/Codec.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
+#include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 #include "DelNico/RtspAnalyser/Streamers/Streamer.h"
 #include "DelNico/RtspAnalyser/WatchdogLib/Watchdog.h"
 
@@ -88,6 +89,12 @@ int main(int argc, char* argv[])
 
     Viewer viewerFgMasks(fgMasks, "fgMasks");
 
+    MotionManager motionManager(
+        boost_io_service,
+        std::chrono::seconds(150),
+        &multiplexer
+    );
+
     MotionDetector motionDetector(
         conf,
         motio_detect_frames,
@@ -96,15 +103,17 @@ int main(int argc, char* argv[])
     );
     motionDetector.setViewer(&viewerFgMasks);
 
+    HumanDetector humanDetector(human_detect_frames, &motionManager);
+
     OutputStream os_viewer(&viewer, viewer_frames, 1);
     OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 3);
-    OutputStream os_human_detector(&motionDetector, human_detect_frames, 3);
-
-    HumanDetector humanDetector(human_detect_frames);
+    OutputStream os_human_detector(&humanDetector, human_detect_frames, 3);
 
     multiplexer.subscribe(&os_viewer);
     multiplexer.subscribe(&os_motiondetector);
     multiplexer.set_stream_redirect_client(&os_human_detector);
+
+    motionManager.start();
 
     multiplexer.start();
 
@@ -157,6 +166,7 @@ int main(int argc, char* argv[])
     watchdog.stop();
 
     multiplexer.stop();
+    motionManager.stop();
 
     boost_io_service.stop();
     boost_io_thread.join();
