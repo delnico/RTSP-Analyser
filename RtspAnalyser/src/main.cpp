@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     stream.codec = conf.getStreamCodec(0);
     stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
 
-    std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks, human_detect_frames;
+    std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks, human_detect_frames, human_detector_output;
 
     Logger logger(logFile);
     logger.start();
@@ -89,6 +89,8 @@ int main(int argc, char* argv[])
 
     Viewer viewerFgMasks(fgMasks, "fgMasks");
 
+    Viewer viewerHDOutput(human_detector_output, "human_detector_output");
+
     MotionManager motionManager(
         boost_io_service,
         std::chrono::seconds(150),
@@ -102,8 +104,10 @@ int main(int argc, char* argv[])
         30
     );
     motionDetector.setViewer(&viewerFgMasks);
+    motionDetector.setMotionManager(&motionManager);
 
     HumanDetector humanDetector(human_detect_frames, &motionManager);
+    humanDetector.setViewer(&viewerHDOutput, &human_detector_output);
 
     OutputStream os_viewer(&viewer, viewer_frames, 1);
     OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 3);
@@ -128,6 +132,7 @@ int main(int argc, char* argv[])
 
     viewer.start();
     viewerFgMasks.start();
+    viewerHDOutput.start();
 
     motionDetector.start();
     humanDetector.start();
@@ -162,6 +167,7 @@ int main(int argc, char* argv[])
     humanDetector.stop();
     viewer.stop();
     viewerFgMasks.stop();
+    viewerHDOutput.stop();
 
     watchdog.stop();
 

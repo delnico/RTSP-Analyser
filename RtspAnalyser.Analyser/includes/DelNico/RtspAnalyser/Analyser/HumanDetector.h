@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
+#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 
@@ -19,6 +20,9 @@ namespace DelNico::RtspAnalyser::Analyser {
             ~HumanDetector() override;
             HumanDetector(const HumanDetector & other) = delete;
             HumanDetector & operator=(const HumanDetector & other) = delete;
+
+            void setViewer(Viewer * viewer, std::deque<cv::Mat> * human_detected_output);
+            
             void start();
             void stop();
             void notify() override;
@@ -30,6 +34,8 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::deque<cv::Mat> & frames;
             cv::HOGDescriptor hog;
             Motion::MotionManager * motionManager;
+            Viewer * viewer;
+            std::deque<cv::Mat> * human_detected_output;
 
             void run();
             std::tuple<bool, cv::Mat>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;

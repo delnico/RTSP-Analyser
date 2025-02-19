@@ -6,6 +6,7 @@
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
+#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCaller.h"
@@ -20,7 +21,9 @@ HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager
     thread(),
     frames(frames),
     hog(),
-    motionManager(motionManager)
+    motionManager(motionManager),
+    viewer(nullptr),
+    human_detected_output(nullptr)
 {
     hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
 }
@@ -28,6 +31,12 @@ HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager
 HumanDetector::~HumanDetector()
 {
     stop();
+}
+
+void HumanDetector::setViewer(Viewer * viewer, std::deque<cv::Mat> * human_detected_output)
+{
+    this->viewer = viewer;
+    this->human_detected_output = human_detected_output;
 }
 
 void HumanDetector::start()
@@ -44,6 +53,11 @@ void HumanDetector::stop()
         notify();
         thread.join();
     }
+}
+
+void HumanDetector::notify()
+{
+    cond.notify();
 }
 
 void HumanDetector::run()
@@ -71,14 +85,20 @@ void HumanDetector::run()
         else {
             Logger::log_main("HumanDetector : undetected");
         }
+        if(viewer)
+        {
+            human_detected_output->push_back(std::get<1>(result));
+            viewer->notify();
+        }
     }
 }
 
 std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
 {
     cv::Mat gray, output;
-    output = frame.clone();
-    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    cv::resize(frame, output, cv::Size(frame.cols / 2, frame.rows / 2));
+
+    cv::cvtColor(output, gray, cv::COLOR_BGR2GRAY);
 
     auto boxes = std::vector<cv::Rect>();
     auto weights = std::vector<double>();
@@ -98,11 +118,6 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
     }
 
     return std::make_tuple(false, output);
-}
-
-void HumanDetector::notify()
-{
-    cond.notify();
 }
 
 bool HumanDetector::operator==(const HumanDetector & other) const
