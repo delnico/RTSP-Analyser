@@ -21,10 +21,11 @@ find_package(Boost REQUIRED COMPONENTS asio program_options)
 find_package(fmt CONFIG REQUIRED)
 
 # Add Libraries
+add_subdirectory(RtspAnalyser.Analyser)
+add_subdirectory(RtspAnalyser.Management)
+add_subdirectory(RtspAnalyser.Motion)
 add_subdirectory(RtspAnalyser.Libs)
 add_subdirectory(RtspAnalyser.Streamers)
-add_subdirectory(RtspAnalyser.Analyser)
-add_subdirectory(RtspAnalyser.Motion)
 add_subdirectory(RtspAnalyser.WatchdogLib)
 add_subdirectory(RtspAnalyser)
 

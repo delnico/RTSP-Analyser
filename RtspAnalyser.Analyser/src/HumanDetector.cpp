@@ -7,7 +7,6 @@
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "DelNico/RtspAnalyser/Analyser/Viewer.h"
-#include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCaller.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCalling.h"
@@ -74,16 +73,12 @@ void HumanDetector::run()
         result = isHumanDetected(frame, true);
         if(std::get<0>(result))
         {
-            Logger::log_main("HumanDetector : detected");
             motionManager->notify(
                 Motion::MotionManagerCalling(
                     Motion::MotionManagerCaller::HUMAN_DETECTOR,
                     true
                 )
             );
-        }
-        else {
-            Logger::log_main("HumanDetector : undetected");
         }
         if(viewer)
         {

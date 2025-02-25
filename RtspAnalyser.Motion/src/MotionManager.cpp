@@ -8,6 +8,7 @@
 
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
@@ -99,7 +100,8 @@ void MotionManager::run_called_by_motion_detector() {
 }
 
 void MotionManager::run_called_by_human_detector() {
-    // Do something
+    // TODO
+    Libs::Logger::log_main("MotionManager : human detected");
 }
 
 void MotionManager::stop_stream_redirect_human_detector() {
