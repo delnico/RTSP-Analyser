@@ -72,6 +72,7 @@ sudo apt install -y python3 python3-pip python3-dev
 # --break-system-packages didn't exist anymore
 # we will se later what we do with
 pip install --break-system-packages numpy
+pip install jinja2
 ```
 
 ## Vcpkg
@@ -93,7 +94,7 @@ export PATH="$PATH:$VCPKG_ROOT"
 export VCPKG_FORCE_SYSTEM_BINARIES=1
 ```
 
-## Dependencies
+<!-- ## Dependencies
 
 ### nlohmann json
 
@@ -147,3 +148,5 @@ sudo ldconfig
 # verify with
 python3 -c "import cv2; print(cv2.getBuildInformation())"
 ```
+
+-->

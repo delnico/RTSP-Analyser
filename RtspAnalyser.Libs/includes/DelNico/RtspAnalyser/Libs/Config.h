@@ -34,7 +34,7 @@ namespace DelNico::RtspAnalyser::Libs {
             std::string nvr_password;
             std::string nvr_protocol;
             std::vector<struct Stream> streams;
-            std::string log_file_path;
+            std::string log_path;
 
             int opencv_model_history;
             int opencv_model_var_threshold;
@@ -55,7 +55,7 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "nvr_user") return nvr_user;
             if(key == "nvr_password") return nvr_password;
             if(key == "nvr_protocol") return nvr_protocol;
-            if(key == "log_file_path") return log_file_path;
+            if(key == "log_path") return log_path;
         }
         else if constexpr (std::is_same<T, int>::value)
         {

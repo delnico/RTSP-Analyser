@@ -46,7 +46,7 @@ Config::Config(const std::string& file) {
         this->streams.push_back(s);
     }
 
-    log_file_path = j["logs_file_path"];
+    log_path = j["logs_path"];
 
     auto opencv_model_set = j["opencv_model_set"];
     opencv_model_history = opencv_model_set["history"];

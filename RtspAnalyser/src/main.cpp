@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     Config conf(configFile);
 
     if(logFile.empty()) {
-        logFile = conf.get<std::string>("log_file_path");
+        logFile = conf.get<std::string>("log_path");
     }
 
     boost::asio::io_service boost_io_service;
