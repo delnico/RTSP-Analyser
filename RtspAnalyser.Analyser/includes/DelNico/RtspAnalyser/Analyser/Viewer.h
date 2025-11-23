@@ -6,6 +6,7 @@
 #include <string>
 
 #include <opencv2/opencv.hpp>
+#include <zmq.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
@@ -31,6 +32,8 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::thread thread;
             std::deque<cv::Mat> & frames;
             std::string windowName;
+            zmq::context_t zmqContext;
+            zmq::socket_t zmqSocket;
 
             void run();
 

@@ -33,6 +33,8 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         ${OpenCV_LIBS}
         fmt::fmt
+        libzmq
+        cppzmq
         RtspAnalyser.Libs
         RtspAnalyser.Motion
     PUBLIC

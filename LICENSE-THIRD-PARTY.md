@@ -39,3 +39,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - **Version** : 11.0.2#1
 - **License** : [MIT](https://github.com/fmtlib/fmt/blob/master/LICENSE)
 - **Usage** : String formating
+
+## ZeroMQ
+
+### libzmq
+
+- **Version** : 4.3.5#2
+- **License** : [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/)
+- **Usage** : for transmitting image on loopback for debug via the Python's app
+
+### cppzmq
+
+- **Version** : 4.11.0
+- **License** : [MIT](https://github.com/zeromq/cppzmq/blob/master/LICENSE)
+- **Usage** : C++ binding for libzmq

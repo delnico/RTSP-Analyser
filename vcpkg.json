@@ -15,7 +15,20 @@
         "name" : "nlohmann-json"
       },
       {
-        "name" : "opencv4"
+        "name" : "opencv4",
+        "features": [
+          "contrib",
+          "ffmpeg",
+          "gtk",
+          "gstreamer",
+          "nonfree"
+        ]
+      },
+      {
+        "name" : "zeromq"
+      },
+      {
+        "name" : "cppzmq"
       }
     ]
   }

@@ -39,8 +39,7 @@ int main(int argc, char* argv[])
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
-        ("config,c", boost::program_options::value<std::string>(), "json configuration file")
-        ("log,l", boost::program_options::value<std::string>(), "log file");
+        ("config,c", boost::program_options::value<std::string>(), "json configuration file");
     
     boost::program_options::variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
@@ -53,10 +52,6 @@ int main(int argc, char* argv[])
 
     if(vm.count("config")) {
         configFile = vm["config"].as<std::string>();
-    }
-
-    if(vm.count("log")) {
-        logFile = vm["log"].as<std::string>();
     }
 
     Config conf(configFile);

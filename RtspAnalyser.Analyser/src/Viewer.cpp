@@ -3,6 +3,7 @@
 #include <deque>
 
 #include <opencv2/opencv.hpp>
+#include <zmq.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/Viewer.h"
