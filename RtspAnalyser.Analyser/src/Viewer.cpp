@@ -10,15 +10,14 @@
 
 using namespace DelNico::RtspAnalyser::Analyser;
 
-Viewer::Viewer(std::deque<cv::Mat> & frames, std::string socket_bind) :
+Viewer::Viewer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext) :
     cond(),
     isEnabled(false),
     thread(),
-    socket_bind(socket_bind),
     frames(frames),
-    zmqContext(1),
-    zmqSocket(zmqContext, zmq::socket_type::pull)
+    socket(zmqContext, zmq::socket_type::pull)
 {
+    socket.bind(socket_bind);
 }
 
 Viewer::~Viewer()
@@ -44,7 +43,6 @@ void Viewer::stop()
 
 void Viewer::run()
 {
-    zmqSocket.bind(socket_bind);
     cv::Mat frame;
     while (isEnabled)
     {
@@ -53,10 +51,34 @@ void Viewer::run()
             continue;
         frame = frames.front();
         frames.pop_front();
-        imshow(socket_bind, frame);
-        cv::waitKey(1);                 // No pause, scheduled by Streamer thread
+
+        /*int metadata[3] = {frame.rows, frame.cols, frame.type()};
+        zmq::message_t meta_msg(sizeof(metadata));
+        memcpy(meta_msg.data(), metadata, sizeof(metadata));
+        socket.send(meta_msg, zmq::send_flags::sndmore);*/
+
+        try {
+            zmq::message_t data_message(frame.total() * frame.elemSize());
+            memcpy(data_message.data(), frame.datastart, data_message.size());
+            socket.send(data_message, zmq::send_flags::none);
+        }
+        catch(const zmq::error_t& e) {
+            std::cerr   << "errno=" << e.num()
+                        << " what=" << e.what() << std::endl;
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
+
+
+        // TODO : send via ZMQ socket
+
+        //imshow(socket_bind, frame);
+        //cv::waitKey(1);                 // No pause, scheduled by Streamer thread
     }
-    cv::destroyWindow(socket_bind);
+    //cv::destroyWindow(socket_bind);
 }
 
 void Viewer::notify()

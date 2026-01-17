@@ -8,6 +8,8 @@
 #include <boost/program_options.hpp>
 #include <boost/asio.hpp>
 
+#include <zmq.hpp>
+
 #include "DelNico/RtspAnalyser/RtspAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
@@ -32,6 +34,9 @@ using namespace DelNico::RtspAnalyser::WatchdogLib;
 
 int main(int argc, char* argv[])
 {
+    std::cout << zmq_has("ipc") << std::endl;
+    return 0;
+
     cv::setNumThreads(1);
 
     std::string configFile = "config.json";
@@ -62,6 +67,8 @@ int main(int argc, char* argv[])
 
     boost::asio::io_service boost_io_service;
 
+    zmq::context_t zmqContext = zmq::context_t();
+
     Stream stream;
     stream.url = conf.getStreamUrl(0);
     stream.codec = conf.getStreamCodec(0);
@@ -80,11 +87,11 @@ int main(int argc, char* argv[])
 
     Multiplexer multiplexer(stream_frames);
 
-    Viewer viewer(viewer_frames, "rtsp");
+    Viewer viewer(viewer_frames, "ipc:///tmp/rtsp_main.zmq", zmqContext);
 
-    Viewer viewerFgMasks(fgMasks, "fgMasks");
+    Viewer viewerFgMasks(fgMasks, "ipc:///tmp/rtsp_fgmask.zmq", zmqContext);
 
-    Viewer viewerHDOutput(human_detector_output, "human_detector_output");
+    Viewer viewerHDOutput(human_detector_output, "ipc:///tmp/video_hdoutput.zmq", zmqContext);
 
     MotionManager motionManager(
         boost_io_service,

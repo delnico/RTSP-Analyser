@@ -17,7 +17,7 @@ namespace DelNico::RtspAnalyser::Analyser {
     class Viewer : public IAnalyser {
         public:
             Viewer();
-            Viewer(std::deque<cv::Mat> & frames, std::string socket_bind);
+            Viewer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext);
             ~Viewer() override;
             Viewer(const Viewer & other) = delete;
             Viewer & operator=(const Viewer & other) = delete;
@@ -30,9 +30,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::deque<cv::Mat> & frames;
-            std::string socket_bind;
-            zmq::context_t zmqContext;
-            zmq::socket_t zmqSocket;
+            zmq::socket_t socket;
 
             void run();
 
