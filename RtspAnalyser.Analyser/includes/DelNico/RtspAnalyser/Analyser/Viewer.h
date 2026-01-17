@@ -17,8 +17,7 @@ namespace DelNico::RtspAnalyser::Analyser {
     class Viewer : public IAnalyser {
         public:
             Viewer();
-            // windowName is can't be empty, can't be with a space, can't be with a tabulation, ...
-            Viewer(std::deque<cv::Mat> & frames, std::string windowName = "Viewer");
+            Viewer(std::deque<cv::Mat> & frames, std::string socket_bind);
             ~Viewer() override;
             Viewer(const Viewer & other) = delete;
             Viewer & operator=(const Viewer & other) = delete;
@@ -31,7 +30,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::deque<cv::Mat> & frames;
-            std::string windowName;
+            std::string socket_bind;
             zmq::context_t zmqContext;
             zmq::socket_t zmqSocket;
 

@@ -7,7 +7,7 @@
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 
 using namespace DelNico::RtspAnalyser::Libs;
-using json = nlohmann::json;
+using namespace nlohmann;
 using namespace std;
 
 Config::Config(const std::string& file) {
@@ -15,7 +15,7 @@ Config::Config(const std::string& file) {
     if(!ifs.is_open()) {
         throw std::runtime_error("Impossible d'ouvrir le fichier de configuration.");
     }
-    json j;
+    nlohmann::json j;
     ifs >> j;
     ifs.close();
 

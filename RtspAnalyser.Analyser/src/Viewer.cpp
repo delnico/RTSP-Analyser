@@ -10,12 +10,14 @@
 
 using namespace DelNico::RtspAnalyser::Analyser;
 
-Viewer::Viewer(std::deque<cv::Mat> & frames, std::string windowName) :
+Viewer::Viewer(std::deque<cv::Mat> & frames, std::string socket_bind) :
     cond(),
     isEnabled(false),
     thread(),
-    windowName(windowName),
-    frames(frames)
+    socket_bind(socket_bind),
+    frames(frames),
+    zmqContext(1),
+    zmqSocket(zmqContext, zmq::socket_type::pull)
 {
 }
 
@@ -42,7 +44,7 @@ void Viewer::stop()
 
 void Viewer::run()
 {
-    namedWindow(windowName, cv::WINDOW_NORMAL);
+    zmqSocket.bind(socket_bind);
     cv::Mat frame;
     while (isEnabled)
     {
@@ -51,10 +53,10 @@ void Viewer::run()
             continue;
         frame = frames.front();
         frames.pop_front();
-        imshow(windowName, frame);
+        imshow(socket_bind, frame);
         cv::waitKey(1);                 // No pause, scheduled by Streamer thread
     }
-    cv::destroyWindow(windowName);
+    cv::destroyWindow(socket_bind);
 }
 
 void Viewer::notify()

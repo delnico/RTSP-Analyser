@@ -12,7 +12,9 @@
         "binaryDir": "${sourceDir}/build/x86_64/debug",
         "cacheVariables": {
           "CMAKE_BUILD_TYPE": "Debug",
-          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "VCPKG_TARGET_TRIPLET": "x64-linux-cascadelake",
+          "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}"
         }
       },
       {

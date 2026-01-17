@@ -44,6 +44,8 @@ namespace DelNico::RtspAnalyser::Libs {
             int opencv_model_gaussian_size;
             int opencv_model_gaussian_sigma;
             int opencv_model_min_area;
+
+            
     };
 
     template<typename T>
