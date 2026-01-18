@@ -38,6 +38,7 @@ void Viewer::stop()
         isEnabled.store(false);
         notify();
         thread.join();
+        socket.close();
     }
 }
 
@@ -52,12 +53,12 @@ void Viewer::run()
         frame = frames.front();
         frames.pop_front();
 
-        /*int metadata[3] = {frame.rows, frame.cols, frame.type()};
-        zmq::message_t meta_msg(sizeof(metadata));
-        memcpy(meta_msg.data(), metadata, sizeof(metadata));
-        socket.send(meta_msg, zmq::send_flags::sndmore);*/
-
         try {
+            int metadata[4] = {frame.rows, frame.cols, frame.channels(), frame.type()};
+            zmq::message_t meta_msg(sizeof(metadata));
+            memcpy(meta_msg.data(), metadata, sizeof(metadata));
+            socket.send(meta_msg, zmq::send_flags::sndmore);
+
             zmq::message_t data_message(frame.total() * frame.elemSize());
             memcpy(data_message.data(), frame.datastart, data_message.size());
             socket.send(data_message, zmq::send_flags::none);
@@ -70,15 +71,7 @@ void Viewer::run()
         {
             std::cerr << e.what() << '\n';
         }
-        
-
-
-        // TODO : send via ZMQ socket
-
-        //imshow(socket_bind, frame);
-        //cv::waitKey(1);                 // No pause, scheduled by Streamer thread
     }
-    //cv::destroyWindow(socket_bind);
 }
 
 void Viewer::notify()

@@ -176,6 +176,8 @@ int main(int argc, char* argv[])
     boost_io_service.stop();
     boost_io_thread.join();
 
+    zmqContext.close();
+
     cv::destroyAllWindows();
 
     logger.stop();
