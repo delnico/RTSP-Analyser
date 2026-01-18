@@ -34,9 +34,6 @@ using namespace DelNico::RtspAnalyser::WatchdogLib;
 
 int main(int argc, char* argv[])
 {
-    std::cout << zmq_has("ipc") << std::endl;
-    return 0;
-
     cv::setNumThreads(1);
 
     std::string configFile = "config.json";

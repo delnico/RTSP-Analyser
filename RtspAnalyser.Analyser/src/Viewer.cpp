@@ -15,9 +15,9 @@ Viewer::Viewer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::conte
     isEnabled(false),
     thread(),
     frames(frames),
-    socket(zmqContext, zmq::socket_type::pull)
+    socket(zmqContext, zmq::socket_type::push)
 {
-    socket.bind(socket_bind);
+    socket.connect(socket_bind);
 }
 
 Viewer::~Viewer()
