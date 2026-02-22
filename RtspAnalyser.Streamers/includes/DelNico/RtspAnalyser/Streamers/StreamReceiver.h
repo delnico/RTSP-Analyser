@@ -14,15 +14,15 @@
 
 
 namespace DelNico::RtspAnalyser::Streamers {
-  class Streamer {
+  class StreamReceiver {
     public:
-        Streamer() = delete;
-        Streamer(
+        StreamReceiver() = delete;
+        StreamReceiver(
             boost::asio::io_service & io_service,
             const Libs::Stream & stream,
             std::deque<cv::Mat> & frames
         );
-        ~Streamer();
+        ~StreamReceiver();
         void start(boost::asio::io_service & io_service);
         void stop();
         void subscribe(Analyser::IAnalyser * analyser);

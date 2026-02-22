@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.24.0)
 project(RtspAnalyser.Streamers VERSION 0.0.1)
 
 set(SOURCES
-    src/Streamer.cpp
+    src/StreamReceiver.cpp
 )
 
 set(INCLUDES
-    includes/DelNico/RtspAnalyser/Streamers/Streamer.h
+    includes/DelNico/RtspAnalyser/Streamers/StreamReceiver.h
 )
 
 add_library(${PROJECT_NAME}

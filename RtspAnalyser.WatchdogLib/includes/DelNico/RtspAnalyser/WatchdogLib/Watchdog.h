@@ -5,7 +5,7 @@
 
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
-#include "DelNico/RtspAnalyser/Streamers/Streamer.h"
+#include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
 
 
 namespace DelNico::RtspAnalyser::WatchdogLib {
@@ -13,7 +13,7 @@ namespace DelNico::RtspAnalyser::WatchdogLib {
         public:
             Watchdog() = delete;
             Watchdog(
-                Streamers::Streamer * streamer,
+                Streamers::StreamReceiver * streamer,
                 Motion::MotionDetector * motionDetector,
                 Libs::Logger * logger
             );
@@ -26,7 +26,7 @@ namespace DelNico::RtspAnalyser::WatchdogLib {
             std::atomic<bool> isEnabled;
             std::thread thread;
 
-            Streamers::Streamer * streamer;
+            Streamers::StreamReceiver * streamer;
             Motion::MotionDetector * motionDetector;
             Libs::Logger * logger;
 

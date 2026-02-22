@@ -21,7 +21,7 @@
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
-#include "DelNico/RtspAnalyser/Streamers/Streamer.h"
+#include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
 #include "DelNico/RtspAnalyser/WatchdogLib/Watchdog.h"
 
 using namespace DelNico::RtspAnalyser;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     Logger logger(logFile);
     logger.start();
 
-    Streamer streamer(
+    StreamReceiver streamer(
         boost_io_service,
         stream,
         stream_frames
