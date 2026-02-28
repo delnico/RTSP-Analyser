@@ -6,11 +6,11 @@
 #include <zmq.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 
 using namespace DelNico::RtspAnalyser::Analyser;
 
-Viewer::Viewer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext) :
+Streamer::Streamer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext) :
     cond(),
     isEnabled(false),
     thread(),
@@ -20,18 +20,18 @@ Viewer::Viewer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::conte
     socket.connect(socket_bind);
 }
 
-Viewer::~Viewer()
+Streamer::~Streamer()
 {
     stop();
 }
 
-void Viewer::start()
+void Streamer::start()
 {
     isEnabled.store(true);
-    thread = std::thread(&Viewer::run, this);
+    thread = std::thread(&Streamer::run, this);
 }
 
-void Viewer::stop()
+void Streamer::stop()
 {
     if(thread.joinable())
     {
@@ -42,7 +42,7 @@ void Viewer::stop()
     }
 }
 
-void Viewer::run()
+void Streamer::run()
 {
     cv::Mat frame;
     while (isEnabled)
@@ -74,13 +74,13 @@ void Viewer::run()
     }
 }
 
-void Viewer::notify()
+void Streamer::notify()
 {
     cond.notify();
 }
 
 
-bool Viewer::operator==(const Viewer & other) const
+bool Streamer::operator==(const Streamer & other) const
 {
     return &other == this;
 }

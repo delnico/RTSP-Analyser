@@ -14,7 +14,7 @@
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
 #include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
-#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 #include "DelNico/RtspAnalyser/Libs/Codec.h"
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     Logger logger(logFile);
     logger.start();
 
-    StreamReceiver streamer(
+    StreamReceiver streamReceiver(
         boost_io_service,
         stream,
         stream_frames
@@ -84,11 +84,11 @@ int main(int argc, char* argv[])
 
     Multiplexer multiplexer(stream_frames);
 
-    Viewer viewer(viewer_frames, "ipc:///tmp/rtsp_main.zmq", zmqContext);
+    Streamer streamerMain(viewer_frames, "ipc:///tmp/rtsp_main.zmq", zmqContext);
 
-    Viewer viewerFgMasks(fgMasks, "ipc:///tmp/rtsp_fgmask.zmq", zmqContext);
+    Streamer streamerFgMasks(fgMasks, "ipc:///tmp/rtsp_fgmask.zmq", zmqContext);
 
-    Viewer viewerHDOutput(human_detector_output, "ipc:///tmp/video_hdoutput.zmq", zmqContext);
+    Streamer streamerHDOutput(human_detector_output, "ipc:///tmp/video_hdoutput.zmq", zmqContext);
 
     MotionManager motionManager(
         boost_io_service,
@@ -102,13 +102,13 @@ int main(int argc, char* argv[])
         fgMasks,
         30
     );
-    motionDetector.setViewer(&viewerFgMasks);
+    motionDetector.setStreamer(&streamerFgMasks);
     motionDetector.setMotionManager(&motionManager);
 
     HumanDetector humanDetector(human_detect_frames, &motionManager);
-    humanDetector.setViewer(&viewerHDOutput, &human_detector_output);
+    humanDetector.setStreamer(&streamerHDOutput, &human_detector_output);
 
-    OutputStream os_viewer(&viewer, viewer_frames, 1);
+    OutputStream os_viewer(&streamerMain, viewer_frames, 1);
     OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 3);
     OutputStream os_human_detector(&humanDetector, human_detect_frames, 3);
 
@@ -121,21 +121,21 @@ int main(int argc, char* argv[])
     multiplexer.start();
 
     Watchdog watchdog(
-        &streamer,
+        &streamReceiver,
         &motionDetector,
         &logger
     );
     watchdog.start();
 
-    streamer.subscribe(&multiplexer);
+    streamReceiver.subscribe(&multiplexer);
 
-    viewer.start();
-    viewerFgMasks.start();
-    viewerHDOutput.start();
+    streamerMain.start();
+    streamerFgMasks.start();
+    streamerHDOutput.start();
 
     motionDetector.start();
     humanDetector.start();
-    streamer.start(boost_io_service);
+    streamReceiver.start(boost_io_service);
 
     std::thread boost_io_thread(
         [](boost::asio::io_service & io) {
@@ -161,12 +161,12 @@ int main(int argc, char* argv[])
         }
     }
 
-    streamer.stop();
+    streamReceiver.stop();
     motionDetector.stop();
     humanDetector.stop();
-    viewer.stop();
-    viewerFgMasks.stop();
-    viewerHDOutput.stop();
+    streamerMain.stop();
+    streamerFgMasks.stop();
+    streamerHDOutput.stop();
 
     watchdog.stop();
 

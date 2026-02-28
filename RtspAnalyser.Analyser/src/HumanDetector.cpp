@@ -6,7 +6,7 @@
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
-#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCaller.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCalling.h"
@@ -21,7 +21,7 @@ HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager
     frames(frames),
     hog(),
     motionManager(motionManager),
-    viewer(nullptr),
+    streamer(nullptr),
     human_detected_output(nullptr)
 {
     hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
@@ -32,9 +32,9 @@ HumanDetector::~HumanDetector()
     stop();
 }
 
-void HumanDetector::setViewer(Viewer * viewer, std::deque<cv::Mat> * human_detected_output)
+void HumanDetector::setStreamer(Streamer * streamer, std::deque<cv::Mat> * human_detected_output)
 {
-    this->viewer = viewer;
+    this->streamer = streamer;
     this->human_detected_output = human_detected_output;
 }
 
@@ -80,10 +80,10 @@ void HumanDetector::run()
                 )
             );
         }
-        if(viewer)
+        if(streamer)
         {
             human_detected_output->push_back(std::get<1>(result));
-            viewer->notify();
+            streamer->notify();
         }
     }
 }

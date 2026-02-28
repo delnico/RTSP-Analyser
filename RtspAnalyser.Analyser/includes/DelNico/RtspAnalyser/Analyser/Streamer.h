@@ -14,13 +14,13 @@
 
 
 namespace DelNico::RtspAnalyser::Analyser {
-    class Viewer : public IAnalyser {
+    class Streamer : public IAnalyser {
         public:
-            Viewer();
-            Viewer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext);
-            ~Viewer() override;
-            Viewer(const Viewer & other) = delete;
-            Viewer & operator=(const Viewer & other) = delete;
+            Streamer();
+            Streamer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext);
+            ~Streamer() override;
+            Streamer(const Streamer & other) = delete;
+            Streamer & operator=(const Streamer & other) = delete;
             void start();
             void stop();
             void notify() override;
@@ -34,7 +34,7 @@ namespace DelNico::RtspAnalyser::Analyser {
 
             void run();
 
-            bool operator==(const Viewer & other) const;
+            bool operator==(const Streamer & other) const;
     };
 }
 

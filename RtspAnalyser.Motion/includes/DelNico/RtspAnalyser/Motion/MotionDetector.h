@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
-#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
@@ -31,7 +31,7 @@ namespace DelNico::RtspAnalyser::Motion {
 
             void start();
             void stop();
-            void setViewer(Analyser::Viewer * viewer);
+            void setStreamer(Analyser::Streamer * streamer);
             void setMotionManager(MotionManager * motionManager);
 
             std::string watchdog();
@@ -45,7 +45,7 @@ namespace DelNico::RtspAnalyser::Motion {
             std::list<cv::Rect> zones;
             std::deque<cv::Mat> & frames;
             std::deque<cv::Mat> & fgMasks;
-            Analyser::Viewer * viewer;
+            Analyser::Streamer * streamer;
             MotionManager * motionManager;
 
             std::atomic<int> cv_motion_history;

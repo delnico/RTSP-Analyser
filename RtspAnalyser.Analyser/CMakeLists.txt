@@ -7,7 +7,7 @@ set(SOURCES
     src/IAnalyser.cpp
     src/Multiplexer.cpp
     src/OutputStream.cpp
-    src/Viewer.cpp
+    src/Streamer.cpp
 )
 
 set(INCLUDES
@@ -15,7 +15,7 @@ set(INCLUDES
     includes/DelNico/RtspAnalyser/Analyser/IAnalyser.h
     includes/DelNico/RtspAnalyser/Analyser/Multiplexer.h
     includes/DelNico/RtspAnalyser/Analyser/OutputStream.h
-    includes/DelNico/RtspAnalyser/Analyser/Viewer.h
+    includes/DelNico/RtspAnalyser/Analyser/Streamer.h
 )
 
 add_library(${PROJECT_NAME}

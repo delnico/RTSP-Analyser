@@ -14,7 +14,7 @@
 
 #include <fmt/core.h>
 
-#include "DelNico/RtspAnalyser/Analyser/Viewer.h"
+#include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
@@ -33,7 +33,7 @@ MotionDetector::MotionDetector(
     isEnabled(false),
     frames(frames),
     fgMasks(fgMasks),
-    viewer(nullptr),
+    streamer(nullptr),
     motionManager(nullptr),
     cv_motion_history(config.get<int>("opencv_model_history")),
     cv_motion_var_threshold(config.get<int>("opencv_model_var_threshold")),
@@ -64,8 +64,8 @@ void MotionDetector::stop() {
     }
 }
 
-void MotionDetector::setViewer(Analyser::Viewer * viewer) {
-    this->viewer = viewer;
+void MotionDetector::setStreamer(Analyser::Streamer * streamer) {
+    this->streamer = streamer;
 }
 
 void MotionDetector::setMotionManager(MotionManager * motionManager) {
@@ -125,7 +125,7 @@ void MotionDetector::run() {
                 motionDetected = true;
             }
 
-            if(viewer != nullptr) {
+            if(streamer != nullptr) {
                 for(const auto & outline : outlines) {
                     cv::Rect rect = boundingRect(outline);
                     if(rect.area() > 500) {
@@ -145,9 +145,9 @@ void MotionDetector::run() {
             }
         }
 
-        if(viewer != nullptr) {
+        if(streamer != nullptr) {
             fgMasks.push_back(cv::Mat(roiMask));
-            viewer->notify();
+            streamer->notify();
         }
 
         auto end = std::chrono::steady_clock::now();

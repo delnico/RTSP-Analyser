@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export DISPLAY=:0
-
 architecture=$(uname -m)
 
 echo "Running for $architecture"
