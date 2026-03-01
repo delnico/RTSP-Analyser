@@ -22,14 +22,14 @@
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 #include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
-#include "DelNico/RtspAnalyser/WatchdogLib/Watchdog.h"
+#include "DelNico/RtspAnalyser/Watchdog/Watchdog.h"
 
 using namespace DelNico::RtspAnalyser;
 using namespace DelNico::RtspAnalyser::Analyser;
 using namespace DelNico::RtspAnalyser::Libs;
 using namespace DelNico::RtspAnalyser::Motion;
 using namespace DelNico::RtspAnalyser::Streamers;
-using namespace DelNico::RtspAnalyser::WatchdogLib;
+using namespace DelNico::RtspAnalyser::Watchdog;
 
 
 int main(int argc, char* argv[])
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
     multiplexer.start();
 
-    Watchdog watchdog(
+    Watchdog::Watchdog watchdog(
         &streamReceiver,
         &motionDetector,
         &logger

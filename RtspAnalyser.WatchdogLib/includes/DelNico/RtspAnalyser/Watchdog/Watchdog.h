@@ -8,7 +8,7 @@
 #include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
 
 
-namespace DelNico::RtspAnalyser::WatchdogLib {
+namespace DelNico::RtspAnalyser::Watchdog {
     class Watchdog {
         public:
             Watchdog() = delete;

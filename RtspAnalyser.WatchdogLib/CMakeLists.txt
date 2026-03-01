@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.24.0)
 
-project(RtspAnalyser.WatchdogLib VERSION 0.0.1)
+project(RtspAnalyser.Watchdog VERSION 0.0.1)
 
 set(SOURCES
     src/Watchdog.cpp
 )
 
 set(INCLUDES
-    includes/DelNico/RtspAnalyser/WatchdogLib/Watchdog.h
+    includes/DelNico/RtspAnalyser/Watchdog/Watchdog.h
 )
 
 add_library(${PROJECT_NAME}

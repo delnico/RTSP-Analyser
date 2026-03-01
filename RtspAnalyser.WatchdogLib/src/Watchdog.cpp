@@ -5,9 +5,9 @@
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
 #include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
-#include "DelNico/RtspAnalyser/WatchdogLib/Watchdog.h"
+#include "DelNico/RtspAnalyser/Watchdog/Watchdog.h"
 
-using namespace DelNico::RtspAnalyser::WatchdogLib;
+using namespace DelNico::RtspAnalyser::Watchdog;
 
 Watchdog::Watchdog(
     Streamers::StreamReceiver * streamer,

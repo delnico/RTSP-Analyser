@@ -30,5 +30,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     RtspAnalyser.Streamers
     RtspAnalyser.Analyser
     RtspAnalyser.Motion
-    RtspAnalyser.WatchdogLib
+    RtspAnalyser.Watchdog
 )
