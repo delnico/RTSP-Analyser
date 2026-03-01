@@ -34,7 +34,7 @@ namespace DelNico::RtspAnalyser::Motion {
             void setStreamer(Analyser::Streamer * streamer);
             void setMotionManager(MotionManager * motionManager);
 
-            std::string watchdog();
+            void watchdog();
 
             void reloadConfig(Libs::Config & config);
 

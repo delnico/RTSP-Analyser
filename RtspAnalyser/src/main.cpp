@@ -121,10 +121,10 @@ int main(int argc, char* argv[])
     multiplexer.start();
 
     DelNico::RtspAnalyser::Watchdog::Watchdog watchdog(
-        &streamReceiver,
-        &motionDetector,
         &logger
     );
+    watchdog.subscribe(std::bind(&MotionDetector::watchdog, &motionDetector));
+    watchdog.subscribe(std::bind(&StreamReceiver::watchdog, &streamReceiver));
     watchdog.start();
 
     streamReceiver.subscribe(&multiplexer);

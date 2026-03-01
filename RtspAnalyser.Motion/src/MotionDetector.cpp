@@ -168,8 +168,7 @@ bool MotionDetector::operator==(const MotionDetector & other) const
     return &other == this;
 }
 
-std::string MotionDetector::watchdog() {
-    std::string result = "";
+void MotionDetector::watchdog() {
     std::lock_guard<Libs::Spinlock> lock(slock_processing_times);
     auto size = processing_times.size();
     if(size > fps) {    // > ~ 1s
@@ -195,9 +194,8 @@ std::string MotionDetector::watchdog() {
         }*/
         processing_times.clear();
         // result = std::format("WATCHDOG : MotionDetector : Frame skipping at {}, frame ms at {}, max = {}, ratio = {} ratioround = {}", frame_skipping, ms_one_frame, max, ratio, ratioround);
-        result = fmt::format("WATCHDOG : MotionDetector : max = {}", max);
+        Libs::Logger::log_main(fmt::format("WATCHDOG : MotionDetector : max = {}", max));
     }
-    return result;
 }
 
 void MotionDetector::reloadConfig(Libs::Config & config) {

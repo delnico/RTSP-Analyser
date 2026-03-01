@@ -9,14 +9,10 @@
 
 namespace DelNico::RtspAnalyser::Watchdog {
     Watchdog::Watchdog(
-        Streamers::StreamReceiver * streamer,
-        Motion::MotionDetector * motionDetector,
         Libs::Logger * logger
     ) :
         isEnabled(false),
         thread(),
-        streamer(streamer),
-        motionDetector(motionDetector),
         logger(logger)
     {}
 
@@ -34,21 +30,44 @@ namespace DelNico::RtspAnalyser::Watchdog {
     void Watchdog::stop() {
         if(thread.joinable()) {
             isEnabled.store(false);
-            thread.join();
+            try {
+                thread.join();
+            }
+            catch(const std::exception & e) {
+                logger->log(std::string("[Watchdog] Exception while joining thread: ") + e.what());
+            }
         }
+        else
+            logger->log("[Watchdog] thread not joinable");
+    }
+
+    void Watchdog::subscribe(const std::function<void()> & callback) {
+        callbacks.push_back(callback);
+    }
+    void Watchdog::unsubscribe(const std::function<void()> & callback) {
+        callbacks.erase(
+            std::remove_if(
+                callbacks.begin(),
+                callbacks.end(),
+                [&callback](const std::function<void()> & cb) {
+                    return cb.target_type() == callback.target_type() &&
+                        cb.target<void()>() == callback.target<void()>();
+                }
+            ),
+            callbacks.end()
+        );
     }
 
     void Watchdog::run() {
         while(isEnabled.load()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            if(motionDetector != nullptr) {
-                std::string res = motionDetector->watchdog();
-                if(res != "") {
-                    logger->log(res);
+            for(const auto & callback : callbacks) {
+                try {
+                    callback();
                 }
-            }
-            if(streamer != nullptr) {
-                streamer->watchdog();
+                catch(const std::exception & e) {
+                    logger->log(std::string("[Watchdog] Exception while running callback: ") + e.what());
+                }
             }
         }
     }

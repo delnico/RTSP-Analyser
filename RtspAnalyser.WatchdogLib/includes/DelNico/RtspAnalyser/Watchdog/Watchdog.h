@@ -1,7 +1,9 @@
 #pragma once
 
-#include <thread>
 #include <atomic>
+#include <functional>
+#include <vector>
+#include <thread>
 
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
@@ -13,8 +15,6 @@ namespace DelNico::RtspAnalyser::Watchdog {
         public:
             Watchdog() = delete;
             Watchdog(
-                Streamers::StreamReceiver * streamer,
-                Motion::MotionDetector * motionDetector,
                 Libs::Logger * logger
             );
             ~Watchdog();
@@ -22,12 +22,15 @@ namespace DelNico::RtspAnalyser::Watchdog {
             void start();
             void stop();
 
+            void subscribe(const std::function<void()> & callback);
+            void unsubscribe(const std::function<void()> & callback);
+
         private:
             std::atomic<bool> isEnabled;
             std::thread thread;
 
-            Streamers::StreamReceiver * streamer;
-            Motion::MotionDetector * motionDetector;
+            std::vector<std::function<void()>> callbacks;
+
             Libs::Logger * logger;
 
             void run();
