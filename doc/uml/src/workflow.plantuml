@@ -1,14 +1,25 @@
 @startuml workflow
 
-skinparam SequenceMessageAlignment direction
 left to right direction
+skinparam ParticipantPadding 20
 
-(*) --> "Streamer"
-"Streamer" --> "MotionDetector"
-"MotionDetector" --> "MotionManager"
-"Streamer" --> "MotionManager"
-"MotionManager" --> "HumanDetector"
-"HumanDetector" --> "MotionManager"
-"MotionManager" --> "TriggerAlert"
+partition "Workflow" {
+    (*) --> "StreamReceiver"
+    "StreamReceiver" --> "Multiplexer"
+    
+    "Multiplexer" --> "MotionDetector"
+    "Multiplexer" --> "HumanDetector"
+
+    "MotionDetector" --> "EventHandler"
+    "HumanDetector" --> "EventHandler"
+
+    "EventHandler" --> "AlertTrigger"
+
+    partition "debugMode" {
+        "Multiplexer" ..> "Streamer"
+        "MotionDetector" ..> "Streamer"
+        "HumanDetector" ..> "Streamer"
+    }
+}
 
 @enduml
