@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
     multiplexer.start();
 
-    Watchdog::Watchdog watchdog(
+    DelNico::RtspAnalyser::Watchdog::Watchdog watchdog(
         &streamReceiver,
         &motionDetector,
         &logger
