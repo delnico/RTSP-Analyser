@@ -97,11 +97,21 @@ namespace DelNico::RtspAnalyser::Motion {
         );
 
         multiplexer->start_stream_redirect_human_detector();
+        if(! last_event.isMotionTimeCloseTo()) {
+            last_event = MotionEvent();
+            last_event.setMotionDetected(true);
+        }
     }
 
     void MotionManager::run_called_by_human_detector() {
-        // TODO
-        Libs::Logger::log_main("MotionManager : human detected");
+        last_event.update();
+        if(! last_event.isHumanDetected())
+            last_event.setHumanDetected(true);
+        if(! last_event.isAlreadyBeenTriggered()) {
+            last_event.setAlreadyBeenTriggered();
+            // TODO : trigger event
+            Libs::Logger::log_main("MotionManager : human detected");
+        }
     }
 
     void MotionManager::stop_stream_redirect_human_detector() {

@@ -6,12 +6,15 @@
 namespace DelNico::RtspAnalyser::Motion {
 
     MotionEvent::MotionEvent() :
-        start_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()),
-        end_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()),
+        start_timestamp(0),
+        end_timestamp(0),
         motionDetected(false),
-        humanDetected(false)
+        humanDetected(false),
+        haveBeenTriggered(false)
     {
-        auto start = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        this->start_timestamp = now;
+        this->end_timestamp = now;
     }
 
     MotionEvent::~MotionEvent() {}
@@ -34,6 +37,14 @@ namespace DelNico::RtspAnalyser::Motion {
 
     bool MotionEvent::isHumanDetected() const {
         return humanDetected;
+    }
+
+    bool MotionEvent::isAlreadyBeenTriggered() const {
+        return haveBeenTriggered;
+    }
+
+    void MotionEvent::setAlreadyBeenTriggered() {
+        haveBeenTriggered = true;
     }
 
     bool MotionEvent::isMotionTimeCloseTo(int64_t guard_time) const {

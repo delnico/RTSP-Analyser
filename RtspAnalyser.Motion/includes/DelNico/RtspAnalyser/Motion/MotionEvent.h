@@ -16,6 +16,8 @@ namespace DelNico::RtspAnalyser::Motion {
             void setHumanDetected(bool status);
             bool isMotionDetected() const;
             bool isHumanDetected() const;
+            bool isAlreadyBeenTriggered() const;
+            void setAlreadyBeenTriggered();
 
             bool isMotionTimeCloseTo(int64_t guard_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(5)).count()) const;
         private:
@@ -23,6 +25,7 @@ namespace DelNico::RtspAnalyser::Motion {
             int64_t end_timestamp;
             bool motionDetected;
             bool humanDetected;
+            bool haveBeenTriggered;
     };
 }
 

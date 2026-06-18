@@ -48,6 +48,8 @@ namespace DelNico::RtspAnalyser::Motion {
         Analyser::Multiplexer * multiplexer;
         std::deque<MotionManagerCalling> motionManagerCallings;
         Libs::Spinlock slock_motionManagerCallings;
+
+        MotionEvent last_event;
     };
 }
 
