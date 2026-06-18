@@ -8,6 +8,7 @@
 #include "DelNico/RtspAnalyser/Watchdog/Watchdog.h"
 
 namespace DelNico::RtspAnalyser::Watchdog {
+
     Watchdog::Watchdog(
         Libs::Logger * logger
     ) :
@@ -71,4 +72,5 @@ namespace DelNico::RtspAnalyser::Watchdog {
             }
         }
     }
+
 }
