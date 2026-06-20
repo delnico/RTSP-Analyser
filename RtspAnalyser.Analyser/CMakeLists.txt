@@ -8,6 +8,7 @@ set(SOURCES
     src/Multiplexer.cpp
     src/OutputStream.cpp
     src/Streamer.cpp
+    src/TriggerWorker.cpp
 )
 
 set(INCLUDES
@@ -16,6 +17,7 @@ set(INCLUDES
     includes/DelNico/RtspAnalyser/Analyser/Multiplexer.h
     includes/DelNico/RtspAnalyser/Analyser/OutputStream.h
     includes/DelNico/RtspAnalyser/Analyser/Streamer.h
+    includes/DelNico/RtspAnalyser/Analyser/TriggerWorker.h
 )
 
 add_library(${PROJECT_NAME}
@@ -35,6 +37,7 @@ target_link_libraries(${PROJECT_NAME}
         fmt::fmt
         libzmq
         cppzmq
+        mailio
         RtspAnalyser.Libs
         RtspAnalyser.Motion
     PUBLIC
