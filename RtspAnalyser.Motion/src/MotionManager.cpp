@@ -7,6 +7,7 @@
 #include <boost/bind/bind.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
+#include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
@@ -20,7 +21,8 @@ namespace DelNico::RtspAnalyser::Motion {
     MotionManager::MotionManager(
         boost::asio::io_service & boost_io_service,
         std::chrono::seconds guard_time_new_event,
-        Analyser::Multiplexer * multiplexer
+        Analyser::Multiplexer * multiplexer,
+        Analyser::TriggerWorker * triggerWorker
     ) :
         boost_io_service(boost_io_service),
         timer_stream_redirect_human_detection(
@@ -32,7 +34,8 @@ namespace DelNico::RtspAnalyser::Motion {
         thread(),
         isEnabled(false),
         guard_time_new_event(guard_time_new_event),
-        multiplexer(multiplexer)
+        multiplexer(multiplexer),
+        triggerWorker(triggerWorker)
     {}
 
     MotionManager::~MotionManager() {}
@@ -109,7 +112,7 @@ namespace DelNico::RtspAnalyser::Motion {
             last_event.setHumanDetected(true);
         if(! last_event.isAlreadyBeenTriggered()) {
             last_event.setAlreadyBeenTriggered();
-            // TODO : trigger event
+            triggerWorker->addEvent(last_event);
             Libs::Logger::log_main("MotionManager : human detected");
         }
     }

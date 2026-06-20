@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
+#include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
@@ -22,7 +23,8 @@ namespace DelNico::RtspAnalyser::Motion {
         MotionManager(
             boost::asio::io_service & boost_io_service,
             std::chrono::seconds guard_time_new_event,
-            Analyser::Multiplexer * multiplexer
+            Analyser::Multiplexer * multiplexer,
+            Analyser::TriggerWorker * triggerWorker
         );
         ~MotionManager();
 
@@ -46,6 +48,7 @@ namespace DelNico::RtspAnalyser::Motion {
         Libs::ConditionalVariable cond_events;
         std::chrono::seconds guard_time_new_event;
         Analyser::Multiplexer * multiplexer;
+        Analyser::TriggerWorker * triggerWorker;
         std::deque<MotionManagerCalling> motionManagerCallings;
         Libs::Spinlock slock_motionManagerCallings;
 

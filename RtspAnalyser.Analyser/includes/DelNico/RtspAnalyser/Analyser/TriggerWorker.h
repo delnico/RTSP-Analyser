@@ -9,7 +9,7 @@
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
 
-namespace DelNico::RtspAnalyser::Motion {
+namespace DelNico::RtspAnalyser::Analyser {
     class TriggerWorker {
         public:
             TriggerWorker() = delete;
@@ -23,7 +23,7 @@ namespace DelNico::RtspAnalyser::Motion {
             void start();
             void stop();
 
-            void addEvent(const MotionEvent & event);
+            void addEvent(const Motion::MotionEvent & event);
         
         private:
             void run();
@@ -34,7 +34,7 @@ namespace DelNico::RtspAnalyser::Motion {
             Libs::ConditionalVariable cv_wakeup;
 
 
-            std::deque<MotionEvent> events;
+            std::deque<Motion::MotionEvent> events;
             const std::string & server_url;
             int server_port;
             const std::string & username;

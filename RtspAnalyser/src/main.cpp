@@ -101,7 +101,8 @@ int main(int argc, char* argv[])
     MotionManager motionManager(
         boost_io_service,
         std::chrono::seconds(150),
-        &multiplexer
+        &multiplexer,
+        &triggerWorker
     );
 
     MotionDetector motionDetector(
@@ -117,8 +118,8 @@ int main(int argc, char* argv[])
     humanDetector.setStreamer(&streamerHDOutput, &human_detector_output);
 
     OutputStream os_viewer(&streamerMain, viewer_frames, 1);
-    OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 3);
-    OutputStream os_human_detector(&humanDetector, human_detect_frames, 3);
+    OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 5);
+    OutputStream os_human_detector(&humanDetector, human_detect_frames, 5);
 
     multiplexer.subscribe(&os_viewer);
     multiplexer.subscribe(&os_motiondetector);

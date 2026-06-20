@@ -14,7 +14,7 @@
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
 #include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
 
-namespace DelNico::RtspAnalyser::Motion {
+namespace DelNico::RtspAnalyser::Analyser {
     TriggerWorker::TriggerWorker(
         const std::string & server_url,
         int server_port,
@@ -46,7 +46,7 @@ namespace DelNico::RtspAnalyser::Motion {
         }
     }
 
-    void TriggerWorker::addEvent(const MotionEvent & event) {
+    void TriggerWorker::addEvent(const Motion::MotionEvent & event) {
         std::lock_guard<Libs::Spinlock> lock(slock_events);
         events.push_back(event);
         cv_wakeup.notify();
@@ -57,7 +57,7 @@ namespace DelNico::RtspAnalyser::Motion {
             cv_wakeup.wait();
             if(! isEnabled.load())
                 break;
-            MotionEvent event;
+            Motion::MotionEvent event;
             {
                 std::lock_guard<Libs::Spinlock> lock(slock_events);
                 if(events.empty())
