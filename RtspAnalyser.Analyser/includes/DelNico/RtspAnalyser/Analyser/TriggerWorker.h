@@ -5,6 +5,7 @@
 #include <deque>
 #include <chrono>
 
+#include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
 
@@ -14,8 +15,8 @@ namespace DelNico::RtspAnalyser::Motion {
             TriggerWorker() = delete;
             TriggerWorker(
                 const std::string & server_url,
-                const std::string & username,
-                const std::string & password
+                int server_port,
+                const std::string & username
             );
             ~TriggerWorker();
 
@@ -30,10 +31,12 @@ namespace DelNico::RtspAnalyser::Motion {
             std::thread thread;
             std::atomic<bool> isEnabled;
             Libs::Spinlock slock_events;
+            Libs::ConditionalVariable cv_wakeup;
+
 
             std::deque<MotionEvent> events;
             const std::string & server_url;
+            int server_port;
             const std::string & username;
-            const std::string & password;
     };
 }

@@ -15,6 +15,7 @@
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
 #include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
+#include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 #include "DelNico/RtspAnalyser/Libs/Codec.h"
@@ -75,6 +76,13 @@ int main(int argc, char* argv[])
 
     Logger logger(logFile);
     logger.start();
+
+    TriggerWorker triggerWorker(
+        conf.get<std::string>("smtp_server"),
+        conf.get<int>("smtp_port"),
+        conf.get<std::string>("smtp_username")
+    );
+    triggerWorker.start();
 
     StreamReceiver streamReceiver(
         boost_io_service,
@@ -167,6 +175,8 @@ int main(int argc, char* argv[])
     streamerMain.stop();
     streamerFgMasks.stop();
     streamerHDOutput.stop();
+
+    triggerWorker.stop();
 
     watchdog.stop();
 

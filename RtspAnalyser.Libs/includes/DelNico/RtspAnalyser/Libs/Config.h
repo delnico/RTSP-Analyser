@@ -45,7 +45,9 @@ namespace DelNico::RtspAnalyser::Libs {
             int opencv_model_gaussian_sigma;
             int opencv_model_min_area;
 
-            
+            std::string smtp_server;
+            int smtp_port;
+            std::string smtp_username;
     };
 
     template<typename T>
@@ -58,6 +60,8 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "nvr_password") return nvr_password;
             if(key == "nvr_protocol") return nvr_protocol;
             if(key == "log_path") return log_path;
+            if(key == "smtp_server") return smtp_server;
+            if(key == "smtp_username") return smtp_username;
         }
         else if constexpr (std::is_same<T, int>::value)
         {
@@ -69,6 +73,7 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "opencv_model_gaussian_size") return opencv_model_gaussian_size;
             if(key == "opencv_model_gaussian_sigma") return opencv_model_gaussian_sigma;
             if(key == "opencv_model_min_area") return opencv_model_min_area;
+            if(key == "smtp_port") return smtp_port;
         }
         else if constexpr (std::is_same<T, bool>::value)
         {
