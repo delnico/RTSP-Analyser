@@ -20,6 +20,10 @@ namespace DelNico::RtspAnalyser::Motion {
             void setAlreadyBeenTriggered();
 
             bool isMotionTimeCloseTo(int64_t guard_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(5)).count()) const;
+
+            int64_t getStartTimestamp() const;
+            int64_t getEndTimestamp() const;
+            
         private:
             int64_t start_timestamp;
             int64_t end_timestamp;

@@ -2,6 +2,7 @@
 
 #include <condition_variable>
 #include <atomic>
+#include <mutex>
 
 #include "DelNico/RtspAnalyser/Libs/Spinlock.h"
 
@@ -12,12 +13,12 @@ namespace DelNico::RtspAnalyser::Libs
     {
         public:
             ConditionalVariable();
-            ConditionalVariable(Spinlock & spinlock);
+            // ConditionalVariable(Spinlock & spinlock);
             ~ConditionalVariable() = default;
             void notify();
             void wait();
         private:
-            Spinlock spinlock;
+            std::mutex spinlock;
             std::condition_variable_any cond;
             std::atomic<bool> status;
     };

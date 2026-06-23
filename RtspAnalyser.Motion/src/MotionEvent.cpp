@@ -47,6 +47,14 @@ namespace DelNico::RtspAnalyser::Motion {
         haveBeenTriggered = true;
     }
 
+    int64_t MotionEvent::getStartTimestamp() const {
+        return start_timestamp;
+    }
+
+    int64_t MotionEvent::getEndTimestamp() const {
+        return end_timestamp;
+    }
+
     bool MotionEvent::isMotionTimeCloseTo(int64_t guard_time) const {
         auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         return now - end_timestamp < guard_time;

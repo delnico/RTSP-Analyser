@@ -101,8 +101,14 @@ namespace DelNico::RtspAnalyser::Motion {
 
         multiplexer->start_stream_redirect_human_detector();
         if(! last_event.isMotionTimeCloseTo()) {
+            int64_t last_event_end_timestamp = last_event.getEndTimestamp();
             last_event = MotionEvent();
+            int64_t new_event_start_timestamp = last_event.getStartTimestamp();
             last_event.setMotionDetected(true);
+            int64_t elapsed_time_s = std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::nanoseconds(new_event_start_timestamp - last_event_end_timestamp)
+            ).count();
+            Libs::Logger::log_main(std::format("[DEBUG] MotionManager : new event (elapsed time: {} s)", elapsed_time_s));
         }
     }
 
