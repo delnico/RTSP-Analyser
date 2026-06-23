@@ -1,8 +1,10 @@
 #include <thread>
 #include <atomic>
 #include <deque>
+#include <vector>
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/dnn.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
@@ -19,12 +21,15 @@ HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager
     isEnabled(false),
     thread(),
     frames(frames),
-    hog(),
+    net(), // Initialisation de l'objet d'OpenCV dnn
     motionManager(motionManager),
     streamer(nullptr),
     human_detected_output(nullptr)
 {
-    hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
+    net = cv::dnn::readNetFromONNX("/home/nico/project/RTSP-Analyser/yolov8n.onnx");
+    // for use in CPU mode
+    net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+    net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
 }
 
 HumanDetector::~HumanDetector()
@@ -90,29 +95,72 @@ void HumanDetector::run()
 
 std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
 {
-    cv::Mat gray, output;
+    cv::Mat blob, output;
     cv::resize(frame, output, cv::Size(frame.cols / 2, frame.rows / 2));
 
-    cv::cvtColor(output, gray, cv::COLOR_BGR2GRAY);
-
-    auto boxes = std::vector<cv::Rect>();
-    auto weights = std::vector<double>();
-
-    hog.detectMultiScale(gray, boxes, weights);
-
-    if (boxes.size() > 0)
-    {
-        if(need_output)
-        {
-            for (size_t i = 0; i < boxes.size(); i++)
-            {
-                cv::rectangle(output, boxes[i], cv::Scalar(0, 255, 0), 2);
-            }
-        }
-        return std::make_tuple(true, output);
+    if (frame.empty()) {
+        return std::make_tuple(false, output);
     }
 
-    return std::make_tuple(false, output);
+    // 1. Préparer l'image pour YOLO (640x640, normalisation 1/255.0, BGR à RGB)
+    cv::dnn::blobFromImage(frame, blob, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), true, false);
+    
+    // On effectue une copie non-const du réseau car net.setInput() modifie l'état interne de l'objet
+    auto & non_const_net = const_cast<cv::dnn::Net&>(net);
+    non_const_net.setInput(blob);
+
+    // 2. Inférence
+    std::vector<cv::Mat> outputs;
+    non_const_net.forward(outputs, non_const_net.getUnconnectedOutLayersNames());
+
+    cv::Mat raw_output = outputs[0];
+    
+    // Remodelage de la matrice de sortie de YOLOv8 [1, 84, 8400] -> [8400, 84]
+    if (raw_output.dims == 3) {
+        raw_output = raw_output.reshape(1, raw_output.size[1]);
+        cv::transpose(raw_output, raw_output);
+    }
+
+    bool human_found = false;
+    const float confidence_threshold = 0.45f; // Ajustable selon la sensibilité voulue
+
+    // 3. Analyse des résultats (8400 boîtes prédites par YOLO)
+    for (int i = 0; i < raw_output.rows; ++i) {
+        // Index 4 dans le dataset COCO = "person"
+        float person_score = raw_output.at<float>(i, 4); 
+
+        if (person_score >= confidence_threshold) {
+            human_found = true;
+
+            if (need_output) {
+                // Récupération des coordonnées normalisées de la boîte de détection
+                float cx = raw_output.at<float>(i, 0);
+                float cy = raw_output.at<float>(i, 1);
+                float w  = raw_output.at<float>(i, 2);
+                float h  = raw_output.at<float>(i, 3);
+
+                // YOLO v8 donne les coordonnées par rapport à l'image d'entrée du BLOB (640x640)
+                // On applique le ratio sur la taille de ton image "output" (qui est frame/2)
+                float scale_x = static_cast<float>(output.cols) / 640.0f;
+                float scale_y = static_cast<float>(output.rows) / 640.0f;
+
+                int left   = static_cast<int>((cx - w / 2.0f) * scale_x);
+                int top    = static_cast<int>((cy - h / 2.0f) * scale_y);
+                int width  = static_cast<int>(w * scale_x);
+                int height = static_cast<int>(h * scale_y);
+
+                cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
+            }
+            
+            // Si need_output est faux, on peut break tout de suite pour gagner du temps CPU, 
+            // sinon on continue pour dessiner toutes les personnes détectées.
+            if (!need_output) {
+                break;
+            }
+        }
+    }
+
+    return std::make_tuple(human_found, output);
 }
 
 bool HumanDetector::operator==(const HumanDetector & other) const

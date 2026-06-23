@@ -37,6 +37,8 @@ namespace DelNico::RtspAnalyser::Analyser {
             Streamer * streamer;
             std::deque<cv::Mat> * human_detected_output;
 
+            cv::dnn::Net net;
+
             void run();
             std::tuple<bool, cv::Mat>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;
 

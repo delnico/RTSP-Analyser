@@ -14,9 +14,9 @@ namespace DelNico::RtspAnalyser::Analyser {
         public:
             TriggerWorker() = delete;
             TriggerWorker(
-                const std::string & server_url,
+                std::string server_url,
                 int server_port,
-                const std::string & username
+                std::string username
             );
             ~TriggerWorker();
 
@@ -35,8 +35,8 @@ namespace DelNico::RtspAnalyser::Analyser {
 
 
             std::deque<Motion::MotionEvent> events;
-            const std::string & server_url;
+            std::string server_url;
             int server_port;
-            const std::string & username;
+            std::string username;
     };
 }

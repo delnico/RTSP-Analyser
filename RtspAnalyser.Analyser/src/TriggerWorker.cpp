@@ -16,9 +16,9 @@
 
 namespace DelNico::RtspAnalyser::Analyser {
     TriggerWorker::TriggerWorker(
-        const std::string & server_url,
+        std::string server_url,
         int server_port,
-        const std::string & username
+        std::string username
     ) :
         thread(),
         isEnabled(false),

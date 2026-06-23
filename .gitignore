@@ -5,3 +5,4 @@ rtsp_config.json
 rpi_mount_samba.sh
 copy.sh
 log.txt
+yolov8n.onnx
