@@ -63,6 +63,7 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "log_path") return log_path;
             if(key == "smtp_server") return smtp_server;
             if(key == "smtp_username") return smtp_username;
+            if(key == "nvr_gstreamer_pipeline_params") return nvr_gstreamer_pipeline_params;
         }
         else if constexpr (std::is_same<T, int>::value)
         {

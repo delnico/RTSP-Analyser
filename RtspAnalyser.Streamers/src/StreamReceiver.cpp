@@ -35,27 +35,31 @@ namespace DelNico::RtspAnalyser::Streamers {
     }
 
     void StreamReceiver::start(
-        boost::asio::io_service & io_service,
-        std::string nvr_ip,
-        int nvr_port,
-        std::string nvr_user,
-        std::string nvr_password,
-        std::string stream_path,
-        std::string gstreamer_pipeline_params
-    )
-    {
-        std::string gstreamer_pipeline =    "rtspsrc location=\"rtsp://" + nvr_ip + ":" + std::to_string(29172) + stream_path + "\" "
-                                            "user-id=\"" + nvr_user + "\" "
-                                            "user-pw=\"" + nvr_password + "\"" + gstreamer_pipeline_params;
+    boost::asio::io_service & io_service,
+    std::string nvr_ip,
+    int nvr_port,
+    std::string nvr_user,
+    std::string nvr_password,
+    std::string stream_path,
+    std::string gstreamer_pipeline_params
+)
+{
+    std::string base_url = "rtsp://" + nvr_ip + ":" + std::to_string(nvr_port) + stream_path;
 
-        cap.open(gstreamer_pipeline, cv::CAP_GSTREAMER);
+    std::string gstreamer_pipeline = 
+        "rtspsrc location=\"" + base_url + "\" "
+        "user-id=\"" + nvr_user + "\" "
+        "user-pw=\"" + nvr_password + "\" "
+        + gstreamer_pipeline_params;
 
-        if(!cap.isOpened())
-            throw std::runtime_error("Failed to open stream with GStreamer");
-        
-        timer = boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()));
-        timer.async_wait(boost::bind(&StreamReceiver::run, this));
-    }
+    cap.open(gstreamer_pipeline, cv::CAP_GSTREAMER);
+
+    if(!cap.isOpened())
+        throw std::runtime_error("Failed to open stream with GStreamer");
+    
+    timer = boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()));
+    timer.async_wait(boost::bind(&StreamReceiver::run, this));
+}
 
     void StreamReceiver::stop()
     {

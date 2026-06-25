@@ -76,6 +76,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             Libs::Logger::log_main("TriggerWorker : Attempting connection to " + server_url + ":" + std::to_string(server_port));
             try {
                 mailio::smtp conn(server_url, server_port);
+                conn.authenticate("", "", mailio::smtp::auth_method_t::NONE);
                 conn.submit(msg);
             }
             catch(mailio::smtp_error& exc) {

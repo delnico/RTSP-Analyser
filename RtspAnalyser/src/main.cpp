@@ -146,7 +146,12 @@ int main(int argc, char* argv[])
     humanDetector.start();
     streamReceiver.start(
         boost_io_service,
-        
+        conf.get<std::string>("nvr_ip"),
+        conf.get<int>("nvr_port"),
+        conf.get<std::string>("nvr_user"),
+        conf.get<std::string>("nvr_password"),
+        stream.url,
+        conf.get<std::string>("nvr_gstreamer_pipeline_params")
     );
 
     std::thread boost_io_thread(

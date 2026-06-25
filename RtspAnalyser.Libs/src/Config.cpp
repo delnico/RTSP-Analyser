@@ -71,7 +71,7 @@ namespace DelNico::RtspAnalyser::Libs {
     }
 
     std::string Config::getStreamUrl(int index) const {
-        return "rtsp://" + nvr_user + ":" + nvr_password + "@" + nvr_ip + ":" + std::to_string(nvr_port) + streams[index].url;
+        return streams[index].url;
     }
 
     Codec Config::getStreamCodec(int index) const {
