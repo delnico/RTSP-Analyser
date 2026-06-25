@@ -31,3 +31,7 @@ cd vcpkg
 export VCPKG_ROOT="/home/$USER/vcpkg"
 export PATH="$PATH:$VCPKG_ROOT"
 ```
+
+
+
+sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav

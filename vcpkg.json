@@ -1,37 +1,51 @@
 {
-    "name" : "rtspanalyser",
-    "version-string": "0.1",
-    "dependencies": [
-      {
-        "name" : "boost"
-      },
-      {
-        "name" : "boost-asio"
-      },
-      {
-        "name" : "fmt"
-      },
-      {
-        "name" : "nlohmann-json"
-      },
-      {
-        "name" : "opencv4",
-        "features": [
-          "contrib",
-          "ffmpeg",
-          "gtk",
-          "gstreamer",
-          "nonfree"
-        ]
-      },
-      {
-        "name" : "zeromq"
-      },
-      {
-        "name" : "cppzmq"
-      },
-      {
-        "name" : "mailio"
-      }
-    ]
-  }
+	"name" : "rtspanalyser",
+	"version-string": "0.1",
+	"overrides": [
+		{
+			"name": "ffmpeg",
+			"version": "6.1.1#11"
+		}
+	],
+	"dependencies": [
+		{
+			"name" : "boost"
+		},
+		{
+			"name" : "boost-asio"
+		},
+		{
+			"name" : "fmt"
+		},
+		{
+			"name" : "nlohmann-json"
+		},
+		{
+			"name" : "opencv4",
+			"features": [
+				"contrib",
+				"gstreamer",
+				"nonfree"
+			]
+		},
+		{
+			"name": "gstreamer",
+			"features": [
+				"plugins-base",
+				"plugins-good",
+				"plugins-bad",
+				"plugins-ugly",
+				"libav"
+			]
+		},
+		{
+			"name" : "zeromq"
+		},
+		{
+			"name" : "cppzmq"
+		},
+		{
+			"name" : "mailio"
+		}
+	]
+}

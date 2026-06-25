@@ -33,6 +33,7 @@ namespace DelNico::RtspAnalyser::Libs {
             std::string nvr_user;
             std::string nvr_password;
             std::string nvr_protocol;
+            std::string nvr_gstreamer_pipeline_params;
             std::vector<struct Stream> streams;
             std::string log_path;
 

@@ -73,6 +73,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             msg.subject("Human detected");
             msg.content("A human has been detected by the RTSP Analyser.");
 
+            Libs::Logger::log_main("TriggerWorker : Attempting connection to " + server_url + ":" + std::to_string(server_port));
             try {
                 mailio::smtp conn(server_url, server_port);
                 conn.submit(msg);
@@ -88,5 +89,4 @@ namespace DelNico::RtspAnalyser::Analyser {
             }
         }
     }
-
 }

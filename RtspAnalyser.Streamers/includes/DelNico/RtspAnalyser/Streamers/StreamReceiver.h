@@ -23,7 +23,15 @@ namespace DelNico::RtspAnalyser::Streamers {
             std::deque<cv::Mat> & frames
         );
         ~StreamReceiver();
-        void start(boost::asio::io_service & io_service);
+        void start(
+            boost::asio::io_service & io_service,
+            std::string nvr_ip,
+            int nvr_port,
+            std::string nvr_user,
+            std::string nvr_password,
+            std::string stream_path,
+            std::string gstreamer_pipeline_params
+        );
         void stop();
         void subscribe(Analyser::IAnalyser * analyser);
         void unsubscribe(Analyser::IAnalyser * analyser);

@@ -35,7 +35,7 @@ using namespace DelNico::RtspAnalyser::Watchdog;
 
 int main(int argc, char* argv[])
 {
-    cv::setNumThreads(1);
+    // cv::setNumThreads(1);
 
     std::string configFile = "config.json";
     std::string logFile;
@@ -144,7 +144,10 @@ int main(int argc, char* argv[])
 
     motionDetector.start();
     humanDetector.start();
-    streamReceiver.start(boost_io_service);
+    streamReceiver.start(
+        boost_io_service,
+        
+    );
 
     std::thread boost_io_thread(
         [](boost::asio::io_service & io) {

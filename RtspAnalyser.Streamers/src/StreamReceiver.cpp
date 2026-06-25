@@ -34,12 +34,25 @@ namespace DelNico::RtspAnalyser::Streamers {
         stop();
     }
 
-    void StreamReceiver::start(boost::asio::io_service & io_service)
+    void StreamReceiver::start(
+        boost::asio::io_service & io_service,
+        std::string nvr_ip,
+        int nvr_port,
+        std::string nvr_user,
+        std::string nvr_password,
+        std::string stream_path,
+        std::string gstreamer_pipeline_params
+    )
     {
-        isEnabled.store(true);
-        cap.open(stream.url, cv::CAP_FFMPEG);
+        std::string gstreamer_pipeline =    "rtspsrc location=\"rtsp://" + nvr_ip + ":" + std::to_string(29172) + stream_path + "\" "
+                                            "user-id=\"" + nvr_user + "\" "
+                                            "user-pw=\"" + nvr_password + "\"" + gstreamer_pipeline_params;
+
+        cap.open(gstreamer_pipeline, cv::CAP_GSTREAMER);
+
         if(!cap.isOpened())
-            throw std::runtime_error("Failed to open stream");
+            throw std::runtime_error("Failed to open stream with GStreamer");
+        
         timer = boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()));
         timer.async_wait(boost::bind(&StreamReceiver::run, this));
     }
@@ -88,25 +101,22 @@ namespace DelNico::RtspAnalyser::Streamers {
     {
         cv::Mat frame;
         std::chrono::duration<double> elapsed(0);
-        while (isEnabled)
-        {
-            auto start = std::chrono::steady_clock::now();
-            cap >> frame;
+        
+        auto start = std::chrono::steady_clock::now();
+        cap >> frame;
 
-            if(! frame.empty() && frame.size().width > 0 && frame.size().height > 0)
+        if(! frame.empty() && frame.size().width > 0 && frame.size().height > 0)
+        {
+            if(listener != nullptr)
             {
-                if(listener != nullptr)
-                {
-                    frames.push_back(frame);
-                    listener->notify();
-                }
+                frames.push_back(frame);
+                listener->notify();
             }
-            auto end = std::chrono::steady_clock::now();
-            elapsed = end - start;
-            auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count() - (elapsed.count() * 1000)));
-            timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
-            timer.async_wait(boost::bind(&StreamReceiver::run, this));
         }
+        auto end = std::chrono::steady_clock::now();
+        elapsed = end - start;
+        auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count() - (elapsed.count() * 1000)));
+        timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
+        timer.async_wait(boost::bind(&StreamReceiver::run, this));
     }
-    
 }

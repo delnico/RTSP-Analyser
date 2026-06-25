@@ -25,6 +25,7 @@ namespace DelNico::RtspAnalyser::Libs {
         nvr_port = nvr["port"];
         nvr_user = nvr["username"];
         nvr_password = nvr["password"];
+        nvr_gstreamer_pipeline_params = nvr["gstreamer_pipeline_params"];
 
         auto streams = j["streams"];
         for(auto& stream : streams) {
