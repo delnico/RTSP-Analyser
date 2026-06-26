@@ -22,14 +22,14 @@
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
-#include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
+#include "DelNico/RtspAnalyser/Receivers/StreamReceiver.h"
 #include "DelNico/RtspAnalyser/Watchdog/Watchdog.h"
 
 using namespace DelNico::RtspAnalyser;
 using namespace DelNico::RtspAnalyser::Analyser;
 using namespace DelNico::RtspAnalyser::Libs;
 using namespace DelNico::RtspAnalyser::Motion;
-using namespace DelNico::RtspAnalyser::Streamers;
+using namespace DelNico::RtspAnalyser::Receivers;
 using namespace DelNico::RtspAnalyser::Watchdog;
 
 

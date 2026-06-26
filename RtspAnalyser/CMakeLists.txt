@@ -27,7 +27,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     libzmq
     cppzmq
     RtspAnalyser.Libs
-    RtspAnalyser.Streamers
+    RtspAnalyser.Receivers
     RtspAnalyser.Analyser
     RtspAnalyser.Motion
     RtspAnalyser.Watchdog

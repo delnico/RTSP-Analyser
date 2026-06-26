@@ -13,7 +13,7 @@
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 
 
-namespace DelNico::RtspAnalyser::Streamers {
+namespace DelNico::RtspAnalyser::Receivers {
   class StreamReceiver {
     public:
         StreamReceiver() = delete;

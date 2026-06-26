@@ -29,7 +29,7 @@ add_subdirectory(RtspAnalyser.Analyser)
 add_subdirectory(RtspAnalyser.Management)
 add_subdirectory(RtspAnalyser.Motion)
 add_subdirectory(RtspAnalyser.Libs)
-add_subdirectory(RtspAnalyser.Streamers)
+add_subdirectory(RtspAnalyser.Receivers)
 add_subdirectory(RtspAnalyser.WatchdogLib)
 add_subdirectory(RtspAnalyser)
 

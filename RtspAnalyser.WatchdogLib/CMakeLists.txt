@@ -27,7 +27,7 @@ target_link_libraries(${PROJECT_NAME}
         Boost::asio
         RtspAnalyser.Analyser
         RtspAnalyser.Motion
-        RtspAnalyser.Streamers
+        RtspAnalyser.Receivers
         RtspAnalyser.Libs
     PUBLIC
         Threads::Threads

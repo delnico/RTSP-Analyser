@@ -10,11 +10,11 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 
-#include "DelNico/RtspAnalyser/Streamers/StreamReceiver.h"
+#include "DelNico/RtspAnalyser/Receivers/StreamReceiver.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 
-namespace DelNico::RtspAnalyser::Streamers {
+namespace DelNico::RtspAnalyser::Receivers {
     
     StreamReceiver::StreamReceiver(
         boost::asio::io_service & io_service,

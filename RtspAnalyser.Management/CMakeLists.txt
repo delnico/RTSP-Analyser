@@ -28,7 +28,7 @@ target_link_libraries(${PROJECT_NAME}
         RtspAnalyser.Analyser
         RtspAnalyser.Libs
         RtspAnalyser.Motion
-        RtspAnalyser.Streamers
+        RtspAnalyser.Receivers
         RtspAnalyser.WatchdogLib
     PUBLIC
         Threads::Threads
