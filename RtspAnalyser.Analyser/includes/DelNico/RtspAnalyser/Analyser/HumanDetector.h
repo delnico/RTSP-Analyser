@@ -32,7 +32,6 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::deque<cv::Mat> & frames;
-            cv::HOGDescriptor hog;
             Motion::MotionManager * motionManager;
             Streamer * streamer;
             std::deque<cv::Mat> * human_detected_output;

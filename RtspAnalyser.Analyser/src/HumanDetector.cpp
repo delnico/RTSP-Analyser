@@ -21,7 +21,7 @@ HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager
     isEnabled(false),
     thread(),
     frames(frames),
-    net(), // Initialisation de l'objet d'OpenCV dnn
+    net(),
     motionManager(motionManager),
     streamer(nullptr),
     human_detected_output(nullptr)
@@ -102,46 +102,41 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
         return std::make_tuple(false, output);
     }
 
-    // 1. Préparer l'image pour YOLO (640x640, normalisation 1/255.0, BGR à RGB)
-    cv::dnn::blobFromImage(frame, blob, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), true, false);
+    // 1    prepare image for YOLO (640x640, normalization 1/255.0, BGR to RGB)
+    cv::dnn::blobFromImage(frame, blob, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), false, false);
     
-    // On effectue une copie non-const du réseau car net.setInput() modifie l'état interne de l'objet
+    //  non-const reference to net to call setInput and forward, to avoid modifying the original one
     auto & non_const_net = const_cast<cv::dnn::Net&>(net);
     non_const_net.setInput(blob);
 
-    // 2. Inférence
+    // 2    predict
     std::vector<cv::Mat> outputs;
     non_const_net.forward(outputs, non_const_net.getUnconnectedOutLayersNames());
 
     cv::Mat raw_output = outputs[0];
     
-    // Remodelage de la matrice de sortie de YOLOv8 [1, 84, 8400] -> [8400, 84]
+    // remodeling output of YOLO [1, 84, 8400] -> [8400, 84]
     if (raw_output.dims == 3) {
         raw_output = raw_output.reshape(1, raw_output.size[1]);
         cv::transpose(raw_output, raw_output);
     }
 
     bool human_found = false;
-    const float confidence_threshold = 0.45f; // Ajustable selon la sensibilité voulue
+    const float confidence_threshold = 0.45f;
 
-    // 3. Analyse des résultats (8400 boîtes prédites par YOLO)
     for (int i = 0; i < raw_output.rows; ++i) {
-        // Index 4 dans le dataset COCO = "person"
-        float person_score = raw_output.at<float>(i, 4); 
+        float person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output
 
         if (person_score >= confidence_threshold) {
             human_found = true;
 
             if (need_output) {
-                // Récupération des coordonnées normalisées de la boîte de détection
                 float cx = raw_output.at<float>(i, 0);
                 float cy = raw_output.at<float>(i, 1);
                 float w  = raw_output.at<float>(i, 2);
                 float h  = raw_output.at<float>(i, 3);
 
-                // YOLO v8 donne les coordonnées par rapport à l'image d'entrée du BLOB (640x640)
-                // On applique le ratio sur la taille de ton image "output" (qui est frame/2)
-                float scale_x = static_cast<float>(output.cols) / 640.0f;
+                float scale_x = static_cast<float>(output.cols) / 640.0f;   // yolov8n input size is 640x640
                 float scale_y = static_cast<float>(output.rows) / 640.0f;
 
                 int left   = static_cast<int>((cx - w / 2.0f) * scale_x);
@@ -152,8 +147,6 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
                 cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
             }
             
-            // Si need_output est faux, on peut break tout de suite pour gagner du temps CPU, 
-            // sinon on continue pour dessiner toutes les personnes détectées.
             if (!need_output) {
                 break;
             }
