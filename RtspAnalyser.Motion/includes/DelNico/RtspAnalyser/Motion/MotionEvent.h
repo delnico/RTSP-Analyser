@@ -9,6 +9,7 @@ namespace DelNico::RtspAnalyser::Motion {
     class MotionEvent {
         public:
             MotionEvent();
+            MotionEvent(int stream_id);
             ~MotionEvent();
 
             void update();
@@ -21,10 +22,13 @@ namespace DelNico::RtspAnalyser::Motion {
 
             bool isMotionTimeCloseTo(int64_t guard_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(5)).count()) const;
 
+            int getStreamId() const;
+
             int64_t getStartTimestamp() const;
             int64_t getEndTimestamp() const;
             
         private:
+            int stream_id;
             int64_t start_timestamp;
             int64_t end_timestamp;
             bool motionDetected;

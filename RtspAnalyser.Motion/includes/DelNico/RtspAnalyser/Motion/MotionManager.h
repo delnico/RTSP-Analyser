@@ -24,7 +24,8 @@ namespace DelNico::RtspAnalyser::Motion {
             boost::asio::io_service & boost_io_service,
             std::chrono::seconds guard_time_new_event,
             Analyser::Multiplexer * multiplexer,
-            Analyser::TriggerWorker * triggerWorker
+            Analyser::TriggerWorker * triggerWorker,
+            int stream_id
         );
         ~MotionManager();
 
@@ -49,6 +50,7 @@ namespace DelNico::RtspAnalyser::Motion {
         std::chrono::seconds guard_time_new_event;
         Analyser::Multiplexer * multiplexer;
         Analyser::TriggerWorker * triggerWorker;
+        int stream_id;
         std::deque<MotionManagerCalling> motionManagerCallings;
         Libs::Spinlock slock_motionManagerCallings;
 

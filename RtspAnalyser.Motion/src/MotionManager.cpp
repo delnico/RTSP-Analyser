@@ -22,7 +22,8 @@ namespace DelNico::RtspAnalyser::Motion {
         boost::asio::io_service & boost_io_service,
         std::chrono::seconds guard_time_new_event,
         Analyser::Multiplexer * multiplexer,
-        Analyser::TriggerWorker * triggerWorker
+        Analyser::TriggerWorker * triggerWorker,
+        int stream_id
     ) :
         boost_io_service(boost_io_service),
         timer_stream_redirect_human_detection(
@@ -35,7 +36,8 @@ namespace DelNico::RtspAnalyser::Motion {
         isEnabled(false),
         guard_time_new_event(guard_time_new_event),
         multiplexer(multiplexer),
-        triggerWorker(triggerWorker)
+        triggerWorker(triggerWorker),
+        stream_id(stream_id)
     {}
 
     MotionManager::~MotionManager() {}
@@ -102,7 +104,7 @@ namespace DelNico::RtspAnalyser::Motion {
         multiplexer->start_stream_redirect_human_detector();
         if(! last_event.isMotionTimeCloseTo()) {
             int64_t last_event_end_timestamp = last_event.getEndTimestamp();
-            last_event = MotionEvent();
+            last_event = MotionEvent(stream_id);
             int64_t new_event_start_timestamp = last_event.getStartTimestamp();
             last_event.setMotionDetected(true);
             int64_t elapsed_time_s = std::chrono::duration_cast<std::chrono::seconds>(

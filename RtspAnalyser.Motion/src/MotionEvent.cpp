@@ -5,7 +5,10 @@
 
 namespace DelNico::RtspAnalyser::Motion {
 
-    MotionEvent::MotionEvent() :
+    MotionEvent::MotionEvent() : MotionEvent(-1) {}
+
+    MotionEvent::MotionEvent(int stream_id) :
+        stream_id(stream_id),
         start_timestamp(0),
         end_timestamp(0),
         motionDetected(false),
@@ -45,6 +48,10 @@ namespace DelNico::RtspAnalyser::Motion {
 
     void MotionEvent::setAlreadyBeenTriggered() {
         haveBeenTriggered = true;
+    }
+
+    int MotionEvent::getStreamId() const {
+        return stream_id;
     }
 
     int64_t MotionEvent::getStartTimestamp() const {

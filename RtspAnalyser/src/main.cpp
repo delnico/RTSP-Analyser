@@ -102,7 +102,8 @@ int main(int argc, char* argv[])
         boost_io_service,
         std::chrono::seconds(150),
         &multiplexer,
-        &triggerWorker
+        &triggerWorker,
+        1
     );
 
     MotionDetector motionDetector(
