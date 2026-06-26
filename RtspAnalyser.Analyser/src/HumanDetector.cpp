@@ -103,7 +103,7 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
     }
 
     // 1    prepare image for YOLO (640x640, normalization 1/255.0, BGR to RGB)
-    cv::dnn::blobFromImage(frame, blob, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), false, false);
+    cv::dnn::blobFromImage(frame, blob, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), true, false);
     
     //  non-const reference to net to call setInput and forward, to avoid modifying the original one
     auto & non_const_net = const_cast<cv::dnn::Net&>(net);
@@ -122,7 +122,7 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
     }
 
     bool human_found = false;
-    const float confidence_threshold = 0.45f;
+    const float confidence_threshold = 0.50f;
 
     for (int i = 0; i < raw_output.rows; ++i) {
         float person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output

@@ -1,11 +1,17 @@
 
+set(INCLUDES
+    includes/DelNico/RtspAnalyser/StreamAnalyserHandler.h
+)
+
 set(SOURCES
+    src/StreamAnalyserHandler.cpp
     src/main.cpp
 )
 
 add_executable(
     ${PROJECT_NAME}
     ${SOURCES}
+    ${INCLUDES}
 )
 
 target_include_directories(

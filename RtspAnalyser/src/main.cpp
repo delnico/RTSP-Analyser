@@ -11,26 +11,18 @@
 #include <zmq.hpp>
 
 #include "DelNico/RtspAnalyser/RtspAnalyser.h"
-#include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
-#include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
-#include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
+#include "DelNico/RtspAnalyser/StreamAnalyserHandler.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 #include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 #include "DelNico/RtspAnalyser/Libs/Codec.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
-#include "DelNico/RtspAnalyser/Motion/MotionDetector.h"
-#include "DelNico/RtspAnalyser/Motion/MotionManager.h"
-#include "DelNico/RtspAnalyser/Receivers/StreamReceiver.h"
-#include "DelNico/RtspAnalyser/Watchdog/Watchdog.h"
 
 using namespace DelNico::RtspAnalyser;
 using namespace DelNico::RtspAnalyser::Analyser;
 using namespace DelNico::RtspAnalyser::Libs;
 using namespace DelNico::RtspAnalyser::Motion;
-using namespace DelNico::RtspAnalyser::Receivers;
-using namespace DelNico::RtspAnalyser::Watchdog;
 
 
 int main(int argc, char* argv[])
@@ -72,8 +64,6 @@ int main(int argc, char* argv[])
     stream.codec = conf.getStreamCodec(0);
     stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
 
-    std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks, human_detect_frames, human_detector_output;
-
     Logger logger(logFile);
     logger.start();
 
@@ -82,70 +72,18 @@ int main(int argc, char* argv[])
         conf.get<int>("smtp_port"),
         conf.get<std::string>("smtp_username")
     );
-    triggerWorker.start();
 
-    StreamReceiver streamReceiver(
+    StreamAnalyserHandler streamAnalyserHandler(
         boost_io_service,
+        zmqContext,
         stream,
-        stream_frames
-    );
-
-    Multiplexer multiplexer(stream_frames);
-
-    Streamer streamerMain(viewer_frames, "ipc:///tmp/rtsp_main.zmq", zmqContext);
-
-    Streamer streamerFgMasks(fgMasks, "ipc:///tmp/rtsp_fgmask.zmq", zmqContext);
-
-    Streamer streamerHDOutput(human_detector_output, "ipc:///tmp/video_hdoutput.zmq", zmqContext);
-
-    MotionManager motionManager(
-        boost_io_service,
-        std::chrono::seconds(150),
-        &multiplexer,
+        &logger,
         &triggerWorker,
-        1
+        conf
     );
 
-    MotionDetector motionDetector(
-        conf,
-        motio_detect_frames,
-        fgMasks,
-        30
-    );
-    motionDetector.setStreamer(&streamerFgMasks);
-    motionDetector.setMotionManager(&motionManager);
-
-    HumanDetector humanDetector(human_detect_frames, &motionManager);
-    humanDetector.setStreamer(&streamerHDOutput, &human_detector_output);
-
-    OutputStream os_viewer(&streamerMain, viewer_frames, 1);
-    OutputStream os_motiondetector(&motionDetector, motio_detect_frames, 5);
-    OutputStream os_human_detector(&humanDetector, human_detect_frames, 5);
-
-    multiplexer.subscribe(&os_viewer);
-    multiplexer.subscribe(&os_motiondetector);
-    multiplexer.set_stream_redirect_client(&os_human_detector);
-
-    motionManager.start();
-
-    multiplexer.start();
-
-    DelNico::RtspAnalyser::Watchdog::Watchdog watchdog(
-        &logger
-    );
-    watchdog.subscribe(std::bind(&MotionDetector::watchdog, &motionDetector));
-    watchdog.subscribe(std::bind(&StreamReceiver::watchdog, &streamReceiver));
-    watchdog.start();
-
-    streamReceiver.subscribe(&multiplexer);
-
-    streamerMain.start();
-    streamerFgMasks.start();
-    streamerHDOutput.start();
-
-    motionDetector.start();
-    humanDetector.start();
-    streamReceiver.start(
+    triggerWorker.start();
+    streamAnalyserHandler.start(
         boost_io_service,
         conf.get<std::string>("nvr_ip"),
         conf.get<int>("nvr_port"),
@@ -162,7 +100,6 @@ int main(int argc, char* argv[])
         std::ref(boost_io_service)
     );
 
-
     std::string input;
     bool enabled = true;
     while(enabled) {
@@ -171,34 +108,19 @@ int main(int argc, char* argv[])
             case 'q':
                 enabled = false;
                 break;
-            case 'r':
-                motionDetector.reloadConfig(conf);
-                break;
             default:
                 break;
         }
     }
 
-    streamReceiver.stop();
-    motionDetector.stop();
-    humanDetector.stop();
-    streamerMain.stop();
-    streamerFgMasks.stop();
-    streamerHDOutput.stop();
+    streamAnalyserHandler.stop();
 
     triggerWorker.stop();
-
-    watchdog.stop();
-
-    multiplexer.stop();
-    motionManager.stop();
 
     boost_io_service.stop();
     boost_io_thread.join();
 
     zmqContext.close();
-
-    cv::destroyAllWindows();
 
     logger.stop();
 
