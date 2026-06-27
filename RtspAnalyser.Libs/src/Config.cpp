@@ -54,11 +54,6 @@ namespace DelNico::RtspAnalyser::Libs {
         opencv_model_history = opencv_model_set["history"];
         opencv_model_var_threshold = opencv_model_set["var_threshold"];
         opencv_model_detect_shadows = opencv_model_set["detect_shadows"];
-        opencv_model_erode = opencv_model_set["erode"];
-        opencv_model_dilate = opencv_model_set["dilate"];
-        opencv_model_gaussian_size = opencv_model_set["gaussian_size"];
-        opencv_model_gaussian_sigma = opencv_model_set["gaussian_sigma"];
-        opencv_model_min_area = opencv_model_set["min_area"];
 
         auto smtp = j["smtp"];
         smtp_server = smtp["server"];
