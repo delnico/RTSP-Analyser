@@ -5,6 +5,7 @@
 #include <chrono>
 #include <mutex>
 
+#include <fmt/chrono.h>
 #include <mailio/message.hpp>
 #include <mailio/smtp.hpp>
 
@@ -71,14 +72,13 @@ namespace DelNico::RtspAnalyser::Analyser {
             msg.from(mailio::mail_address(username, username));
             msg.add_recipient(mailio::mail_address(username, username));
 
-            std::string date_hour_min = std::to_string(std::chrono::duration_cast<std::chrono::hours>(std::chrono::nanoseconds(event.getStartTimestamp())).count() % 24) + ":" +
-                std::to_string(std::chrono::duration_cast<std::chrono::minutes>(std::chrono::nanoseconds(event.getStartTimestamp())).count() % 60);
-            std::string date_day = std::to_string(std::chrono::duration_cast<std::chrono::hours>(std::chrono::nanoseconds(event.getStartTimestamp())).count() / 24);
-            std::string date_month = std::to_string(std::chrono::duration_cast<std::chrono::days>(std::chrono::nanoseconds(event.getStartTimestamp())).count() / 30);
-            std::string date_year = std::to_string(std::chrono::duration_cast<std::chrono::days>(std::chrono::nanoseconds(event.getStartTimestamp())).count() / 365);
-            std::string date_hour_min_str = date_hour_min + " on " + date_day + "/" + date_month + "/" + date_year;
+            std::chrono::nanoseconds duration(event.getStartTimestamp());
+            std::chrono::system_clock::time_point tp(
+                std::chrono::duration_cast<std::chrono::system_clock::duration>(duration)
+            );
+            std::string formated = fmt::format("{:%d/%m/%Y %H:%M}", tp);
 
-            msg.subject("CAM " + std::to_string(event.getStreamId()) + " at " + date_hour_min_str);
+            msg.subject("CAM " + std::to_string(event.getStreamId()) + " at " + formated);
             msg.content("A human has been detected by the RTSP Analyser.");
 
             Libs::Logger::log_main("TriggerWorker : Attempting connection to " + server_url + ":" + std::to_string(server_port));

@@ -16,7 +16,11 @@ namespace DelNico::RtspAnalyser::Analyser {
     class HumanDetector : public IAnalyser {
         public:
             HumanDetector() = delete;
-            HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager * motionManager);
+            HumanDetector(
+                std::deque<cv::Mat> & frames,
+                Motion::MotionManager * motionManager,
+                bool onCPU = true
+            );
             ~HumanDetector() override;
             HumanDetector(const HumanDetector & other) = delete;
             HumanDetector & operator=(const HumanDetector & other) = delete;

@@ -16,7 +16,11 @@
 using namespace DelNico::RtspAnalyser::Analyser;
 using namespace DelNico::RtspAnalyser::Libs;
 
-HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager * motionManager) :
+HumanDetector::HumanDetector(
+    std::deque<cv::Mat> & frames,
+    Motion::MotionManager * motionManager,
+    bool onCPU
+) :
     cond(),
     isEnabled(false),
     thread(),
@@ -27,9 +31,11 @@ HumanDetector::HumanDetector(std::deque<cv::Mat> & frames, Motion::MotionManager
     human_detected_output(nullptr)
 {
     net = cv::dnn::readNetFromONNX("/home/nico/project/RTSP-Analyser/yolov8n.onnx");
-    // for use in CPU mode
     net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-    net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+    if(onCPU)
+        net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+    else
+        net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
 }
 
 HumanDetector::~HumanDetector()
