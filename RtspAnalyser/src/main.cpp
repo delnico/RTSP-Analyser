@@ -72,27 +72,85 @@ int main(int argc, char* argv[])
 
     std::list<std::unique_ptr<StreamAnalyserHandler>> sahs;
 
-    for (auto & stream : streams) {
-        auto sah = std::make_unique<StreamAnalyserHandler>(
-            boost_io_service,
-            zmqContext,
-            stream,
-            &logger,
-            &triggerWorker,
-            conf
-        );
-        sah->start(
-            boost_io_service,
-            conf.get<std::string>("nvr_ip"),
-            conf.get<int>("nvr_port"),
-            conf.get<std::string>("nvr_user"),
-            conf.get<std::string>("nvr_password"),
-            stream.url,
-            conf.get<std::string>("nvr_gstreamer_pipeline_params")
-        );
-        sahs.push_back(
-            std::move(sah)
-        );
+    bool debug_enabled = conf.get<bool>("debug_enabled");
+
+    if(debug_enabled) {
+        int stream_count = 0;
+        int dbg_stream_id = conf.get<int>("dbg_stream_id");
+        for (auto & stream : streams) {
+            if(stream_count == dbg_stream_id) {
+                auto sah = std::make_unique<StreamAnalyserHandler>(
+                    boost_io_service,
+                    zmqContext,
+                    stream,
+                    &logger,
+                    &triggerWorker,
+                    conf,
+                    conf.get<std::string>("dbg_stream_main"),
+                    conf.get<std::string>("dbg_stream_fgmask"),
+                    conf.get<std::string>("dbg_stream_hd")
+                );
+                sah->start(
+                    boost_io_service,
+                    conf.get<std::string>("nvr_ip"),
+                    conf.get<int>("nvr_port"),
+                    conf.get<std::string>("nvr_user"),
+                    conf.get<std::string>("nvr_password"),
+                    stream.url,
+                    conf.get<std::string>("nvr_gstreamer_pipeline_params")
+                );
+                sahs.push_back(
+                    std::move(sah)
+                );
+            }
+            else {
+                auto sah = std::make_unique<StreamAnalyserHandler>(
+                    boost_io_service,
+                    zmqContext,
+                    stream,
+                    &logger,
+                    &triggerWorker,
+                    conf
+                );
+                sah->start(
+                    boost_io_service,
+                    conf.get<std::string>("nvr_ip"),
+                    conf.get<int>("nvr_port"),
+                    conf.get<std::string>("nvr_user"),
+                    conf.get<std::string>("nvr_password"),
+                    stream.url,
+                    conf.get<std::string>("nvr_gstreamer_pipeline_params")
+                );
+                sahs.push_back(
+                    std::move(sah)
+                );
+            }
+            stream_count++;
+        }
+    }
+    else {
+        for (auto & stream : streams) {
+            auto sah = std::make_unique<StreamAnalyserHandler>(
+                boost_io_service,
+                zmqContext,
+                stream,
+                &logger,
+                &triggerWorker,
+                conf
+            );
+            sah->start(
+                boost_io_service,
+                conf.get<std::string>("nvr_ip"),
+                conf.get<int>("nvr_port"),
+                conf.get<std::string>("nvr_user"),
+                conf.get<std::string>("nvr_password"),
+                stream.url,
+                conf.get<std::string>("nvr_gstreamer_pipeline_params")
+            );
+            sahs.push_back(
+                std::move(sah)
+            );
+        }
     }
 
     triggerWorker.start();

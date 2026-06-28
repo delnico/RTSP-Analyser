@@ -60,6 +60,9 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "smtp_server") return smtp_server;
             if(key == "smtp_username") return smtp_username;
             if(key == "nvr_gstreamer_pipeline_params") return nvr_gstreamer_pipeline_params;
+            if(key == "dbg_stream_main") return dbg_stream_main;
+            if(key == "dbg_stream_fgmask") return dbg_stream_fgmask;
+            if(key == "dbg_stream_hd") return dbg_stream_hd;
         }
         else if constexpr (std::is_same<T, int>::value)
         {
@@ -67,10 +70,12 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "opencv_model_history") return opencv_model_history;
             if(key == "opencv_model_var_threshold") return opencv_model_var_threshold;
             if(key == "smtp_port") return smtp_port;
+            if(key == "dbg_stream_id") return dbg_stream_id;
         }
         else if constexpr (std::is_same<T, bool>::value)
         {
             if(key == "opencv_model_detect_shadows") return opencv_model_detect_shadows;
+            if(key == "debug_enabled") return debug_enabled;
         }
 
         throw std::runtime_error("Unknown key.");
