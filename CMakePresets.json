@@ -18,6 +18,17 @@
         }
       },
       {
+        "name": "x86_64-linux-release",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/x86_64/release",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "VCPKG_TARGET_TRIPLET": "x64-linux-cascadelake",
+          "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}"
+        }
+      },
+      {
         "name": "arm-linux-debug",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build/arm/debug",
@@ -31,6 +42,10 @@
       {
         "name": "x86_64-linux-debug",
         "configurePreset": "x86_64-linux-debug"
+      },
+      {
+        "name": "x86_64-linux-release",
+        "configurePreset": "x86_64-linux-release"
       },
       {
         "name": "arm-linux-debug",
