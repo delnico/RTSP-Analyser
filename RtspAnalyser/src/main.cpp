@@ -17,7 +17,6 @@
 #include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
-#include "DelNico/RtspAnalyser/Libs/Codec.h"
 #include "DelNico/RtspAnalyser/Libs/Logger.h"
 
 using namespace DelNico::RtspAnalyser;
@@ -65,7 +64,6 @@ int main(int argc, char* argv[])
     for(int i = 0; i < n_streams; ++i) {
         Stream stream;
         stream.url = conf.getStreamUrl(i);
-        stream.codec = conf.getStreamCodec(i);
         stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
         streams.push_back(stream);
     }

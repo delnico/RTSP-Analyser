@@ -27,31 +27,61 @@ namespace DelNico::RtspAnalyser {
         const Stream & stream,
         Logger * logger,
         TriggerWorker * triggerWorker,
-        Config & conf
+        Config & conf,
+        std::string dbg_stream_ipc_main,
+        std::string dbg_stream_ipc_fgmask,
+        std::string dbg_stream_ipc_hdoutput
     ) :
         streamReceiver(io_service, stream, stream_frames),
         multiplexer(stream_frames),
-        streamerMain(viewer_frames, "ipc:///tmp/rtsp_main.zmq", zmqContext),
-        streamerFgMasks(fgMasks, "ipc:///tmp/rtsp_fgmask.zmq", zmqContext),
-        streamerHDOutput(human_detector_output, "ipc:///tmp/video_hdoutput.zmq", zmqContext),
+        streamerMain(nullptr),
+        streamerFgMasks(nullptr),
+        streamerHDOutput(nullptr),
         motionManager(io_service, std::chrono::seconds(150), &multiplexer, triggerWorker, 1),
         motionDetector(conf, motio_detect_frames, fgMasks, 30),
         humanDetector(human_detect_frames, &motionManager),
-        os_viewer(&streamerMain, viewer_frames, 1),
+        os_viewer(nullptr),
         os_motiondetector(&motionDetector, motio_detect_frames, 5),
         os_human_detector(&humanDetector, human_detect_frames, 5),
         watchdog(
             logger
         )
     {
-        motionDetector.setStreamer(&streamerFgMasks);
+        if(dbg_stream_ipc_main.length() > 0) {
+            streamerMain = new Streamer(viewer_frames, dbg_stream_ipc_main, zmqContext);
+        }
+        if(dbg_stream_ipc_fgmask.length() > 0) {
+            streamerFgMasks = new Streamer(fgMasks, dbg_stream_ipc_fgmask, zmqContext);
+            motionDetector.setStreamer(streamerFgMasks);
+        }
+        if(dbg_stream_ipc_hdoutput.length() > 0) {
+            streamerHDOutput = new Streamer(human_detector_output, dbg_stream_ipc_hdoutput, zmqContext);
+            humanDetector.setStreamer(streamerHDOutput, &human_detector_output);
+        }
+
         motionDetector.setMotionManager(&motionManager);
 
-        humanDetector.setStreamer(&streamerHDOutput, &human_detector_output);
-
-        multiplexer.subscribe(&os_viewer);
+        if(streamerMain) {
+            os_viewer = new OutputStream(streamerMain, viewer_frames, 1);
+            multiplexer.subscribe(os_viewer);
+        }
         multiplexer.subscribe(&os_motiondetector);
         multiplexer.set_stream_redirect_client(&os_human_detector);
+    }
+
+    StreamAnalyserHandler::~StreamAnalyserHandler() {
+        if(os_viewer) {
+            delete os_viewer;
+        }
+        if(streamerMain) {
+            delete streamerMain;
+        }
+        if(streamerFgMasks) {
+            delete streamerFgMasks;
+        }
+        if(streamerHDOutput) {
+            delete streamerHDOutput;
+        }
     }
 
     void StreamAnalyserHandler::start(
@@ -69,9 +99,15 @@ namespace DelNico::RtspAnalyser {
         watchdog.subscribe(std::bind(&StreamReceiver::watchdog, &streamReceiver));
         watchdog.start();
         streamReceiver.subscribe(&multiplexer);
-        streamerMain.start();
-        streamerFgMasks.start();
-        streamerHDOutput.start();
+        if(streamerMain) {
+            streamerMain->start();
+        }
+        if(streamerFgMasks) {
+            streamerFgMasks->start();
+        }
+        if(streamerHDOutput) {
+            streamerHDOutput->start();
+        }
         motionDetector.start();
         humanDetector.start();
         streamReceiver.start(
@@ -89,9 +125,15 @@ namespace DelNico::RtspAnalyser {
         streamReceiver.stop();
         motionDetector.stop();
         humanDetector.stop();
-        streamerMain.stop();
-        streamerFgMasks.stop();
-        streamerHDOutput.stop();
+        if(streamerMain) {
+            streamerMain->stop();
+        }
+        if(streamerFgMasks) {
+            streamerFgMasks->stop();
+        }
+        if(streamerHDOutput) {
+            streamerHDOutput->stop();
+        }
         watchdog.stop();
         multiplexer.stop();
         motionManager.stop();

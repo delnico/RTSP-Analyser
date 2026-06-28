@@ -3,7 +3,6 @@
 #include <nlohmann/json.hpp>
 
 #include "DelNico/RtspAnalyser/Libs/Config.h"
-#include "DelNico/RtspAnalyser/Libs/Codec.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 
 using namespace nlohmann;
@@ -31,15 +30,6 @@ namespace DelNico::RtspAnalyser::Libs {
         for(auto& stream : streams) {
             struct Stream s;
             s.url = stream["url"];
-            std::string codec = stream["codec"];
-            std::transform(codec.begin(), codec.end(), codec.begin(), ::tolower);
-            if(codec == "h264") {
-                s.codec = Codec::H264;
-            } else if(codec == "h265") {
-                s.codec = Codec::H265;
-            } else {
-                throw std::runtime_error("Codec inconnu.");
-            }
 
             auto zones = stream["zones"];
 
@@ -68,9 +58,4 @@ namespace DelNico::RtspAnalyser::Libs {
     std::string Config::getStreamUrl(int index) const {
         return streams[index].url;
     }
-
-    Codec Config::getStreamCodec(int index) const {
-        return streams[index].codec;
-    }
-
 }

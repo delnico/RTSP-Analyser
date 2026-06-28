@@ -1,8 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
-#include "DelNico/RtspAnalyser/Libs/Codec.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 
 
@@ -25,7 +23,6 @@ namespace DelNico::RtspAnalyser::Libs {
 
             int getHowManyStreams() const;
             std::string getStreamUrl(int index) const;
-            Codec getStreamCodec(int index) const;
 
         private:
             std::string nvr_ip;

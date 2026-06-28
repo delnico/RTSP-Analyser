@@ -10,7 +10,6 @@ set(SOURCES
 )
 
 set(INCLUDES
-    includes/DelNico/RtspAnalyser/Libs/Codec.h
     includes/DelNico/RtspAnalyser/Libs/ConditionalVariable.h
     includes/DelNico/RtspAnalyser/Libs/Config.h
     includes/DelNico/RtspAnalyser/Libs/Logger.h

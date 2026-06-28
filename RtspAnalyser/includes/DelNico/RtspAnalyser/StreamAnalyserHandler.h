@@ -30,8 +30,12 @@ namespace DelNico::RtspAnalyser {
                 const Stream & stream,
                 Logger * logger,
                 TriggerWorker * triggerWorker,
-                Config & conf
+                Config & conf,
+                std::string dbg_stream_ipc_main = "",
+                std::string dbg_stream_ipc_fgmask = "",
+                std::string dbg_stream_ipc_hdoutput = ""
             );
+            ~StreamAnalyserHandler();
 
             void start(
                 boost::asio::io_service & io_service,
@@ -49,11 +53,11 @@ namespace DelNico::RtspAnalyser {
 
             StreamReceiver streamReceiver;
             Multiplexer multiplexer;
-            Streamer streamerMain, streamerFgMasks, streamerHDOutput;
+            Streamer * streamerMain, * streamerFgMasks, * streamerHDOutput;
             MotionManager motionManager;
             MotionDetector motionDetector;
             HumanDetector humanDetector;
-            OutputStream os_viewer, os_motiondetector, os_human_detector;
+            OutputStream * os_viewer, os_motiondetector, os_human_detector;
             DelNico::RtspAnalyser::Watchdog::Watchdog watchdog;
     };
 }
