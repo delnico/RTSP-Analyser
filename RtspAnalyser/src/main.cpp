@@ -2,6 +2,7 @@
 #include <memory>
 #include <deque>
 #include <thread>
+#include <list>
 
 #include <opencv2/opencv.hpp>
 
@@ -59,10 +60,15 @@ int main(int argc, char* argv[])
 
     zmq::context_t zmqContext = zmq::context_t();
 
-    Stream stream;
-    stream.url = conf.getStreamUrl(0);
-    stream.codec = conf.getStreamCodec(0);
-    stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
+    std::list<Stream> streams;
+    int n_streams = conf.getHowManyStreams();
+    for(int i = 0; i < n_streams; ++i) {
+        Stream stream;
+        stream.url = conf.getStreamUrl(i);
+        stream.codec = conf.getStreamCodec(i);
+        stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
+        streams.push_back(stream);
+    }
 
     Logger logger(logFile);
     logger.start();
@@ -73,25 +79,33 @@ int main(int argc, char* argv[])
         conf.get<std::string>("smtp_username")
     );
 
-    StreamAnalyserHandler streamAnalyserHandler(
-        boost_io_service,
-        zmqContext,
-        stream,
-        &logger,
-        &triggerWorker,
-        conf
-    );
+    std::list<std::unique_ptr<StreamAnalyserHandler>> sahs;
+
+    for (auto & stream : streams) {
+        auto sah = std::make_unique<StreamAnalyserHandler>(
+            boost_io_service,
+            zmqContext,
+            stream,
+            &logger,
+            &triggerWorker,
+            conf
+        );
+        sah->start(
+            boost_io_service,
+            conf.get<std::string>("nvr_ip"),
+            conf.get<int>("nvr_port"),
+            conf.get<std::string>("nvr_user"),
+            conf.get<std::string>("nvr_password"),
+            stream.url,
+            conf.get<std::string>("nvr_gstreamer_pipeline_params")
+        );
+        sahs.push_back(
+            std::move(sah)
+        );
+    }
 
     triggerWorker.start();
-    streamAnalyserHandler.start(
-        boost_io_service,
-        conf.get<std::string>("nvr_ip"),
-        conf.get<int>("nvr_port"),
-        conf.get<std::string>("nvr_user"),
-        conf.get<std::string>("nvr_password"),
-        stream.url,
-        conf.get<std::string>("nvr_gstreamer_pipeline_params")
-    );
+    
 
     std::thread boost_io_thread(
         [](boost::asio::io_service & io) {
@@ -113,7 +127,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    streamAnalyserHandler.stop();
+    for (auto & sah : sahs) {
+        sah->stop();
+    }
 
     triggerWorker.stop();
 
