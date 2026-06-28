@@ -1,5 +1,9 @@
+#include <chrono>
 #include <fstream>
+#include <list>
 #include <stdexcept>
+
+
 #include <nlohmann/json.hpp>
 
 #include "DelNico/RtspAnalyser/Libs/Config.h"
@@ -30,10 +34,20 @@ namespace DelNico::RtspAnalyser::Libs {
         for(auto& stream : streams) {
             struct Stream s;
             s.url = stream["url"];
+            auto freq = stream["fps"];
+            int64_t freq_num = freq[0];
+            int64_t freq_den = freq[1];
+            s.frequency = std::chrono::microseconds(1000000LL / freq_num * freq_den);
 
             auto zones = stream["zones"];
 
-            // for(auto& zone : zones)
+            for(auto & zone : zones) {
+                int x1 = zone["x1"];
+                int y1 = zone["y1"];
+                int x2 = zone["x2"];
+                int y2 = zone["y2"];
+                s.zones.push_back(cv::Rect(x1, y1, x2, y2));
+            }
 
             this->streams.push_back(s);
         }
@@ -55,7 +69,7 @@ namespace DelNico::RtspAnalyser::Libs {
         return streams.size();
     }
 
-    std::string Config::getStreamUrl(int index) const {
-        return streams[index].url;
+    std::list<Stream> Config::getStreams() const {
+        return streams;
     }
 }

@@ -1,5 +1,4 @@
 #include <thread>
-#include <list>
 #include <atomic>
 #include <deque>
 #include <memory>
@@ -28,7 +27,8 @@ namespace DelNico::RtspAnalyser::Motion {
         Libs::Config & config,
         std::deque<cv::Mat> & frames,
         std::deque<cv::Mat> & fgMasks,
-        int64_t fps
+        int64_t fps,
+        std::vector<cv::Rect> zones
     ) :
         isEnabled(false),
         frames(frames),
@@ -40,12 +40,9 @@ namespace DelNico::RtspAnalyser::Motion {
         cv_motion_detect_shadows(config.get<bool>("opencv_model_detect_shadows")),
         ms_one_frame(1000LL / fps),
         ms_one_frame_original(1000LL / fps),
-        fps(fps)
-    {
-        // zone depend of screen resolution and scale
-        zones.push_back(cv::Rect(0, 150, 550, 210));
-        zones.push_back(cv::Rect(250, 50, 325, 100));
-    }
+        fps(fps),
+        zones(zones)
+    {}
 
     MotionDetector::~MotionDetector() {}
 

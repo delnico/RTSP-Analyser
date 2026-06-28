@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <string>
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
 
@@ -23,15 +24,15 @@ namespace DelNico::RtspAnalyser::Libs {
 
             int getHowManyStreams() const;
             std::string getStreamUrl(int index) const;
+            std::list<Stream> getStreams() const;
 
         private:
             std::string nvr_ip;
             int nvr_port;
             std::string nvr_user;
             std::string nvr_password;
-            std::string nvr_protocol;
             std::string nvr_gstreamer_pipeline_params;
-            std::vector<struct Stream> streams;
+            std::list<struct Stream> streams;
             std::string log_path;
 
             int opencv_model_history;
@@ -41,6 +42,10 @@ namespace DelNico::RtspAnalyser::Libs {
             std::string smtp_server;
             int smtp_port;
             std::string smtp_username;
+
+            bool debug_enabled;
+            int dbg_stream_id;
+            std::string dbg_stream_main, dbg_stream_fgmask, dbg_stream_hd;
     };
 
     template<typename T>
@@ -51,7 +56,6 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "nvr_ip") return nvr_ip;
             if(key == "nvr_user") return nvr_user;
             if(key == "nvr_password") return nvr_password;
-            if(key == "nvr_protocol") return nvr_protocol;
             if(key == "log_path") return log_path;
             if(key == "smtp_server") return smtp_server;
             if(key == "smtp_username") return smtp_username;

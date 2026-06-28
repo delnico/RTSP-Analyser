@@ -1,7 +1,7 @@
 #pragma once
 
 #include <thread>
-#include <list>
+#include <vector>
 #include <atomic>
 #include <deque>
 #include <cstdint>
@@ -25,7 +25,8 @@ namespace DelNico::RtspAnalyser::Motion {
                 Libs::Config & config,
                 std::deque<cv::Mat> & frames,
                 std::deque<cv::Mat> & fgMasks,
-                int64_t fps
+                int64_t fps,
+                std::vector<cv::Rect> zones
             );
             ~MotionDetector() override;
 
@@ -42,7 +43,7 @@ namespace DelNico::RtspAnalyser::Motion {
             Libs::ConditionalVariable cond;
             std::atomic<bool> isEnabled;
             std::thread thread;
-            std::list<cv::Rect> zones;
+            std::vector<cv::Rect> zones;
             std::deque<cv::Mat> & frames;
             std::deque<cv::Mat> & fgMasks;
             Analyser::Streamer * streamer;

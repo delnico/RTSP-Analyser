@@ -59,14 +59,7 @@ int main(int argc, char* argv[])
 
     zmq::context_t zmqContext = zmq::context_t();
 
-    std::list<Stream> streams;
-    int n_streams = conf.getHowManyStreams();
-    for(int i = 0; i < n_streams; ++i) {
-        Stream stream;
-        stream.url = conf.getStreamUrl(i);
-        stream.frequency = std::chrono::microseconds(1000000LL / 30000 * 1000);
-        streams.push_back(stream);
-    }
+    std::list<Stream> streams = conf.getStreams();
 
     Logger logger(logFile);
     logger.start();
