@@ -70,9 +70,9 @@ namespace DelNico::RtspAnalyser::Motion {
     }
 
     void MotionDetector::run() {
-        // cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
+        cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::createBackgroundSubtractorMOG2(cv_motion_history, cv_motion_var_threshold, cv_motion_detect_shadows);
 
-        cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::bgsegm::createBackgroundSubtractorCNT(6, false, 900, false);
+        // cv::Ptr<cv::BackgroundSubtractor> bgSubtractor = cv::bgsegm::createBackgroundSubtractorCNT(6, false, 900, false);
 
         cv::Mat frame, fgMask, roiMask, grayFrame;
 
@@ -143,7 +143,8 @@ namespace DelNico::RtspAnalyser::Motion {
             }
 
             if(streamer != nullptr) {
-                fgMasks.push_back(cv::Mat(roiMask));
+                fgMasks.push_back(cv::Mat(frame));  // can replace there by "frame" to have rectangular and detection
+                                                    // or use default "roiMask" to have black/white image points
                 streamer->notify();
             }
 

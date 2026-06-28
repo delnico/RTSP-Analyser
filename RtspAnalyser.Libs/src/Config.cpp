@@ -67,9 +67,9 @@ namespace DelNico::RtspAnalyser::Libs {
         auto debug = j["debug"];
         debug_enabled = debug["enabled"];
         dbg_stream_id = debug["stream_id"];
-        dbg_stream_main = debug["stream_main"];
-        dbg_stream_fgmask = debug["stream_fgmask"];
-        dbg_stream_hd = debug["stream_hd"];
+        dbg_stream_main = debug["out_live_view"];
+        dbg_stream_fgmask = debug["out_fg_masks"];
+        dbg_stream_hd = debug["out_human_detection"];
     }
 
     int Config::getHowManyStreams() const {
