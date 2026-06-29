@@ -74,8 +74,8 @@ int main(int argc, char* argv[])
 
     bool debug_enabled = conf.get<bool>("debug_enabled");
 
+    int stream_count = 1;   // start at 1 : more user friendly, of course for debug start at 1 in json config
     if(debug_enabled) {
-        int stream_count = 0;
         int dbg_stream_id = conf.get<int>("dbg_stream_id");
         for (auto & stream : streams) {
             if(stream_count == dbg_stream_id) {
@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
                     &logger,
                     &triggerWorker,
                     conf,
+                    stream_count,
                     conf.get<std::string>("dbg_stream_main"),
                     conf.get<std::string>("dbg_stream_fgmask"),
                     conf.get<std::string>("dbg_stream_hd")
@@ -110,7 +111,8 @@ int main(int argc, char* argv[])
                     stream,
                     &logger,
                     &triggerWorker,
-                    conf
+                    conf,
+                    stream_count
                 );
                 sah->start(
                     boost_io_service,
@@ -136,7 +138,8 @@ int main(int argc, char* argv[])
                 stream,
                 &logger,
                 &triggerWorker,
-                conf
+                conf,
+                stream_count
             );
             sah->start(
                 boost_io_service,
@@ -150,6 +153,7 @@ int main(int argc, char* argv[])
             sahs.push_back(
                 std::move(sah)
             );
+            stream_count++;
         }
     }
 

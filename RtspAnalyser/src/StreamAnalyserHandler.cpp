@@ -28,6 +28,7 @@ namespace DelNico::RtspAnalyser {
         Logger * logger,
         TriggerWorker * triggerWorker,
         Config & conf,
+        int stream_id,
         std::string dbg_stream_ipc_main,
         std::string dbg_stream_ipc_fgmask,
         std::string dbg_stream_ipc_hdoutput
@@ -37,7 +38,7 @@ namespace DelNico::RtspAnalyser {
         streamerMain(nullptr),
         streamerFgMasks(nullptr),
         streamerHDOutput(nullptr),
-        motionManager(io_service, std::chrono::seconds(150), &multiplexer, triggerWorker, 1),
+        motionManager(io_service, std::chrono::seconds(150), &multiplexer, triggerWorker, stream_id),
         motionDetector(conf, motio_detect_frames, fgMasks, 30, stream.zones),
         humanDetector(human_detect_frames, &motionManager, stream.zones, conf.get<float>("human_detection_min_score")),
         os_viewer(nullptr),

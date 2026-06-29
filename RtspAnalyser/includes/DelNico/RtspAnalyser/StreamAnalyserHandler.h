@@ -31,6 +31,7 @@ namespace DelNico::RtspAnalyser {
                 Logger * logger,
                 TriggerWorker * triggerWorker,
                 Config & conf,
+                int stream_id,
                 std::string dbg_stream_ipc_main = "",
                 std::string dbg_stream_ipc_fgmask = "",
                 std::string dbg_stream_ipc_hdoutput = ""
