@@ -2,13 +2,8 @@
 #include <chrono>
 
 #include <opencv2/imgcodecs.hpp>
-#include <boost/archive/iterators/base64_from_binary.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
 
 #include "DelNico/RtspAnalyser/Motion/MotionEvent.h"
-
-using namespace boost::archive::iterators;
-using base64_enc = base64_from_binary<transform_width<std::vector<uchar>::const_iterator, 6, 8>>;
 
 namespace DelNico::RtspAnalyser::Motion {
 
@@ -76,17 +71,6 @@ namespace DelNico::RtspAnalyser::Motion {
     }
 
     void MotionEvent::setPreviewImage(const cv::Mat & frame) {
-        // if (frame.empty()) return;
-
-        // // compress into jpg
-        // std::vector<uchar> buf;
-        // cv::imencode(".jpg", frame, buf, {cv::IMWRITE_JPEG_QUALITY, 80});
-
-        // // encode to base64 using Boost
-        // preview_image_b64 = std::string(base64_enc(buf.begin()), base64_enc(buf.end()));
-
-        // size_t padding = (3 - (buf.size() % 3)) % 3;
-        // preview_image_b64.append(padding, '=');
         preview_image_b64 = frame;
     }
 

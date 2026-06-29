@@ -4,6 +4,7 @@
 #include <deque>
 #include <chrono>
 #include <mutex>
+#include <format>
 
 #include <fmt/chrono.h>
 #include <mailio/message.hpp>
@@ -81,7 +82,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::string content = "";
             content += "<html><body>";
             content += "<p> Score : ";
-            content += std::to_string(score);
+            content += std::format("{:.2f}", score);
             content += "</p>";
             content += "<img src=\"cid:capture.jpg\">";
             content += "</body></html>";
@@ -100,7 +101,6 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::string formated = fmt::format("{:%d/%m/%Y %H:%M}", tp);
 
             msg.subject("CAM " + std::to_string(event.getStreamId()) + " at " + formated);
-            // msg.content("A human has been detected by the RTSP Analyser.");
 
             Libs::Logger::log_main("TriggerWorker : Attempting connection to " + server_url + ":" + std::to_string(server_port));
             try {
