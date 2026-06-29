@@ -71,7 +71,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             msg.content_type(mailio::message::media_type_t::TEXT, "html");
 
             cv::Mat image = event.getPreviewImage();
-            float score = event.getScore();
+            int score = event.getScore();
 
             std::vector<uchar> buffer;
             std::vector<int> params = { cv::IMWRITE_JPEG_QUALITY, 90 };
@@ -82,7 +82,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::string content = "";
             content += "<html><body>";
             content += "<p> Score : ";
-            content += std::format("{:.2f}", score);
+            content += std::format("{}", score);
             content += "</p>";
             content += "<img src=\"cid:capture.jpg\">";
             content += "</body></html>";
