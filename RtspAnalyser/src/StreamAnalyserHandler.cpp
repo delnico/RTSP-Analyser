@@ -39,7 +39,7 @@ namespace DelNico::RtspAnalyser {
         streamerHDOutput(nullptr),
         motionManager(io_service, std::chrono::seconds(150), &multiplexer, triggerWorker, 1),
         motionDetector(conf, motio_detect_frames, fgMasks, 30, stream.zones),
-        humanDetector(human_detect_frames, &motionManager),
+        humanDetector(human_detect_frames, &motionManager, stream.zones, conf.get<float>("human_detection_min_score")),
         os_viewer(nullptr),
         os_motiondetector(&motionDetector, motio_detect_frames, 5),
         os_human_detector(&humanDetector, human_detect_frames, 5),

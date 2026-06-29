@@ -3,6 +3,7 @@
 #include <thread>
 #include <atomic>
 #include <deque>
+#include <vector>
 
 #include <opencv2/opencv.hpp>
 
@@ -19,6 +20,8 @@ namespace DelNico::RtspAnalyser::Analyser {
             HumanDetector(
                 std::deque<cv::Mat> & frames,
                 Motion::MotionManager * motionManager,
+                std::vector<cv::Rect> zones,
+                float confidence_threshold,
                 bool onCPU = true
             );
             ~HumanDetector() override;
@@ -37,6 +40,8 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::thread thread;
             std::deque<cv::Mat> & frames;
             Motion::MotionManager * motionManager;
+            std::vector<cv::Rect> zones;
+            float confidence_threshold;
             Streamer * streamer;
             std::deque<cv::Mat> * human_detected_output;
 
@@ -44,6 +49,7 @@ namespace DelNico::RtspAnalyser::Analyser {
 
             void run();
             std::tuple<bool, cv::Mat>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;
+            bool isHumanInsideZone(int x_center, int y_center) const;
 
             bool operator==(const HumanDetector & other) const;
     };

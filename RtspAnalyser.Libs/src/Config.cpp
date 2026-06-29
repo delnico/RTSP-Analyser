@@ -64,6 +64,9 @@ namespace DelNico::RtspAnalyser::Libs {
         smtp_port = smtp["port"];
         smtp_username = smtp["username"];
 
+        auto human_detection = j["human_detection"];
+        human_detection_min_score = human_detection["min_score"];
+
         auto debug = j["debug"];
         debug_enabled = debug["enabled"];
         dbg_stream_id = debug["stream_id"];

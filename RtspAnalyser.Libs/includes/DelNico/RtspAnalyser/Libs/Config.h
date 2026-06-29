@@ -43,6 +43,8 @@ namespace DelNico::RtspAnalyser::Libs {
             int smtp_port;
             std::string smtp_username;
 
+            float human_detection_min_score;
+
             bool debug_enabled;
             int dbg_stream_id;
             std::string dbg_stream_main, dbg_stream_fgmask, dbg_stream_hd;
@@ -71,6 +73,10 @@ namespace DelNico::RtspAnalyser::Libs {
             if(key == "opencv_model_var_threshold") return opencv_model_var_threshold;
             if(key == "smtp_port") return smtp_port;
             if(key == "dbg_stream_id") return dbg_stream_id;
+        }
+        else if constexpr (std::is_same<T, float>::value)
+        {
+            if(key == "human_detection_min_score") return human_detection_min_score;
         }
         else if constexpr (std::is_same<T, bool>::value)
         {

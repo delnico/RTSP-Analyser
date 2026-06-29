@@ -19,6 +19,8 @@ using namespace DelNico::RtspAnalyser::Libs;
 HumanDetector::HumanDetector(
     std::deque<cv::Mat> & frames,
     Motion::MotionManager * motionManager,
+    std::vector<cv::Rect> zones,
+    float confidence_threshold,
     bool onCPU
 ) :
     cond(),
@@ -27,6 +29,8 @@ HumanDetector::HumanDetector(
     frames(frames),
     net(),
     motionManager(motionManager),
+    zones(zones),
+    confidence_threshold(confidence_threshold),
     streamer(nullptr),
     human_detected_output(nullptr)
 {
@@ -128,38 +132,53 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
     }
 
     bool human_found = false;
-    const float confidence_threshold = 0.50f;
 
     for (int i = 0; i < raw_output.rows; ++i) {
         float person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output
 
         if (person_score >= confidence_threshold) {
-            human_found = true;
-
-            if (need_output) {
-                float cx = raw_output.at<float>(i, 0);
-                float cy = raw_output.at<float>(i, 1);
-                float w  = raw_output.at<float>(i, 2);
-                float h  = raw_output.at<float>(i, 3);
-
-                float scale_x = static_cast<float>(output.cols) / 640.0f;   // yolov8n input size is 640x640
-                float scale_y = static_cast<float>(output.rows) / 640.0f;
-
-                int left   = static_cast<int>((cx - w / 2.0f) * scale_x);
-                int top    = static_cast<int>((cy - h / 2.0f) * scale_y);
-                int width  = static_cast<int>(w * scale_x);
-                int height = static_cast<int>(h * scale_y);
-
-                cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
-            }
             
-            if (!need_output) {
-                break;
+            float cx = raw_output.at<float>(i, 0);
+            float cy = raw_output.at<float>(i, 1);
+            float w  = raw_output.at<float>(i, 2);
+            float h  = raw_output.at<float>(i, 3);
+
+            float scale_x = static_cast<float>(output.cols) / 640.0f;   // yolov8n input size is 640x640
+            float scale_y = static_cast<float>(output.rows) / 640.0f;
+
+            int left   = static_cast<int>((cx - w / 2.0f) * scale_x);
+            int top    = static_cast<int>((cy - h / 2.0f) * scale_y);
+            int width  = static_cast<int>(w * scale_x);
+            int height = static_cast<int>(h * scale_y);
+
+            if(isHumanInsideZone(
+                left + (width / 2),
+                top + (height / 2)
+            ))
+            {
+                human_found = true;
+                if (need_output)
+                cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
+                else
+                    break;  // used when no need_output, and into the else because if catche one person, we don't care if many
             }
         }
     }
 
     return std::make_tuple(human_found, output);
+}
+
+bool HumanDetector::isHumanInsideZone(int x_center, int y_center) const 
+{
+    for(auto & zone : zones)
+    {
+        if(zone.x < x_center < (zone.x + zone.width))
+        {
+            if(zone.y < y_center < (zone.y + zone.height))
+                return true;
+        }
+    }
+    return false;
 }
 
 bool HumanDetector::operator==(const HumanDetector & other) const
