@@ -77,7 +77,7 @@ void HumanDetector::notify()
 void HumanDetector::run()
 {
     cv::Mat frame;
-    std::tuple<bool, cv::Mat> result;
+    std::tuple<bool, cv::Mat, float> result;
     while (isEnabled)
     {
         cond.wait();
@@ -91,7 +91,8 @@ void HumanDetector::run()
             motionManager->notify(
                 Motion::MotionManagerCalling(
                     Motion::MotionManagerCaller::HUMAN_DETECTOR,
-                    true
+                    true,
+                    std::get<2>(result)
                 )
             );
         }
@@ -103,13 +104,13 @@ void HumanDetector::run()
     }
 }
 
-std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
+std::tuple<bool, cv::Mat, float> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
 {
     cv::Mat blob, output;
     cv::resize(frame, output, cv::Size(frame.cols / 2, frame.rows / 2));
 
     if (frame.empty()) {
-        return std::make_tuple(false, output);
+        return std::make_tuple(false, output, 0.0f);
     }
 
     // 1    prepare image for YOLO (640x640, normalization 1/255.0, BGR to RGB)
@@ -132,9 +133,10 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
     }
 
     bool human_found = false;
+    float person_score = 0.0f;
 
     for (int i = 0; i < raw_output.rows; ++i) {
-        float person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output
+        person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output
 
         if (person_score >= confidence_threshold) {
             
@@ -165,7 +167,7 @@ std::tuple<bool, cv::Mat> HumanDetector::isHumanDetected(const cv::Mat & frame, 
         }
     }
 
-    return std::make_tuple(human_found, output);
+    return std::make_tuple(human_found, output, person_score);
 }
 
 bool HumanDetector::isHumanInsideZone(int x_center, int y_center) const 

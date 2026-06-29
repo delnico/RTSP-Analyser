@@ -80,7 +80,7 @@ namespace DelNico::RtspAnalyser::Motion {
                     run_called_by_motion_detector();
                     break;
                 case MotionManagerCaller::HUMAN_DETECTOR:
-                    run_called_by_human_detector();
+                    run_called_by_human_detector(motionManagerCalling.getScore());
                     break;
                 default:
                     throw std::runtime_error("MotionManager::run : unknown motionManagerCalling");
@@ -114,12 +114,13 @@ namespace DelNico::RtspAnalyser::Motion {
         }
     }
 
-    void MotionManager::run_called_by_human_detector() {
+    void MotionManager::run_called_by_human_detector(float score) {
         last_event.update();
         if(! last_event.isHumanDetected())
             last_event.setHumanDetected(true);
         if(! last_event.isAlreadyBeenTriggered()) {
             last_event.setAlreadyBeenTriggered();
+            last_event.setPreviewImage(multiplexer->getCurrentImage());
             triggerWorker->addEvent(last_event);
             Libs::Logger::log_main("MotionManager : human detected");
         }

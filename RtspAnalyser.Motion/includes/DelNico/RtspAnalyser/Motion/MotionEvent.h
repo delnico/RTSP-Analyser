@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 
+#include <opencv2/opencv.hpp>
 
 
 namespace DelNico::RtspAnalyser::Motion {
@@ -26,6 +27,11 @@ namespace DelNico::RtspAnalyser::Motion {
 
             int64_t getStartTimestamp() const;
             int64_t getEndTimestamp() const;
+
+            void setPreviewImage(const cv::Mat & frame);
+            std::string getPreviewImage() const;
+            void setScore(float score);
+            float getScore() const;
             
         private:
             int stream_id;
@@ -34,6 +40,9 @@ namespace DelNico::RtspAnalyser::Motion {
             bool motionDetected;
             bool humanDetected;
             bool haveBeenTriggered;
+
+            std::string preview_image_b64;
+            float score;
     };
 }
 

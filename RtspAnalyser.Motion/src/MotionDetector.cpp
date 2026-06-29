@@ -143,7 +143,7 @@ namespace DelNico::RtspAnalyser::Motion {
             }
 
             if(streamer != nullptr) {
-                fgMasks.push_back(cv::Mat(frame));  // can replace there by "frame" to have rectangular and detection
+                fgMasks.push_back(cv::Mat(roiMask));  // can replace there by "frame" to have rectangular and detection
                                                     // or use default "roiMask" to have black/white image points
                 streamer->notify();
             }

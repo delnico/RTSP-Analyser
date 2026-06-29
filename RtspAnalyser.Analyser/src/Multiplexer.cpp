@@ -69,6 +69,10 @@ void Multiplexer::set_stream_redirect_client(OutputStream * stream_redirect_clie
     this->stream_redirect_client = stream_redirect_client;
 }
 
+cv::Mat Multiplexer::getCurrentImage() const {
+    return currentImage;
+}
+
 void Multiplexer::run() {
     cv::Mat frame;
     while(isEnabled.load()) {
@@ -80,6 +84,7 @@ void Multiplexer::run() {
         {
             frame = input_frames.front();
             input_frames.pop_front();
+            currentImage = frame;
 
             multiplex(frame);
         }

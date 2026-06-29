@@ -5,6 +5,8 @@
 #include <list>
 #include <thread>
 
+#include <opencv2/opencv.hpp>
+
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
 #include "DelNico/RtspAnalyser/Libs/ConditionalVariable.h"
@@ -31,6 +33,8 @@ namespace DelNico::RtspAnalyser::Analyser {
             void stop_stream_redirect_human_detector();
             void set_stream_redirect_client(OutputStream * stream_redirect_client);
 
+            cv::Mat getCurrentImage() const;
+
         private:
             void run();
             void multiplex(cv::Mat frame);
@@ -46,6 +50,8 @@ namespace DelNico::RtspAnalyser::Analyser {
 
             std::atomic<bool> is_stream_redirecting;
             OutputStream * stream_redirect_client;
+
+            cv::Mat currentImage;
     };
 }
 

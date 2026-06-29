@@ -48,7 +48,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             cv::dnn::Net net;
 
             void run();
-            std::tuple<bool, cv::Mat>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;
+            std::tuple<bool, cv::Mat, float>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;
             bool isHumanInsideZone(int x_center, int y_center) const;
 
             bool operator==(const HumanDetector & other) const;

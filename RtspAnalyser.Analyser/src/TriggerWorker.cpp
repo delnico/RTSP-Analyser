@@ -67,7 +67,34 @@ namespace DelNico::RtspAnalyser::Analyser {
                 events.pop_front();
             }
             mailio::message msg;
-            msg.content_type(mailio::mime::media_type_t::TEXT, "plain", "utf-8");
+            msg.content_type(mailio::mime::media_type_t::MULTIPART, "related");
+
+            std::string img_b64 = event.getPreviewImage();
+            float score = event.getScore();
+
+            mailio::mime html_part;
+            html_part.content_type(mailio::mime::media_type_t::TEXT, "html", "utf-8");
+            std::string html_body = 
+                "<html><body>"
+                "<img src=\"cid:detection_image\" style=\"max-width:100%; border:1px solid #ccc;\">"
+                "<p> Score :" + std::to_string(score) + "</p>"
+                "</body></html>";
+            html_part.content(html_body);
+            msg.add_part(html_part);
+
+            if(!img_b64.empty())
+            {
+                mailio::message image_part;
+                image_part.content_type(mailio::mime::media_type_t::IMAGE, "jpeg");
+                
+                image_part.content_transfer_encoding(mailio::mime::content_transfer_encoding_t::BASE_64);
+                image_part.content_disposition(mailio::mime::content_disposition_t::INLINE);
+                
+                image_part.add_header("Content-ID", "<detection_image>");
+                
+                image_part.content(img_b64);
+                msg.add_part(image_part);
+            }
 
             msg.from(mailio::mail_address(username, username));
             msg.add_recipient(mailio::mail_address(username, username));
@@ -79,7 +106,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::string formated = fmt::format("{:%d/%m/%Y %H:%M}", tp);
 
             msg.subject("CAM " + std::to_string(event.getStreamId()) + " at " + formated);
-            msg.content("A human has been detected by the RTSP Analyser.");
+            // msg.content("A human has been detected by the RTSP Analyser.");
 
             Libs::Logger::log_main("TriggerWorker : Attempting connection to " + server_url + ":" + std::to_string(server_port));
             try {
