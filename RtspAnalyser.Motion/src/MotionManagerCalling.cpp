@@ -12,16 +12,16 @@ namespace DelNico::RtspAnalyser::Motion {
     MotionManagerCalling::MotionManagerCalling(MotionManagerCaller who) :
         who(who),
         human_detected(false),
-        score(0.0f)
+        score(0)
     {}
 
     MotionManagerCalling::MotionManagerCalling(MotionManagerCaller who, bool human_detected) :
         who(who),
         human_detected(human_detected),
-        score(0.0f)
+        score(0)
     {}
 
-    MotionManagerCalling::MotionManagerCalling(MotionManagerCaller who, bool human_detected, float score) :
+    MotionManagerCalling::MotionManagerCalling(MotionManagerCaller who, bool human_detected, int score) :
         who(who),
         human_detected(human_detected),
         score(score)
@@ -37,7 +37,7 @@ namespace DelNico::RtspAnalyser::Motion {
         return human_detected;
     }
 
-    float MotionManagerCalling::getScore() const {
+    int MotionManagerCalling::getScore() const {
         return score;
     }
 

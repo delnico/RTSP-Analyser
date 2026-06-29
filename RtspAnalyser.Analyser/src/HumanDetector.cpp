@@ -77,7 +77,7 @@ void HumanDetector::notify()
 void HumanDetector::run()
 {
     cv::Mat frame;
-    std::tuple<bool, cv::Mat, float> result;
+    std::tuple<bool, cv::Mat, int> result;
     while (isEnabled)
     {
         cond.wait();
@@ -92,7 +92,7 @@ void HumanDetector::run()
                 Motion::MotionManagerCalling(
                     Motion::MotionManagerCaller::HUMAN_DETECTOR,
                     true,
-                    std::get<2>(result)
+                    ((int) (std::get<2>(result) * 100))             // avoid format error of float so let do in pourcentage
                 )
             );
         }
@@ -104,7 +104,7 @@ void HumanDetector::run()
     }
 }
 
-std::tuple<bool, cv::Mat, float> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
+std::tuple<bool, cv::Mat, int> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
 {
     cv::Mat blob, output;
     cv::resize(frame, output, cv::Size(frame.cols / 2, frame.rows / 2));

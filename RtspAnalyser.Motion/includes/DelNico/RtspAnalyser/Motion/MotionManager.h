@@ -37,7 +37,7 @@ namespace DelNico::RtspAnalyser::Motion {
     private:
         void run();
         void run_called_by_motion_detector();
-        void run_called_by_human_detector(float score);
+        void run_called_by_human_detector(int score);
 
         void stop_stream_redirect_human_detector();
 

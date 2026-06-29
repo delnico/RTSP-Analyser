@@ -114,7 +114,7 @@ namespace DelNico::RtspAnalyser::Motion {
         }
     }
 
-    void MotionManager::run_called_by_human_detector(float score) {
+    void MotionManager::run_called_by_human_detector(int score) {
         last_event.update();
         if(! last_event.isHumanDetected())
             last_event.setHumanDetected(true);
@@ -123,7 +123,7 @@ namespace DelNico::RtspAnalyser::Motion {
             last_event.setPreviewImage(multiplexer->getCurrentImage());
             last_event.setScore(score);
             triggerWorker->addEvent(last_event);
-            Libs::Logger::log_main("MotionManager : human detected");
+            Libs::Logger::log_main("MotionManager : human detected score :" + std::to_string(score));
         }
     }
 
