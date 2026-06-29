@@ -29,7 +29,7 @@ namespace DelNico::RtspAnalyser::Motion {
             int64_t getEndTimestamp() const;
 
             void setPreviewImage(const cv::Mat & frame);
-            std::string getPreviewImage() const;
+            cv::Mat getPreviewImage() const;
             void setScore(float score);
             float getScore() const;
             
@@ -41,7 +41,7 @@ namespace DelNico::RtspAnalyser::Motion {
             bool humanDetected;
             bool haveBeenTriggered;
 
-            std::string preview_image_b64;
+            cv::Mat preview_image_b64;
             float score;
     };
 }

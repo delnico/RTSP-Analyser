@@ -21,7 +21,6 @@ namespace DelNico::RtspAnalyser::Motion {
         motionDetected(false),
         humanDetected(false),
         haveBeenTriggered(false),
-        preview_image_b64(""),
         score(0.0f)
     {
         auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -77,20 +76,21 @@ namespace DelNico::RtspAnalyser::Motion {
     }
 
     void MotionEvent::setPreviewImage(const cv::Mat & frame) {
-        if (frame.empty()) return;
+        // if (frame.empty()) return;
 
-        // compress into jpg
-        std::vector<uchar> buf;
-        cv::imencode(".jpg", frame, buf, {cv::IMWRITE_JPEG_QUALITY, 80});
+        // // compress into jpg
+        // std::vector<uchar> buf;
+        // cv::imencode(".jpg", frame, buf, {cv::IMWRITE_JPEG_QUALITY, 80});
 
-        // encode to base64 using Boost
-        preview_image_b64 = std::string(base64_enc(buf.begin()), base64_enc(buf.end()));
+        // // encode to base64 using Boost
+        // preview_image_b64 = std::string(base64_enc(buf.begin()), base64_enc(buf.end()));
 
-        size_t padding = (3 - (buf.size() % 3)) % 3;
-        preview_image_b64.append(padding, '=');
+        // size_t padding = (3 - (buf.size() % 3)) % 3;
+        // preview_image_b64.append(padding, '=');
+        preview_image_b64 = frame;
     }
 
-    std::string MotionEvent::getPreviewImage() const {
+    cv::Mat MotionEvent::getPreviewImage() const {
         return preview_image_b64;
     }
 

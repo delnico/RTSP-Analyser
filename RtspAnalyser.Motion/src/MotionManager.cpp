@@ -121,6 +121,7 @@ namespace DelNico::RtspAnalyser::Motion {
         if(! last_event.isAlreadyBeenTriggered()) {
             last_event.setAlreadyBeenTriggered();
             last_event.setPreviewImage(multiplexer->getCurrentImage());
+            last_event.setScore(score);
             triggerWorker->addEvent(last_event);
             Libs::Logger::log_main("MotionManager : human detected");
         }

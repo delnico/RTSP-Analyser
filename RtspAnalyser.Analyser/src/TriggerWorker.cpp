@@ -67,34 +67,28 @@ namespace DelNico::RtspAnalyser::Analyser {
                 events.pop_front();
             }
             mailio::message msg;
-            msg.content_type(mailio::mime::media_type_t::MULTIPART, "related");
+            msg.content_type(mailio::message::media_type_t::TEXT, "html");
 
-            std::string img_b64 = event.getPreviewImage();
+            cv::Mat image = event.getPreviewImage();
             float score = event.getScore();
 
-            mailio::mime html_part;
-            html_part.content_type(mailio::mime::media_type_t::TEXT, "html", "utf-8");
-            std::string html_body = 
-                "<html><body>"
-                "<img src=\"cid:detection_image\" style=\"max-width:100%; border:1px solid #ccc;\">"
-                "<p> Score :" + std::to_string(score) + "</p>"
-                "</body></html>";
-            html_part.content(html_body);
-            msg.add_part(html_part);
+            std::vector<uchar> buffer;
+            std::vector<int> params = { cv::IMWRITE_JPEG_QUALITY, 90 };
+            cv::imencode(".jpg", image, buffer, params);
+            std::string image_data(buffer.begin(), buffer.end());
+            std::istringstream image_stream(image_data, std::ios::binary);
 
-            if(!img_b64.empty())
-            {
-                mailio::message image_part;
-                image_part.content_type(mailio::mime::media_type_t::IMAGE, "jpeg");
-                
-                image_part.content_transfer_encoding(mailio::mime::content_transfer_encoding_t::BASE_64);
-                image_part.content_disposition(mailio::mime::content_disposition_t::INLINE);
-                
-                image_part.add_header("Content-ID", "<detection_image>");
-                
-                image_part.content(img_b64);
-                msg.add_part(image_part);
-            }
+            std::string content = "";
+            content += "<html><body>";
+            content += "<p> Score : ";
+            content += std::to_string(score);
+            content += "</p>";
+            content += "<img src=\"cid:capture.jpg\">";
+            content += "</body></html>";
+
+            msg.content(content);
+
+            msg.attach(image_stream, "capture.jpg", mailio::message::media_type_t::IMAGE, "jpeg");
 
             msg.from(mailio::mail_address(username, username));
             msg.add_recipient(mailio::mail_address(username, username));
