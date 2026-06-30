@@ -42,6 +42,7 @@ namespace DelNico::RtspAnalyser::Receivers {
         int64_t queueSize() const;
         void goToLive();
         void run();
+        void autoReloadAfterCrash();
 
         std::atomic<bool> isEnabled;
         boost::asio::deadline_timer timer;
@@ -50,6 +51,8 @@ namespace DelNico::RtspAnalyser::Receivers {
         std::deque<cv::Mat> & frames;
 
         Analyser::IAnalyser * listener;
+
+        std::string gstreamer_pipeline;
     };
 }
 

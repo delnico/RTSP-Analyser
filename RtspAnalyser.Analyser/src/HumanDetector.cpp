@@ -77,7 +77,7 @@ void HumanDetector::notify()
 void HumanDetector::run()
 {
     cv::Mat frame;
-    std::tuple<bool, cv::Mat, int> result;
+    std::tuple<bool, cv::Mat, float> result;
     while (isEnabled)
     {
         cond.wait();
@@ -92,7 +92,7 @@ void HumanDetector::run()
                 Motion::MotionManagerCalling(
                     Motion::MotionManagerCaller::HUMAN_DETECTOR,
                     true,
-                    ((int) (std::get<2>(result) * 100))             // avoid format error of float so let do in pourcentage
+                    ((int) (std::get<2>(result) * 100.0f))             // avoid format error of float so let do in pourcentage
                 )
             );
         }
@@ -104,7 +104,7 @@ void HumanDetector::run()
     }
 }
 
-std::tuple<bool, cv::Mat, int> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
+std::tuple<bool, cv::Mat, float> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
 {
     cv::Mat blob, output;
     cv::resize(frame, output, cv::Size(frame.cols / 2, frame.rows / 2));
@@ -134,6 +134,7 @@ std::tuple<bool, cv::Mat, int> HumanDetector::isHumanDetected(const cv::Mat & fr
 
     bool human_found = false;
     float person_score = 0.0f;
+    float max_score = 0.0f;
 
     for (int i = 0; i < raw_output.rows; ++i) {
         person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output
@@ -159,15 +160,17 @@ std::tuple<bool, cv::Mat, int> HumanDetector::isHumanDetected(const cv::Mat & fr
             ))
             {
                 human_found = true;
+                if (person_score > max_score)
+                    max_score = person_score;
                 if (need_output)
-                cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
+                    cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
                 else
                     break;  // used when no need_output, and into the else because if catche one person, we don't care if many
             }
         }
     }
 
-    return std::make_tuple(human_found, output, person_score);
+    return std::make_tuple(human_found, output, max_score);
 }
 
 bool HumanDetector::isHumanInsideZone(int x_center, int y_center) const 
