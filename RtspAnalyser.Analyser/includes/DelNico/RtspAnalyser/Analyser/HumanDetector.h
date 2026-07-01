@@ -4,8 +4,10 @@
 #include <atomic>
 #include <deque>
 #include <vector>
+#include <memory>
 
 #include <opencv2/opencv.hpp>
+#include <onnxruntime_cxx_api.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
@@ -45,7 +47,10 @@ namespace DelNico::RtspAnalyser::Analyser {
             Streamer * streamer;
             std::deque<cv::Mat> * human_detected_output;
 
-            cv::dnn::Net net;
+            std::unique_ptr<Ort::Env> env;
+            std::unique_ptr<Ort::Session> session;
+            std::vector<const char*> input_names;
+            std::vector<const char*> output_names;
 
             void run();
             std::tuple<bool, cv::Mat, float>  isHumanDetected(const cv::Mat & frame, const bool need_output = false) const;

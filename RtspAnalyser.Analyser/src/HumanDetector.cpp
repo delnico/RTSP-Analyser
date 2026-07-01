@@ -34,12 +34,14 @@ HumanDetector::HumanDetector(
     streamer(nullptr),
     human_detected_output(nullptr)
 {
-    net = cv::dnn::readNetFromONNX("/home/nico/project/RTSP-Analyser/yolov8n.onnx");
-    net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-    if(onCPU)
-        net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-    else
-        net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
+    env = std::make_unique<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, "YOLOv26_Detector");
+    Ort::SessionOptions session_options;
+    session_options.SetIntraOpNumThreads(4);
+    session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+    std::string model_path = "/home/nico/project/RTSP-Analyser/iamodel/yolov26n.onnx";
+    session = std::make_unique<Ort::Session>(*env, model_path.c_str(), session_options);
+    input_names = {"images"};
+    output_names = {"output0"};
 }
 
 HumanDetector::~HumanDetector()
@@ -106,66 +108,95 @@ void HumanDetector::run()
 
 std::tuple<bool, cv::Mat, float> HumanDetector::isHumanDetected(const cv::Mat & frame, const bool need_output) const
 {
-    cv::Mat blob, output;
+    cv::Mat output;
     cv::resize(frame, output, cv::Size(frame.cols / 2, frame.rows / 2));
 
     if (frame.empty()) {
         return std::make_tuple(false, output, 0.0f);
     }
 
-    // 1    prepare image for YOLO (640x640, normalization 1/255.0, BGR to RGB)
-    cv::dnn::blobFromImage(frame, blob, 1.0 / 255.0, cv::Size(640, 640), cv::Scalar(), true, false);
-    
-    //  non-const reference to net to call setInput and forward, to avoid modifying the original one
-    auto & non_const_net = const_cast<cv::dnn::Net&>(net);
-    non_const_net.setInput(blob);
+    // 1. Prétraitement de l'image (YOLO attend du 640x640, RGB, normalisé)
+    cv::Mat resized_img;
+    cv::Size target_size(640, 640);
+    cv::resize(frame, resized_img, target_size);
+    cv::cvtColor(resized_img, resized_img, cv::COLOR_BGR2RGB);
 
-    // 2    predict
-    std::vector<cv::Mat> outputs;
-    non_const_net.forward(outputs, non_const_net.getUnconnectedOutLayersNames());
+    // Convertir l'image en Float 32 et normaliser (1/255.0)
+    cv::Mat float_img;
+    resized_img.convertTo(float_img, CV_32FC3, 1.0 / 255.0);
 
-    cv::Mat raw_output = outputs[0];
-    
-    // remodeling output of YOLO [1, 84, 8400] -> [8400, 84]
-    if (raw_output.dims == 3) {
-        raw_output = raw_output.reshape(1, raw_output.size[1]);
-        cv::transpose(raw_output, raw_output);
+    // Réarranger les canaux de HWC (OpenCV) à CHW (ONNX standard)
+    std::vector<float> input_tensor_values(1 * 3 * 640 * 640);
+    std::vector<cv::Mat> chw_channels(3);
+    for (int i = 0; i < 3; ++i) {
+        chw_channels[i] = cv::Mat(target_size, CV_32FC1, &input_tensor_values[i * 640 * 640]);
     }
+    cv::split(float_img, chw_channels);
+
+    // 2. Création des Tensors ONNX Runtime
+    auto memory_info = Ort::MemoryInfo::CreateCpu(OrtAllocatorAsset, OrtMemTypeDefault);
+    std::array<int64_t, 4> input_shape = {1, 3, 640, 640};
+
+    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
+        memory_info, input_tensor_values.data(), input_tensor_values.size(), input_shape.data(), input_shape.size()
+    );
+
+    // 3. Inférence (forward)
+    auto output_tensors = session->Run(
+        Ort::RunOptions{nullptr},
+        input_names.data(), &input_tensor, 1,
+        output_names.data(), 1
+    );
+
+    // 4. Post-traitement des données reçues (Format YOLOv26: [1 x 300 x 6])
+    float* raw_output = output_tensors[0].GetTensorMutableData<float>();
+    auto output_shape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
+
+    int num_detections = output_shape[1]; // Devrait être 300
+    int num_elements = output_shape[2];   // Devrait être 6 [x1, y1, x2, y2, score, class_id]
 
     bool human_found = false;
-    float person_score = 0.0f;
     float max_score = 0.0f;
 
-    for (int i = 0; i < raw_output.rows; ++i) {
-        person_score = raw_output.at<float>(i, 4);    // 4 is person class score in YOLOv8 output
+    float scale_x = static_cast<float>(output.cols) / 640.0f;
+    float scale_y = static_cast<float>(output.rows) / 640.0f;
 
-        if (person_score >= confidence_threshold) {
-            
-            float cx = raw_output.at<float>(i, 0);
-            float cy = raw_output.at<float>(i, 1);
-            float w  = raw_output.at<float>(i, 2);
-            float h  = raw_output.at<float>(i, 3);
+    for (int i = 0; i < num_detections; ++i) {
+        int index = i * num_elements;
 
-            float scale_x = static_cast<float>(output.cols) / 640.0f;   // yolov8n input size is 640x640
-            float scale_y = static_cast<float>(output.rows) / 640.0f;
+        float confidence = raw_output[index + 4];
+        int class_id     = static_cast<int>(raw_output[index + 5]);
 
-            int left   = static_cast<int>((cx - w / 2.0f) * scale_x);
-            int top    = static_cast<int>((cy - h / 2.0f) * scale_y);
-            int width  = static_cast<int>(w * scale_x);
-            int height = static_cast<int>(h * scale_y);
+        // Classe 0 = Personne dans le modèle COCO standard
+        if (class_id == 0 && confidence >= confidence_threshold) {
 
-            if(isHumanInsideZone(
-                left + (width / 2),
-                top + (height / 2)
-            ))
-            {
+            float x1 = raw_output[index + 0];
+            float y1 = raw_output[index + 1];
+            float x2 = raw_output[index + 2];
+            float y2 = raw_output[index + 3];
+
+            int left   = static_cast<int>(x1 * scale_x);
+            int top    = static_cast<int>(y1 * scale_y);
+            int right  = static_cast<int>(x2 * scale_x);
+            int bottom = static_cast<int>(y2 * scale_y);
+
+            int width  = right - left;
+            int height = bottom - top;
+
+            int center_x = left + (width / 2);
+            int center_y = top + (height / 2);
+
+            if (isHumanInsideZone(center_x, center_y)) {
                 human_found = true;
-                if (person_score > max_score)
-                    max_score = person_score;
-                if (need_output)
+                if (confidence > max_score) {
+                    max_score = confidence;
+                }
+
+                if (need_output) {
                     cv::rectangle(output, cv::Rect(left, top, width, height), cv::Scalar(0, 255, 0), 2);
-                else
-                    break;  // used when no need_output, and into the else because if catche one person, we don't care if many
+                } else {
+                    break;
+                }
             }
         }
     }
