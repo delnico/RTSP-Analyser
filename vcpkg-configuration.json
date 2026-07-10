@@ -12,6 +12,6 @@
 	}
 	],
 	"overlay-ports": [
-		"./vcpkg-overlays/libffi"
+		"./vcpkg-overlays/vcpkg-make"
 	]
 }
