@@ -25,7 +25,7 @@ namespace DelNico::RtspAnalyser {
     class StreamAnalyserHandler {
         public:
             StreamAnalyserHandler(
-                boost::asio::io_service & io_service,
+                boost::asio::io_context & io_service,
                 zmq::context_t & zmqContext,
                 const Stream & stream,
                 Logger * logger,
@@ -39,7 +39,7 @@ namespace DelNico::RtspAnalyser {
             ~StreamAnalyserHandler();
 
             void start(
-                boost::asio::io_service & io_service,
+                boost::asio::io_context & io_service,
                 std::string nvr_ip,
                 int nvr_port,
                 std::string nvr_user,

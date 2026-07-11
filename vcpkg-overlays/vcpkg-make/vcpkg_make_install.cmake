@@ -121,6 +121,20 @@ function(vcpkg_make_install)
             endif()
         endforeach()
 
+        # PATCH: fallback quand --prefix n'atteint pas configure (bug vcpkg-make 2026-01-01).
+        # Les fichiers atterrissent dans usr/local ; il faut les déplacer VERS LA BONNE
+        # DESTINATION CONFIG PAR CONFIG, avant que la config suivante n'écrase usr/local.
+        if(EXISTS "${CURRENT_PACKAGES_DIR}/usr/local")
+            set(_z_vcm_dest "${CURRENT_PACKAGES_DIR}${path_suffix}")
+            file(GLOB _z_vcm_children RELATIVE "${CURRENT_PACKAGES_DIR}/usr/local" "${CURRENT_PACKAGES_DIR}/usr/local/*")
+            foreach(_z_vcm_child ${_z_vcm_children})
+                file(COPY "${CURRENT_PACKAGES_DIR}/usr/local/${_z_vcm_child}" DESTINATION "${_z_vcm_dest}")
+            endforeach()
+            file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/usr")
+            unset(_z_vcm_dest)
+            unset(_z_vcm_children)
+        endif()
+
         z_vcpkg_make_restore_env()
 
         vcpkg_restore_env_variables(VARS LIB LIBPATH LIBRARY_PATH)

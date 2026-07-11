@@ -37,7 +37,8 @@ target_link_libraries(${PROJECT_NAME}
         fmt::fmt
         libzmq
         cppzmq
-        mailio
+        mailio::mailio
+        onnxruntime::onnxruntime
         RtspAnalyser.Libs
         RtspAnalyser.Motion
     PUBLIC

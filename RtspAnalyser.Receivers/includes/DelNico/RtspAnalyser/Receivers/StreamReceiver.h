@@ -18,13 +18,13 @@ namespace DelNico::RtspAnalyser::Receivers {
     public:
         StreamReceiver() = delete;
         StreamReceiver(
-            boost::asio::io_service & io_service,
+            boost::asio::io_context & io_service,
             const Libs::Stream & stream,
             std::deque<cv::Mat> & frames
         );
         ~StreamReceiver();
         void start(
-            boost::asio::io_service & io_service,
+            boost::asio::io_context & io_service,
             std::string nvr_ip,
             int nvr_port,
             std::string nvr_user,
@@ -45,7 +45,7 @@ namespace DelNico::RtspAnalyser::Receivers {
         void autoReloadAfterCrash();
 
         std::atomic<bool> isEnabled;
-        boost::asio::deadline_timer timer;
+        boost::asio::steady_timer timer;
         Libs::Stream stream;
         cv::VideoCapture cap;
         std::deque<cv::Mat> & frames;

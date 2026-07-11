@@ -89,7 +89,18 @@ namespace DelNico::RtspAnalyser::Analyser {
 
             msg.content(content);
 
-            msg.attach(image_stream, "capture.jpg", mailio::message::media_type_t::IMAGE, "jpeg");
+            //msg.attach(image_stream, "capture.jpg", mailio::message::media_type_t::IMAGE, "jpeg");
+            //msg.attach({std::make_tuple(std::ref(image_stream), mailio::string_t("capture.jpg"), mailio::content_type_t(mailio::content_type_t::media_type_t::IMAGE, "jpeg"))});
+
+            std::list<std::tuple<std::istream&, mailio::string_t, mailio::mime::content_type_t>> attachments;
+            attachments.emplace_back(
+                image_stream,
+                mailio::string_t("capture.jpg"),
+                // Correction ici aussi
+                mailio::mime::content_type_t(mailio::message::media_type_t::IMAGE, "jpeg")
+            );
+
+            msg.attach(attachments);
 
             msg.from(mailio::mail_address(username, username));
             msg.add_recipient(mailio::mail_address(username, username));

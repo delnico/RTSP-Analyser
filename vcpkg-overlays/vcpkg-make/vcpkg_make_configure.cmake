@@ -112,6 +112,8 @@ function(vcpkg_make_configure)
             cmake_language(CALL ${cmd} ${configup})
         endforeach()
 
+        message(STATUS "### DEBUG opts pour ${configup} = [${opts}]")
+
         vcpkg_make_run_configure(SHELL
                                     "${shell_cmd}"
                                  CONFIG

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include <opencv2/opencv.hpp>
-#include <onnxruntime_cxx_api.h>
+#include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"

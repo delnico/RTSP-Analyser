@@ -19,7 +19,7 @@
 namespace DelNico::RtspAnalyser::Motion {
 
     MotionManager::MotionManager(
-        boost::asio::io_service & boost_io_service,
+        boost::asio::io_context & boost_io_service,
         std::chrono::seconds guard_time_new_event,
         Analyser::Multiplexer * multiplexer,
         Analyser::TriggerWorker * triggerWorker,
@@ -28,9 +28,7 @@ namespace DelNico::RtspAnalyser::Motion {
         boost_io_service(boost_io_service),
         timer_stream_redirect_human_detection(
             boost_io_service,
-            boost::posix_time::microsec(
-                std::chrono::duration_cast<std::chrono::microseconds>(guard_time_new_event).count()
-            )
+            std::chrono::duration_cast<std::chrono::microseconds>(guard_time_new_event)
         ),
         thread(),
         isEnabled(false),
@@ -91,11 +89,9 @@ namespace DelNico::RtspAnalyser::Motion {
 
     void MotionManager::run_called_by_motion_detector() {
         timer_stream_redirect_human_detection.cancel();
-        timer_stream_redirect_human_detection = boost::asio::deadline_timer(
+        timer_stream_redirect_human_detection = boost::asio::steady_timer(
             boost_io_service,
-            boost::posix_time::microsec(
-                std::chrono::duration_cast<std::chrono::microseconds>(guard_time_new_event).count()
-            )
+            std::chrono::duration_cast<std::chrono::microseconds>(guard_time_new_event)
         );
         timer_stream_redirect_human_detection.async_wait(
             boost::bind(&MotionManager::stop_stream_redirect_human_detector, this)

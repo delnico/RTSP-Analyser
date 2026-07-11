@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
         logFile = conf.get<std::string>("log_path");
     }
 
-    boost::asio::io_service boost_io_service;
+    boost::asio::io_context boost_io_service;
 
     zmq::context_t zmqContext = zmq::context_t();
 
@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
     
 
     std::thread boost_io_thread(
-        [](boost::asio::io_service & io) {
+        [](boost::asio::io_context & io) {
             io.run();
         },
         std::ref(boost_io_service)

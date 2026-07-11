@@ -12,6 +12,7 @@
 #include <opencv2/bgsegm.hpp>
 
 #include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
 #include "DelNico/RtspAnalyser/Libs/Config.h"

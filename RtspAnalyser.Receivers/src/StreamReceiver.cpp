@@ -19,12 +19,12 @@
 namespace DelNico::RtspAnalyser::Receivers {
     
     StreamReceiver::StreamReceiver(
-        boost::asio::io_service & io_service,
+        boost::asio::io_context & io_service,
         const Libs::Stream & stream,
         std::deque<cv::Mat> & frames
     ) :
         isEnabled(false),
-        timer(boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()))),
+        timer(boost::asio::steady_timer(io_service, std::chrono::microseconds(stream.frequency.count()))),
         stream(stream),
         cap(),
         frames(frames),
@@ -38,7 +38,7 @@ namespace DelNico::RtspAnalyser::Receivers {
     }
 
     void StreamReceiver::start(
-    boost::asio::io_service & io_service,
+    boost::asio::io_context & io_service,
     std::string nvr_ip,
     int nvr_port,
     std::string nvr_user,
@@ -60,7 +60,7 @@ namespace DelNico::RtspAnalyser::Receivers {
     if(!cap.isOpened())
         throw std::runtime_error("Failed to open stream with GStreamer");
     
-    timer = boost::asio::deadline_timer(io_service, boost::posix_time::microsec(stream.frequency.count()));
+    timer = boost::asio::steady_timer(io_service, std::chrono::microseconds(stream.frequency.count()));
     timer.async_wait(boost::bind(&StreamReceiver::run, this));
 }
 
@@ -130,7 +130,7 @@ namespace DelNico::RtspAnalyser::Receivers {
         auto end = std::chrono::steady_clock::now();
         elapsed = end - start;
         auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count() - (elapsed.count() * 1000)));
-        timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
+        timer.expires_at(timer.expiry() + sleep_duration);
         timer.async_wait(boost::bind(&StreamReceiver::run, this));
     }
 
@@ -153,11 +153,11 @@ namespace DelNico::RtspAnalyser::Receivers {
         catch(const std::exception & e)
         {
             Libs::Logger::log_main(std::format("StreamReceiver : {} : crash during restart, try again in 5sec", stream.url));
-            timer.expires_at(timer.expires_at() + boost::posix_time::microsec(std::chrono::seconds(5).count()));
+            timer.expires_at(timer.expiry() + std::chrono::microseconds(std::chrono::seconds(5).count()));
             timer.async_wait(boost::bind(&StreamReceiver::autoReloadAfterCrash, this));
         }
         auto sleep_duration = std::chrono::microseconds((int64_t) (stream.frequency.count()));
-        timer.expires_at(timer.expires_at() + boost::posix_time::microsec(sleep_duration.count()));
+        timer.expires_at(timer.expiry() + sleep_duration);
         timer.async_wait(boost::bind(&StreamReceiver::run, this));
     }
 }

@@ -21,7 +21,7 @@ namespace DelNico::RtspAnalyser::Motion {
     public:
         MotionManager() = delete;
         MotionManager(
-            boost::asio::io_service & boost_io_service,
+            boost::asio::io_context & boost_io_service,
             std::chrono::seconds guard_time_new_event,
             Analyser::Multiplexer * multiplexer,
             Analyser::TriggerWorker * triggerWorker,
@@ -41,8 +41,8 @@ namespace DelNico::RtspAnalyser::Motion {
 
         void stop_stream_redirect_human_detector();
 
-        boost::asio::io_service & boost_io_service;
-        boost::asio::deadline_timer timer_stream_redirect_human_detection;
+        boost::asio::io_context & boost_io_service;
+        boost::asio::steady_timer timer_stream_redirect_human_detection;
         std::thread thread;
         std::atomic<bool> isEnabled;
         std::deque<MotionEvent> events;

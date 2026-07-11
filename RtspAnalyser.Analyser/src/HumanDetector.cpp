@@ -5,6 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn.hpp>
+#include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
@@ -27,7 +28,6 @@ HumanDetector::HumanDetector(
     isEnabled(false),
     thread(),
     frames(frames),
-    net(),
     motionManager(motionManager),
     zones(zones),
     confidence_threshold(confidence_threshold),
@@ -134,7 +134,7 @@ std::tuple<bool, cv::Mat, float> HumanDetector::isHumanDetected(const cv::Mat & 
     cv::split(float_img, chw_channels);
 
     // 2. Création des Tensors ONNX Runtime
-    auto memory_info = Ort::MemoryInfo::CreateCpu(OrtAllocatorAsset, OrtMemTypeDefault);
+    auto memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
     std::array<int64_t, 4> input_shape = {1, 3, 640, 640};
 
     Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
