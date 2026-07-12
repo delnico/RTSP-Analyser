@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn.hpp>
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
