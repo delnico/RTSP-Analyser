@@ -10,6 +10,7 @@
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
+#include "DelNico/RtspAnalyser/Libs/Logger.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManager.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCaller.h"
 #include "DelNico/RtspAnalyser/Motion/MotionManagerCalling.h"
@@ -87,7 +88,15 @@ void HumanDetector::run()
             continue;
         frame = frames.front();
         frames.pop_front();
-        result = isHumanDetected(frame, true);
+        try
+        {
+            result = isHumanDetected(frame, true);
+        }
+        catch(const std::exception & e)
+        {
+            Logger::log_main("HumanDetector::run - Exception: " + std::string(e.what()));
+            continue;
+        }
         if(std::get<0>(result))
         {
             motionManager->notify(
