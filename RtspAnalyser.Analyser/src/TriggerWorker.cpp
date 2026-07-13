@@ -73,34 +73,30 @@ namespace DelNico::RtspAnalyser::Analyser {
             cv::Mat image = event.getPreviewImage();
             int score = event.getScore();
 
-            std::vector<uchar> buffer;
-            std::vector<int> params = { cv::IMWRITE_JPEG_QUALITY, 90 };
-            cv::imencode(".jpg", image, buffer, params);
-            std::string image_data(buffer.begin(), buffer.end());
-            std::istringstream image_stream(image_data, std::ios::binary);
+            // std::vector<uchar> buffer;
+            // std::vector<int> params = { cv::IMWRITE_JPEG_QUALITY, 90 };
+            // cv::imencode(".jpg", image, buffer, params);
+            // std::string image_data(buffer.begin(), buffer.end());
+            // std::istringstream image_stream(image_data, std::ios::binary);
 
             std::string content = "";
             content += "<html><body>";
             content += "<p> Score : ";
             content += std::format("{}", score);
             content += "</p>";
-            content += "<img src=\"cid:capture.jpg\">";
+            // content += "<img src=\"cid:capture.jpg\">";
             content += "</body></html>";
 
             msg.content(content);
 
-            //msg.attach(image_stream, "capture.jpg", mailio::message::media_type_t::IMAGE, "jpeg");
-            //msg.attach({std::make_tuple(std::ref(image_stream), mailio::string_t("capture.jpg"), mailio::content_type_t(mailio::content_type_t::media_type_t::IMAGE, "jpeg"))});
+            // std::list<std::tuple<std::istream&, mailio::string_t, mailio::mime::content_type_t>> attachments;
+            // attachments.emplace_back(
+            //     image_stream,
+            //     mailio::string_t("capture.jpg"),
+            //     mailio::mime::content_type_t(mailio::message::media_type_t::IMAGE, "jpeg")
+            // );
 
-            std::list<std::tuple<std::istream&, mailio::string_t, mailio::mime::content_type_t>> attachments;
-            attachments.emplace_back(
-                image_stream,
-                mailio::string_t("capture.jpg"),
-                // Correction ici aussi
-                mailio::mime::content_type_t(mailio::message::media_type_t::IMAGE, "jpeg")
-            );
-
-            msg.attach(attachments);
+            // msg.attach(attachments);
 
             msg.from(mailio::mail_address(username, username));
             msg.add_recipient(mailio::mail_address(username, username));
