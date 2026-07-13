@@ -12,6 +12,7 @@
 	}
 	],
 	"overlay-ports": [
-		"./vcpkg-overlays/vcpkg-make"
+		"./vcpkg-overlays/vcpkg-make",
+		"./vcpkg-overlays/onnx"
 	]
 }

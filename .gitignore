@@ -11,3 +11,5 @@ exec_release.sh
 .venv
 iamodel/yolo26n.onnx
 iamodel/yolo26n.pt
+
+core.*
