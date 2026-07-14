@@ -115,13 +115,19 @@ namespace DelNico::RtspAnalyser::Analyser {
                 conn.authenticate("", "", mailio::smtp::auth_method_t::NONE);
                 conn.submit(msg);
             }
-            catch(mailio::smtp_error& exc) {
+            catch(const mailio::smtp_error& exc) {
                 Libs::Logger::log_main("TriggerWorker : SMTP error: " + std::string(exc.what()));
             }
-            catch(mailio::dialog_error& exc) {
+            catch(const mailio::dialog_error& exc) {
                 Libs::Logger::log_main("TriggerWorker : Dialog error: " + std::string(exc.what()));
             }
-            catch(std::exception& exc) {
+            catch(const boost::system::system_error& exc) {
+                Libs::Logger::log_main("TriggerWorker : System error: " + std::string(exc.what()) + " code : " + std::to_string(exc.code().value()));
+            }
+            catch(const std::runtime_error& exc) {
+                Libs::Logger::log_main("TriggerWorker : Runtime error: " + std::string(exc.what()));
+            }
+            catch(const std::exception& exc) {
                 Libs::Logger::log_main("TriggerWorker : Exception: " + std::string(exc.what()));
             }
         }

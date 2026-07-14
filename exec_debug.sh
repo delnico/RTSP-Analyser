@@ -12,3 +12,4 @@ export GST_PLUGIN_PATH="/home/nico/project/RTSP-Analyser/build/x86_64/debug/vcpk
 export GST_REGISTRY="/tmp/gst_registry_vcpkg_debug.bin"
 ./build/x86_64/debug/RtspAnalyser/RtspAnalyser -c rtsp_config.json
 
+timedatectl
