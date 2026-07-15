@@ -9,6 +9,38 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Link static lib as shared
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# set asan debug flags
+option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
+
+if(ENABLE_ASAN)
+    add_compile_options(
+        -fsanitize=address
+        -fsanitize=undefined
+        -fno-omit-frame-pointer
+        -g
+        -O1
+    )
+
+    add_link_options(
+        -fsanitize=address
+        -fsanitize=undefined
+    )
+endif()
+
+option(ENABLE_TSAN "Enable Thread Sanitizer" OFF)
+
+if(ENABLE_TSAN)
+    add_compile_options(
+        -fsanitize=thread
+        -g
+        -O1
+    )
+
+    add_link_options(
+        -fsanitize=thread
+    )
+endif()
+
 # Dependencies
 #set(OpenCV_DIR "${VCPKG_INSTALLED_DIR}/x64-linux/share/opencv4")
 set(OpenCV_DIR "${VCPKG_INSTALLED_DIR}/x64-linux-cascadelake/share/opencv4")

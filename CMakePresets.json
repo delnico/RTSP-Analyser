@@ -38,6 +38,22 @@
           "CMAKE_BUILD_TYPE": "Debug",
           "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         }
+      },
+      {
+        "name": "debug_asan",
+        "inherits": "x86_64-linux-debug",
+        "binaryDir": "${sourceDir}/build/x86_64/debug_asan",
+        "cacheVariables": {
+          "ENABLE_ASAN": "ON"
+        }
+      },
+      {
+        "name": "debug_tsan",
+        "inherits": "x86_64-linux-debug",
+        "binaryDir": "${sourceDir}/build/x86_64/debug_tsan",
+        "cacheVariables": {
+          "ENABLE_TSAN": "ON"
+        }
       }
     ],
     "buildPresets": [
@@ -52,6 +68,14 @@
       {
         "name": "arm-linux-debug",
         "configurePreset": "arm-linux-debug"
+      },
+      {
+        "name": "debug_asan",
+        "configurePreset": "debug_asan"
+      },
+      {
+        "name": "debug_tsan",
+        "configurePreset": "debug_tsan"
       }
     ]
   }

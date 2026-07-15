@@ -6,7 +6,6 @@ rpi_mount_samba.sh
 copy.sh
 log.txt
 yolov8n.onnx
-exec_release.sh
 
 .venv
 iamodel/yolo26n.onnx

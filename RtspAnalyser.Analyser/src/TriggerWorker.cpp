@@ -31,7 +31,9 @@ namespace DelNico::RtspAnalyser::Analyser {
         username(username)
     {}
 
-    TriggerWorker::~TriggerWorker() {}
+    TriggerWorker::~TriggerWorker() {
+        stop();
+    }
 
     void TriggerWorker::start() {
         if(! isEnabled.load()) {
