@@ -1,10 +1,10 @@
 #include <thread>
 #include <atomic>
-#include <deque>
 #include <vector>
 
 #include <opencv2/opencv.hpp>
 #include <onnxruntime/onnxruntime_cxx_api.h>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
@@ -18,7 +18,7 @@ using namespace DelNico::RtspAnalyser::Analyser;
 using namespace DelNico::RtspAnalyser::Libs;
 
 HumanDetector::HumanDetector(
-    std::deque<cv::Mat> & frames,
+    oneapi::tbb::concurrent_queue<cv::Mat> & frames,
     Motion::MotionManager * motionManager,
     std::vector<cv::Rect> zones,
     float confidence_threshold,
@@ -49,7 +49,7 @@ HumanDetector::~HumanDetector()
     stop();
 }
 
-void HumanDetector::setStreamer(Streamer * streamer, std::deque<cv::Mat> * human_detected_output)
+void HumanDetector::setStreamer(Streamer * streamer, oneapi::tbb::concurrent_queue<cv::Mat> * human_detected_output)
 {
     this->streamer = streamer;
     this->human_detected_output = human_detected_output;
@@ -83,10 +83,9 @@ void HumanDetector::run()
     while (isEnabled)
     {
         cond.wait();
-        if(frames.empty())
+        if(! frames.try_pop(frame))
             continue;
-        frame = frames.front();
-        frames.pop_front();
+
         try
         {
             result = isHumanDetected(frame, true);
@@ -108,7 +107,7 @@ void HumanDetector::run()
         }
         if(streamer)
         {
-            human_detected_output->push_back(std::get<1>(result));
+            human_detected_output->push(std::get<1>(result));
             streamer->notify();
         }
     }

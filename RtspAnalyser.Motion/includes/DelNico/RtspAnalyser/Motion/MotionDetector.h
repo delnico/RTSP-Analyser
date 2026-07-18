@@ -3,10 +3,10 @@
 #include <thread>
 #include <vector>
 #include <atomic>
-#include <deque>
 #include <cstdint>
 
 #include <opencv2/opencv.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
@@ -23,8 +23,8 @@ namespace DelNico::RtspAnalyser::Motion {
             MotionDetector() = delete;
             MotionDetector(
                 Libs::Config & config,
-                std::deque<cv::Mat> & frames,
-                std::deque<cv::Mat> & fgMasks,
+                oneapi::tbb::concurrent_queue<cv::Mat> & frames,
+                oneapi::tbb::concurrent_queue<cv::Mat> & fgMasks,
                 int64_t fps,
                 std::vector<cv::Rect> zones
             );
@@ -44,8 +44,8 @@ namespace DelNico::RtspAnalyser::Motion {
             std::atomic<bool> isEnabled;
             std::thread thread;
             std::vector<cv::Rect> zones;
-            std::deque<cv::Mat> & frames;
-            std::deque<cv::Mat> & fgMasks;
+            oneapi::tbb::concurrent_queue<cv::Mat> & frames;
+            oneapi::tbb::concurrent_queue<cv::Mat> & fgMasks;
             Analyser::Streamer * streamer;
             MotionManager * motionManager;
 

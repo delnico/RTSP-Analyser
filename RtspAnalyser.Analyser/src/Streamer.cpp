@@ -1,8 +1,8 @@
 #include <thread>
 #include <atomic>
-#include <deque>
 
 #include <opencv2/opencv.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 #include <zmq.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
@@ -10,7 +10,7 @@
 
 using namespace DelNico::RtspAnalyser::Analyser;
 
-Streamer::Streamer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext) :
+Streamer::Streamer(oneapi::tbb::concurrent_queue<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext) :
     cond(),
     isEnabled(false),
     thread(),
@@ -48,10 +48,8 @@ void Streamer::run()
     while (isEnabled)
     {
         cond.wait();
-        if(frames.empty())
+        if(!frames.try_pop(frame))
             continue;
-        frame = frames.front();
-        frames.pop_front();
 
         try {
             int metadata[4] = {frame.rows, frame.cols, frame.channels(), frame.type()};

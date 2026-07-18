@@ -56,6 +56,7 @@ find_package(ZeroMQ CONFIG REQUIRED)
 find_package(cppzmq CONFIG REQUIRED)
 find_package(mailio CONFIG REQUIRED)
 find_package(onnxruntime CONFIG REQUIRED)
+find_package(TBB CONFIG REQUIRED)
 
 # Add Libraries
 add_subdirectory(RtspAnalyser.Analyser)

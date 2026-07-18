@@ -32,6 +32,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Boost::program_options
     libzmq
     cppzmq
+    TBB::tbb
     RtspAnalyser.Libs
     RtspAnalyser.Receivers
     RtspAnalyser.Analyser

@@ -1,6 +1,5 @@
 #include <atomic>
 #include <string>
-#include <deque>
 #include <thread>
 #include <vector>
 #include <memory>
@@ -9,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
@@ -21,7 +21,7 @@ namespace DelNico::RtspAnalyser::Receivers {
     StreamReceiver::StreamReceiver(
         boost::asio::io_context & io_service,
         const Libs::Stream & stream,
-        std::deque<cv::Mat> & frames
+        oneapi::tbb::concurrent_queue<cv::Mat> & frames
     ) :
         isEnabled(false),
         timer(boost::asio::steady_timer(io_service, std::chrono::microseconds(stream.frequency.count()))),
@@ -93,15 +93,19 @@ namespace DelNico::RtspAnalyser::Receivers {
 
     int64_t StreamReceiver::queueSize() const
     {
-        return frames.size();
+        return frames.unsafe_size();
     }
 
     void StreamReceiver::goToLive()
     {
         // let clear frames queue but keep the last frame (and one before, for secure queue)
-        while(frames.size() > 2)
+        while(frames.unsafe_size() > 2)
         {
-            frames.pop_front();
+            cv::Mat tmp;
+            if(!frames.try_pop(tmp))
+            {
+                break;
+            }
         }
     }
 
@@ -118,7 +122,7 @@ namespace DelNico::RtspAnalyser::Receivers {
             {
                 if(listener != nullptr)
                 {
-                    frames.push_back(frame);
+                    frames.push(frame);
                     listener->notify();
                 }
             }

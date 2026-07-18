@@ -2,12 +2,12 @@
 #pragma once
 
 #include <atomic>
-#include <deque>
 #include <memory>
 #include <cstdint>
 
 #include <opencv2/opencv.hpp>
 #include <boost/asio.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Libs/Stream.h"
@@ -20,7 +20,7 @@ namespace DelNico::RtspAnalyser::Receivers {
         StreamReceiver(
             boost::asio::io_context & io_service,
             const Libs::Stream & stream,
-            std::deque<cv::Mat> & frames
+            oneapi::tbb::concurrent_queue<cv::Mat> & frames
         );
         ~StreamReceiver();
         void start(
@@ -48,7 +48,7 @@ namespace DelNico::RtspAnalyser::Receivers {
         boost::asio::steady_timer timer;
         Libs::Stream stream;
         cv::VideoCapture cap;
-        std::deque<cv::Mat> & frames;
+        oneapi::tbb::concurrent_queue<cv::Mat> & frames;
 
         Analyser::IAnalyser * listener;
 

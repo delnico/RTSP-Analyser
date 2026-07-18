@@ -1,9 +1,10 @@
 #pragma once
 
-#include <deque>
 #include <cstdint>
+#include <optional>
 
 #include <opencv2/opencv.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 
@@ -14,19 +15,19 @@ namespace DelNico::RtspAnalyser::Analyser {
             OutputStream() = delete;
             OutputStream(
                 IAnalyser * output,
-                std::deque<cv::Mat> & frames,
+                oneapi::tbb::concurrent_queue<cv::Mat> & frames,
                 int64_t frame_skipping
             );
             ~OutputStream() = default;
 
             void notify();
             void addFrame(cv::Mat frame);
-            cv::Mat getFrame();
+            std::optional<cv::Mat> getFrame();
             int64_t getFrameSkipping();
 
         private:
             IAnalyser * output;
-            std::deque<cv::Mat> & frames;
+            oneapi::tbb::concurrent_queue<cv::Mat> & frames;
             int64_t frame_skipping;
     };
 }

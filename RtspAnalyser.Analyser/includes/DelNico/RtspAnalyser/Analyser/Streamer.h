@@ -2,10 +2,10 @@
 
 #include <thread>
 #include <atomic>
-#include <deque>
 #include <string>
 
 #include <opencv2/opencv.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 #include <zmq.hpp>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
@@ -17,7 +17,7 @@ namespace DelNico::RtspAnalyser::Analyser {
     class Streamer : public IAnalyser {
         public:
             Streamer();
-            Streamer(std::deque<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext);
+            Streamer(oneapi::tbb::concurrent_queue<cv::Mat> & frames, std::string socket_bind, zmq::context_t & zmqContext);
             ~Streamer() override;
             Streamer(const Streamer & other) = delete;
             Streamer & operator=(const Streamer & other) = delete;
@@ -29,7 +29,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             Libs::ConditionalVariable cond;
             std::atomic<bool> isEnabled;
             std::thread thread;
-            std::deque<cv::Mat> & frames;
+            oneapi::tbb::concurrent_queue<cv::Mat> & frames;
             zmq::socket_t socket;
 
             void run();

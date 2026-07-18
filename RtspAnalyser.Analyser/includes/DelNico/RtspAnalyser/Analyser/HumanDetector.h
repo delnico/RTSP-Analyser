@@ -2,12 +2,12 @@
 
 #include <thread>
 #include <atomic>
-#include <deque>
 #include <vector>
 #include <memory>
 
 #include <opencv2/opencv.hpp>
 #include <onnxruntime/onnxruntime_cxx_api.h>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/Streamer.h"
@@ -20,7 +20,7 @@ namespace DelNico::RtspAnalyser::Analyser {
         public:
             HumanDetector() = delete;
             HumanDetector(
-                std::deque<cv::Mat> & frames,
+                oneapi::tbb::concurrent_queue<cv::Mat> & frames,
                 Motion::MotionManager * motionManager,
                 std::vector<cv::Rect> zones,
                 float confidence_threshold,
@@ -30,7 +30,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             HumanDetector(const HumanDetector & other) = delete;
             HumanDetector & operator=(const HumanDetector & other) = delete;
 
-            void setStreamer(Streamer * streamer, std::deque<cv::Mat> * human_detected_output);
+            void setStreamer(Streamer * streamer, oneapi::tbb::concurrent_queue<cv::Mat> * human_detected_output);
             
             void start();
             void stop();
@@ -40,12 +40,12 @@ namespace DelNico::RtspAnalyser::Analyser {
             Libs::ConditionalVariable cond;
             std::atomic<bool> isEnabled;
             std::thread thread;
-            std::deque<cv::Mat> & frames;
+            oneapi::tbb::concurrent_queue<cv::Mat> & frames;
             Motion::MotionManager * motionManager;
             std::vector<cv::Rect> zones;
             float confidence_threshold;
             Streamer * streamer;
-            std::deque<cv::Mat> * human_detected_output;
+            oneapi::tbb::concurrent_queue<cv::Mat> * human_detected_output;
 
             std::unique_ptr<Ort::Env> env;
             std::unique_ptr<Ort::Session> session;

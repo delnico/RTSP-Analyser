@@ -1,10 +1,9 @@
 #pragma once
 
-#include <deque>
-
 #include <opencv2/opencv.hpp>
 #include <boost/asio.hpp>
 #include <zmq.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/HumanDetector.h"
 #include "DelNico/RtspAnalyser/Analyser/TriggerWorker.h"
@@ -50,7 +49,7 @@ namespace DelNico::RtspAnalyser {
             void stop();
         
         private:
-            std::deque<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks, human_detect_frames, human_detector_output;
+            oneapi::tbb::concurrent_queue<cv::Mat> stream_frames, viewer_frames, motio_detect_frames, fgMasks, human_detect_frames, human_detector_output;
 
             StreamReceiver streamReceiver;
             Multiplexer multiplexer;

@@ -1,6 +1,5 @@
 #include <thread>
 #include <atomic>
-#include <deque>
 #include <memory>
 #include <vector>
 #include <cstdint>
@@ -10,7 +9,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/bgsegm.hpp>
-
+#include <oneapi/tbb/concurrent_queue.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
 
@@ -26,8 +25,8 @@ namespace DelNico::RtspAnalyser::Motion {
 
     MotionDetector::MotionDetector(
         Libs::Config & config,
-        std::deque<cv::Mat> & frames,
-        std::deque<cv::Mat> & fgMasks,
+        oneapi::tbb::concurrent_queue<cv::Mat> & frames,
+        oneapi::tbb::concurrent_queue<cv::Mat> & fgMasks,
         int64_t fps,
         std::vector<cv::Rect> zones
     ) :
@@ -85,10 +84,9 @@ namespace DelNico::RtspAnalyser::Motion {
             cond.wait();
 
             try {
-                if(frames.size() < 2)
+                if(! frames.try_pop(frame)) {
                     continue;
-                frame = frames.front();
-                frames.pop_front();
+                }
             }
             catch(const std::exception & e) {
                 Libs::Logger::log_main(fmt::format("MotionDetector::run error : {}", e.what()));
@@ -144,7 +142,7 @@ namespace DelNico::RtspAnalyser::Motion {
             }
 
             if(streamer != nullptr) {
-                fgMasks.push_back(cv::Mat(roiMask));    // can replace there by "frame" to have rectangular and detection
+                fgMasks.push(cv::Mat(roiMask));    // can replace there by "frame" to have rectangular and detection
                                                         // or use default "roiMask" to have black/white image points
                 streamer->notify();
             }

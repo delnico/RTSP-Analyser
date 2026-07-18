@@ -1,10 +1,10 @@
 #include <thread>
 #include <atomic>
 #include <vector>
-#include <deque>
 #include <cstdint>
 
 #include <opencv2/opencv.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/Multiplexer.h"
@@ -13,7 +13,7 @@
 using namespace DelNico::RtspAnalyser::Analyser;
 
 Multiplexer::Multiplexer(
-    std::deque<cv::Mat> & input_frames
+    oneapi::tbb::concurrent_queue<cv::Mat> & input_frames
 ) :
     isEnabled(false),
     thread(),
@@ -82,11 +82,10 @@ void Multiplexer::run() {
         
         if(! input_frames.empty())
         {
-            frame = input_frames.front();
-            input_frames.pop_front();
-            currentImage = frame;
-
-            multiplex(frame);
+            if(input_frames.try_pop(frame)) {
+                currentImage = frame;
+                multiplex(frame);
+            }
         }
     }
 }

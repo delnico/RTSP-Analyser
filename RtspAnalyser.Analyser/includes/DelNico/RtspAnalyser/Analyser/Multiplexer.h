@@ -1,11 +1,11 @@
 #pragma once
 
 #include <atomic>
-#include <deque>
 #include <list>
 #include <thread>
 
 #include <opencv2/opencv.hpp>
+#include <oneapi/tbb/concurrent_queue.h>
 
 #include "DelNico/RtspAnalyser/Analyser/IAnalyser.h"
 #include "DelNico/RtspAnalyser/Analyser/OutputStream.h"
@@ -17,7 +17,7 @@ namespace DelNico::RtspAnalyser::Analyser {
         public:
             Multiplexer() = delete;
             Multiplexer(
-                std::deque<cv::Mat> & input_frames
+                oneapi::tbb::concurrent_queue<cv::Mat> & input_frames
             );
             ~Multiplexer() override;
 
@@ -43,7 +43,7 @@ namespace DelNico::RtspAnalyser::Analyser {
             std::thread thread;
             Libs::ConditionalVariable input_cond;
 
-            std::deque<cv::Mat> & input_frames;
+            oneapi::tbb::concurrent_queue<cv::Mat> & input_frames;
 
             std::list<OutputStream *> output_clients;
             int64_t frame_count;
