@@ -70,6 +70,7 @@ namespace DelNico::RtspAnalyser::Receivers {
         {
             isEnabled.store(false);
             timer.cancel();
+            cap.release();
         }
     }
 
