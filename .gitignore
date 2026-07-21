@@ -13,4 +13,5 @@ iamodel/yolo26n.pt
 
 core.*
 logs/**
-
+sonarqube.sh
+.scannerwork/**
