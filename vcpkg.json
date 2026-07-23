@@ -45,7 +45,7 @@
 			"name" : "cppzmq"
 		},
 		{
-			"name" : "mailio"
+			"name" : "curl"
 		},
 		{
 			"name" : "onnxruntime"

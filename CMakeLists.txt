@@ -54,7 +54,7 @@ find_package(Boost REQUIRED COMPONENTS asio program_options)
 find_package(fmt CONFIG REQUIRED)
 find_package(ZeroMQ CONFIG REQUIRED)
 find_package(cppzmq CONFIG REQUIRED)
-find_package(mailio CONFIG REQUIRED)
+find_package(CURL REQUIRED)
 find_package(onnxruntime CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
 
